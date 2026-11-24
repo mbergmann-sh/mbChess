@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=mbChess
+GenericName=Chess
+GenericName[de]=Schach
+Comment=Play and analyse chess with UCI engines
+Comment[de]=Schach spielen und analysieren mit UCI-Engines
+Exec=mbchess
+Icon=mbchess
+Terminal=false
+Categories=Game;BoardGame;
+Keywords=chess;schach;uci;stockfish;

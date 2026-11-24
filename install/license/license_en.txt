@@ -1,0 +1,21 @@
+mbChess – licence
+=================
+
+© Michael Bergmann 2026
+
+mbChess is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+mbChess is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for details.
+
+The source code is available at https://github.com/mbergmann-sh/mbChess.
+The bundled chess engines, pieces, boards, sounds and opening data come
+under their own free licences; see CREDITS.md in the source code and the
+licence files in the engine folders.
+
+------------------------------------------------------------------------
+

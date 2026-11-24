@@ -1,0 +1,73 @@
+# Builds mbChess and runs the unit tests on every push and pull request.
+# Covers the minimum Qt versions (5.15 and 6.4) on Linux plus Windows (MinGW) and macOS.
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  linux:
+    name: Linux ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Qt 6.4 (Ubuntu 24.04)
+            os: ubuntu-24.04
+            packages: qt6-base-dev qt6-svg-dev qt6-serialport-dev qt6-tools-dev-tools qt6-l10n-tools libgl-dev
+            qmake: /usr/lib/qt6/bin/qmake
+          - name: Qt 5.15 (Ubuntu 22.04)
+            os: ubuntu-22.04
+            packages: qtbase5-dev libqt5svg5-dev libqt5serialport5-dev qttools5-dev-tools
+            qmake: /usr/lib/x86_64-linux-gnu/qt5/bin/qmake
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Qt
+        run: sudo apt-get update && sudo apt-get install -y ${{ matrix.packages }}
+      - name: Build
+        run: |
+          mkdir build && cd build
+          ${{ matrix.qmake }} ../mbChess.pro
+          make -j"$(nproc)"
+      - name: Test
+        run: cd build && QT_QPA_PLATFORM=offscreen make check
+
+  windows:
+    name: Windows Qt 6 (MinGW)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Qt and MinGW
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          arch: win64_mingw
+          modules: 'qtserialport'
+          tools: 'tools_mingw1310'
+      - name: Build and test
+        shell: cmd
+        run: |
+          mkdir build
+          cd build
+          qmake ..\mbChess.pro
+          mingw32-make -j4
+          mingw32-make check
+
+  macos:
+    name: macOS Qt 6
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.3'
+          modules: 'qtserialport'
+      - name: Build and test
+        run: |
+          mkdir build && cd build
+          qmake ../mbChess.pro
+          make -j"$(sysctl -n hw.ncpu)"
+          make check

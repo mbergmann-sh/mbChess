@@ -1,0 +1,28 @@
+# Build output
+build*/
+bin/
+lib/
+*.o
+*.obj
+*.a
+*.lib
+*.exe
+*.qm
+moc_*
+qrc_*
+ui_*.h
+Makefile*
+.qmake.stash
+*.pro.user*
+*.autosave
+# Engines: keep the upstream Makefiles, ignore downloaded networks
+!engines/**/Makefile*
+!engines/gnuchess/lib/
+engines/viridithas/viridithas.nnue.zst
+engines/viridithas/viridithas.nnue.zst.part
+# Installer output (built, not versioned)
+install/build/
+install/output/
+# OS
+.DS_Store
+Thumbs.db
