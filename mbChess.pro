@@ -14,6 +14,7 @@ SUBDIRS += \
     pgn \
     book \
     engine \
+    gaviota \
     app \
     tests
 
@@ -24,9 +25,11 @@ book.subdir      = src/libs/book
 book.depends     = chesscore
 engine.subdir    = src/libs/engine
 engine.depends   = chesscore
+gaviota.subdir   = src/libs/gaviota
+gaviota.depends  = chesscore
 
 app.subdir  = src/app
-app.depends = chesscore pgn book engine
+app.depends = chesscore pgn book engine gaviota
 
 # DGT e-boards need Qt Serial Port (Qt Maintenance Tool: "Qt Serial Port").
 # Without it mbChess builds without DGT support.

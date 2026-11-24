@@ -110,6 +110,9 @@ private slots:
         d.depth = 12;
         QCOMPARE(goCommand(d), QStringLiteral("go depth 12"));
         QCOMPARE(goCommand(GoParameters()), QStringLiteral("go infinite"));
+        GoParameters pp = p;
+        pp.ponder = true;
+        QCOMPARE(goCommand(pp), QStringLiteral("go ponder wtime 60000 btime 55000 winc 2000 binc 2000"));
 
         QCOMPARE(positionCommand(QString(), {}), QStringLiteral("position startpos"));
         QCOMPARE(positionCommand(QString(), { "e2e4", "e7e5" }), QStringLiteral("position startpos moves e2e4 e7e5"));
@@ -159,6 +162,29 @@ private slots:
         Position pos = Position::startPosition();
         pos.makeMove(parseUci(pos, QStringLiteral("e2e4")));
         QVERIFY(!parseUci(pos, best.first().at(0).toString()).isNull());
+        QCOMPARE(e.state(), UciEngine::State::Ready);
+
+        // Pondering: no move until "ponderhit", then the search ends normally.
+        best.clear();
+        GoParameters ponder;
+        ponder.moveTime = 300;
+        ponder.ponder = true;
+        e.go(QString(), { "e2e4", "e7e5" }, ponder);
+        QVERIFY(e.isPondering());
+        QTest::qWait(800);
+        QCOMPARE(best.size(), 0); // longer than movetime, but still pondering
+        e.ponderHit();
+        QVERIFY(!e.isPondering());
+        QVERIFY(best.wait(15000));
+        QCOMPARE(e.state(), UciEngine::State::Ready);
+        // a ponder search that is not hit is stopped and reports nothing
+        best.clear();
+        e.go(QString(), { "e2e4", "e7e5" }, ponder);
+        QTest::qWait(200);
+        e.stop(true);
+        QVERIFY(!e.isPondering());
+        QTest::qWait(500);
+        QCOMPARE(best.size(), 0);
         QCOMPARE(e.state(), UciEngine::State::Ready);
 
         e.quit();

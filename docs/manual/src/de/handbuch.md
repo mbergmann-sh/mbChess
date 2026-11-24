@@ -18,13 +18,14 @@ Das Wichtigste in Kürze:
 
 - **Spielen** gegen eine Engine, gegen einen Menschen am selben Brett oder Engine gegen Engine
   zuschauen, mit Schachuhr, einstellbarer Spielstärke, Eröffnungsbuch und Chessbooks.
-- **Mitgelieferte Engines**: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess und
-  Viridithas. Weitere UCI-Engines lassen sich hinzufügen.
+- **Mitgelieferte Engines**: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess,
+  Viridithas, Texel, Patricia und die Tarrasch Toy Engine. Weitere UCI-Engines lassen sich
+  hinzufügen.
 - **Analyse** mit einer Engine, Bewertungsgraph, Varianten und Kommentaren.
 - **Partiedatenbanken** im PGN-Format, auch mit zehntausenden Partien.
 - **Brett-Editor** und **Mattsuche**.
 - **Engine-Benchmark**: ein Rundenturnier der Engines unter gleichen Bedingungen.
-- **Endspiel-Datenbanken** (Syzygy) zum Herunterladen.
+- **Endspiel-Datenbanken**: Syzygy zum Herunterladen, Gaviota mit Matt-Abstand in der Analyse.
 - **DGT-Bretter** über USB oder Bluetooth.
 - Hunderte **Bretter und Figurensätze**, Zuggeräusche und **Zugansagen** auf Deutsch oder Englisch.
 
@@ -125,6 +126,7 @@ Funktion an oder aus ist.
 | **Engine** | der Gegner. „Andere Engine…“ wählt eine Programmdatei, „Verwalten…“ öffnet die Engine-Verwaltung |
 | **Spielstärke** | von „Anfänger (etwa 1350 Elo)“ bis „Volle Spielstärke“ |
 | **CPU-Kerne**, **Hash-Tabelle** | Rechenleistung und Speicher der Engine |
+| **Engine denkt in Ihrer Bedenkzeit mit (Ponder)** | die Engine rechnet schon, während Sie überlegen, und zwar auf den Zug, den sie von Ihnen erwartet. Spielen Sie ihn, antwortet sie schneller und besser. Nur mit voller Spielstärke und bei Engines, die es können (Stockfish, Arasan, Texel, Fruit, Toga II, Glaurung, GNU Chess) |
 | **Bedenkzeit** | „Ohne Uhr“ oder eine Bedenkzeit mit Inkrement, zum Beispiel 5 min + 3 s |
 | **Immer in Dame umwandeln** | ein Bauer auf der letzten Reihe wird ohne Rückfrage zur Dame |
 | **Von der Stellung auf dem Brett aus spielen** | die Partie beginnt mit der aufgebauten Stellung statt mit der Grundstellung |
@@ -286,9 +288,12 @@ Lösung in die Partie ein; mit der Pfeiltaste nach rechts gehen Sie sie durch.
 | Stockfish | eine der stärksten Engines | neuronales Netz, Mattsuche, Syzygy |
 | Arasan | sehr stark | Syzygy, eigenes Buch |
 | Viridithas | sehr stark | neuronales Netz, Syzygy |
+| Texel | sehr stark | neuronales Netz, Syzygy und Gaviota, Spielstärke einstellbar |
+| Patricia | stark, sehr angriffslustig | neuronales Netz, Syzygy, Spielstärke einstellbar |
 | Toga II, Fruit | mittel bis stark | klassisch, PolyGlot-Buch |
 | Glaurung | mittel bis stark | klassisch |
 | GNU Chess | mittel | eigenes Buch |
+| Tarrasch Toy Engine | schwach | klein und einfach, gut für Anfänger |
 
 Crafty wird nicht mitgeliefert, weil seine Lizenz die Weitergabe verbietet. Wer es selbst baut,
 legt es in den Ordner `engines` neben dem Programm.
@@ -325,16 +330,23 @@ Spielt die Engine einen Buchzug, steht „Buchzug: …“ im Engine-Fenster.
 # Endspiel-Datenbanken
 
 Syzygy-Endspiel-Datenbanken enthalten das perfekte Ergebnis jeder Stellung mit wenigen
-Steinen. Engines, die sie lesen können (Stockfish, Arasan, Viridithas, Crafty), spielen solche
-Endspiele damit fehlerfrei.
+Steinen. Engines, die sie lesen können (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty),
+spielen solche Endspiele damit fehlerfrei.
 
 ![Endspiel-Datenbanken herunterladen](images/tablebases.png)
 
-**Engines → Endspiel-Datenbanken (Syzygy)** zeigt, wie viele Tabellen vorhanden sind, und
+**Engines → Endspiel-Datenbanken** zeigt, wie viele Tabellen vorhanden sind, und
 lädt die Tabellen mit 3, 4 und 5 Steinen herunter: nur die Ergebnisse (WDL, etwa 378 MB) oder
 dazu den Abstand zum nächsten Bauernzug oder Schlag (WDL + DTZ, etwa 939 MB, empfohlen). Ein
 abgebrochener Download lässt sich später fortsetzen. Der Ordner ist `Syzygy` neben dem
 Programm und lässt sich ändern.
+
+**Gaviota-Tabellen** (Dateien `*.gtb.cp4`) enthalten zusätzlich die Zahl der Züge bis zum Matt.
+Legen Sie sie in den Ordner `Gaviota` neben dem Programm oder wählen Sie im selben Dialog einen
+anderen Ordner; mbChess lädt sie nicht selbst herunter (3–5 Steine, etwa 6,5 GB). Texel nutzt sie
+beim Spielen, und mbChess zeigt in der Analyse (ohne Engine-Gegner und ohne Uhr) bei Stellungen
+mit bis zu 5 Steinen das Ergebnis in der Statuszeile, zum Beispiel „Endspiel-Datenbank: Weiß setzt in
+9 Zügen matt.“ In einer laufenden Partie erscheint dieser Hinweis nicht.
 
 # Engine-Benchmark
 
@@ -391,7 +403,9 @@ welchem Anschluss es antwortet, mit Name, Version und der Stellung auf dem Brett
 
 ## Spielen
 
-**Brett → DGT-Brett verwenden** (Strg+D, Werkzeugleiste) schaltet das Brett ein und aus.
+**Brett → DGT-Brett verwenden** (Strg+D, Werkzeugleiste) schaltet das Brett ein und aus. Haken und
+Symbol zeigen ein verbundenes Brett; ist keins gefunden, sucht ein Klick erneut, und mbChess
+verbindet sich ohnehin, sobald das Brett angeschlossen oder eingeschaltet wird.
 Führen Sie Ihre Züge auf dem Brett aus: Sobald das Brett kurz ruhig ist und genau ein gültiger
 Zug passt, wird er gespielt. Den Zug der Engine zeigt die Statusleiste („DGT: bitte Sf6 auf dem
 Brett ziehen“); führen Sie ihn auf dem Brett aus. „✓ stimmt mit der Partie überein“ bestätigt,
@@ -460,7 +474,8 @@ Neben dem Programm (unter Windows meist `C:\mbChess`) liegen diese Ordner:
 | `engines` | die Engines, je eine pro Unterordner; neue Engines hier ablegen |
 | `Openings` | Eröffnungsbücher im PolyGlot-Format (`*.bin`) |
 | `Chessbooks` | Partiedatenbanken (`*.pgn`) für die Chessbooks |
-| `Syzygy` | Endspiel-Datenbanken |
+| `Syzygy` | Endspiel-Datenbanken (Syzygy) |
+| `Gaviota` | Endspiel-Datenbanken (Gaviota) |
 | `themes` | eigene Bretter und Figurensätze |
 | `Handbuch` / `Manual` | dieses Handbuch (CHM unter Windows, PDF) |
 
@@ -495,7 +510,7 @@ Version 3 oder später. Den Lizenztext enthält die Datei `LICENSE.txt` im Progr
 mbChess verwendet Qt (The Qt Company, LGPL) sowie Material vieler freier Projekte: die Figuren
 „cburnett“ von Colin M.L. Burnett, Bretter und Figuren aus AmiChess und Lucas Chess, die Stimme
 „Thorsten“ von Thorsten Müller, die Stimme „LibriTTS“, die Eröffnungsnamen von lichess.org und
-die Engines Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess und Viridithas mit ihren
-Autoren. Die vollständige Liste steht in der Datei `CREDITS.md` des Quelltexts.
+die Engines Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess, Viridithas, Texel, Patricia
+und die Tarrasch Toy Engine mit ihren Autoren sowie den Gaviota-Probecode von Miguel A. Ballicora. Die vollständige Liste steht in der Datei `CREDITS.md` des Quelltexts.
 
 Vielen Dank an DGT für die Beschreibung des Brett-Protokolls.

@@ -138,6 +138,7 @@ private:
 
     // DGT e-board (built only with Qt Serial Port)
     void setDgt(bool on);            // toolbar/menu toggle
+    bool dgtWanted() const;          // switched on by the user (setting dgt/enabled)
     void dgtDialog();
     void dgtWatch();                 // ports appeared / board switched on
     QStringList dgtPortNames() const;

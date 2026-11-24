@@ -35,7 +35,7 @@ void EngineAnalysis::start(const EngineEntry &engine, int threads, int hashMb)
     QString setup = engine.path + QStringLiteral("|%1|%2").arg(threads).arg(hashMb);
     for (auto it = engine.options.cbegin(); it != engine.options.cend(); ++it)
         setup += QLatin1Char('|') + it.key() + QLatin1Char('=') + it.value();
-    setup += QStringLiteral("|tb=") + tablebases::activePath();
+    setup += QStringLiteral("|tb=") + tablebases::activePath() + QStringLiteral("|gtb=") + tablebases::gaviotaActivePath();
     if (m_running && setup == m_setup)
         return;
     stop();

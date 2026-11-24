@@ -95,7 +95,7 @@ BenchmarkDialog::BenchmarkDialog(QWidget *parent)
     auto *eloRow = new QHBoxLayout;
     m_limit = new QCheckBox(tr("Limit to"), condBox);
     m_limit->setChecked(s.value(QStringLiteral("limit"), false).toBool());
-    m_limit->setToolTip(tr("Engines with a strength setting (UCI_Elo or Skill Level) play at about this "
+    m_limit->setToolTip(tr("Engines with a strength setting (UCI_Elo, Skill Level or Skill_Level) play at about this "
                            "rating, the others at full strength. Without the limit all play at full "
                            "strength."));
     m_elo = new QSpinBox(condBox);
@@ -111,9 +111,9 @@ BenchmarkDialog::BenchmarkDialog(QWidget *parent)
     form->addRow(tr("Playing strength:"), eloRow);
     m_tablebases = new QCheckBox(tr("Endgame tablebases for the engines that can use them"), condBox);
     m_tablebases->setToolTip(tr("Off by default: the tables help only some engines (Stockfish, Arasan, "
-                                "Viridithas, Crafty), which makes the comparison less fair."));
+                                "Viridithas, Texel, Patricia, Crafty), which makes the comparison less fair."));
     m_tablebases->setChecked(s.value(QStringLiteral("tablebases"), false).toBool());
-    m_tablebases->setEnabled(!tablebases::activePath().isEmpty());
+    m_tablebases->setEnabled(!tablebases::activePath().isEmpty() || !tablebases::gaviotaActivePath().isEmpty());
     if (!m_tablebases->isEnabled())
         m_tablebases->setChecked(false);
     form->addRow(QString(), m_tablebases);
@@ -169,8 +169,10 @@ BenchmarkSettings BenchmarkDialog::settings() const
     s.threads = m_threads->value();
     s.hashMb = m_hash->value();
     s.elo = m_limit->isChecked() ? m_elo->value() : 0;
-    if (m_tablebases->isChecked())
+    if (m_tablebases->isChecked()) {
         s.tablebasePath = tablebases::activePath();
+        s.gaviotaPath = tablebases::gaviotaActivePath();
+    }
     s.followOnBoard = m_follow->isChecked();
     s.showResultsAtEnd = m_showResults->isChecked();
     return s;

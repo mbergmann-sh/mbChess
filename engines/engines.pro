@@ -9,7 +9,7 @@
 
 TEMPLATE = subdirs
 
-isEmpty(MBCHESS_ENGINES): MBCHESS_ENGINES = stockfish arasan fruit toga glaurung gnuchess viridithas crafty
+isEmpty(MBCHESS_ENGINES): MBCHESS_ENGINES = stockfish arasan fruit toga glaurung gnuchess viridithas texel patricia tarrasch crafty
 
 for (e, MBCHESS_ENGINES) {
     equals(e, viridithas) {

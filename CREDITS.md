@@ -27,7 +27,11 @@
 | Glaurung 2.2 | Tord Romstad | GPL-3.0-or-later |
 | GNU Chess 6.2.5 | Free Software Foundation | GPL-3.0-or-later |
 | Viridithas 21 | Cosmo Bobak | AGPL-3.0; Netze CC0-1.0 |
+| Texel 1.13a7 (mit Netz `nndata.tbin.compr` und Gaviota-Probecode) | Peter Österlund | GPL-3.0-or-later |
+| Patricia 5.1 (mit Fathom für Syzygy) | Adam Kulju | MIT |
+| Tarrasch Toy Engine 0.908 | Bill Forster | MIT |
 | Crafty 25.2 (nicht enthalten, beim Bauen geladen) | Robert Hyatt | nur privater Gebrauch, keine Weitergabe |
+| Gaviota-Tablebases, Probecode (`src/libs/gaviota/gtb/`, mit LZMA, zlib, LZF, Huffman) | Miguel A. Ballicora (LZMA: Igor Pavlov, zlib: Jean-loup Gailly und Mark Adler, LZF: Marc Lehmann) | MIT (LZMA: Public Domain, zlib: zlib-Lizenz, LZF: BSD-2-Clause) |
 | Syzygy-Endspiel-Datenbanken (nicht enthalten, lädt der Benutzer im Programm herunter, Server lichess.org bzw. sesse.net) | Ronald de Man (Format und Generator) | frei verfügbar |
 
 ## About-Bild / About picture

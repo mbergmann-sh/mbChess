@@ -2,6 +2,7 @@
 // mbChess - entry point
 
 #include "datafolders.h"
+#include "tablebases.h"
 #include "guitheme.h"
 #include "languagemanager.h"
 #include "mainwindow.h"
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
     guitheme::apply(QSettings().value(QStringLiteral("ui/guiTheme"), guitheme::defaultId()).toString());
 
     datafolders::create();
+    tablebases::openGaviotaForGui(); // positions with up to 5 pieces: result below the board
 
     LanguageManager languages;
     languages.setLanguage(LanguageManager::savedLanguage());

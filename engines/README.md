@@ -12,6 +12,9 @@ bin/engines/toga/toga(.exe)
 bin/engines/glaurung/glaurung(.exe)
 bin/engines/gnuchess/gnuchess    + smallbook.bin, gnuchess.ini
 bin/engines/viridithas/viridithas(.exe)
+bin/engines/texel/texel(.exe)
+bin/engines/patricia/patricia(.exe)
+bin/engines/tarrasch/tarrasch(.exe)
 bin/engines/crafty/crafty(.exe)  + book.bin   (Quelltext wird beim Bauen geladen, s. u.)
 ```
 
@@ -30,14 +33,32 @@ einem anderen Ort lässt sich im Dialog „Neue Partie“ über „Andere Engine
 | Glaurung | 2.2 | GPL-3.0-or-later | [phenri/glaurung](https://github.com/phenri/glaurung) (1ac8827), von Tord Romstad, Vorläufer von Stockfish | `glaurung.pro` |
 | GNU Chess | 6.2.5e | GPL-3.0-or-later | [madnight/gnuchess](https://github.com/madnight/gnuchess) (f910dd4) | `gnuchess.pro` |
 | Viridithas | 21.0.0 | AGPL-3.0 | [cosmobobak/viridithas](https://github.com/cosmobobak/viridithas) (4609ff2) | `viridithas.pro` (Rust) |
+| Texel | 1.13a7 | GPL-3.0-or-later | [peterosterlund2/texel](https://github.com/peterosterlund2/texel) (b1883f8), von Peter Österlund; Netz `nndata.tbin.compr` (6 MB) im Quelltext, eingebettet | `texel.pro` |
+| Patricia | 5.1 | MIT | [Adam-Kulju/Patricia](https://github.com/Adam-Kulju/Patricia) (8a19bab), sehr angriffslustig; drei kleine Netze (`engine/nets`, je 1,5 MB) eingebettet, Fathom für Syzygy | `patricia.pro` (C++20) |
+| Tarrasch Toy Engine | 0.908 | MIT | [billforsternz/tarrasch-toy-engine](https://github.com/billforsternz/tarrasch-toy-engine) (96319e7), die kleine Demo-Engine der Tarrasch-GUI, schwach – gut für Anfänger | `tarrasch.pro` |
 
-### Endspiel-Datenbanken (Syzygy)
+### Endspiel-Datenbanken (Syzygy und Gaviota)
 
-Stockfish, Arasan, Viridithas (Option `SyzygyPath`) und Crafty (`tbpath`/`egtb`) lesen
-Syzygy-Tabellen. mbChess übergibt ihnen den Ordner aus „Engines → Endspiel-Datenbanken“
-(Vorgabe: `Syzygy` neben dem Programm), sobald dort Tabellen liegen; der Dialog lädt die
-Tabellen mit 3–5 Steinen von tablebase.lichess.ovh oder tablebase.sesse.net herunter. Fruit,
-Toga II, Glaurung und GNU Chess spielen ohne Tabellen.
+Stockfish, Arasan, Viridithas, Texel, Patricia (Option `SyzygyPath`) und Crafty
+(`tbpath`/`egtb`) lesen Syzygy-Tabellen. mbChess übergibt ihnen den Ordner aus
+„Engines → Endspiel-Datenbanken“ (Vorgabe: `Syzygy` neben dem Programm), sobald dort Tabellen
+liegen; der Dialog lädt die Tabellen mit 3–5 Steinen von tablebase.lichess.ovh oder
+tablebase.sesse.net herunter. Fruit, Toga II, Glaurung, GNU Chess und Tarrasch spielen ohne Tabellen.
+
+**Gaviota-Tabellen** (`*.gtb.cp4`, Abstand bis zum Matt) liest Texel (Option `GaviotaTbPath`).
+mbChess selbst liest sie ebenfalls, mit dem Probecode aus
+[michiguel/Gaviota-Tablebases](https://github.com/michiguel/Gaviota-Tablebases) (981472c, MIT) in
+`src/libs/gaviota/gtb/` (unverändert, gebaut von `src/libs/gaviota/gaviota.pro` mit `-DZ_PREFIX`),
+und zeigt in der Analyse bei Stellungen mit bis zu 5 Steinen das Ergebnis unter dem Brett
+(„Weiß setzt in 9 Zügen matt“). Ordner: `Gaviota` neben dem Programm oder ein eigener; einen
+Download bietet mbChess nicht an.
+
+### Ponder
+
+Gegen einen Menschen und mit voller Stärke kann eine UCI-Engine mit der Option `Ponder`
+(Stockfish, Arasan, Texel, Fruit, Toga, Glaurung …) in der Bedenkzeit des Gegners weiterrechnen
+(„Neue Partie“ → „Engine denkt in Ihrer Bedenkzeit mit (Ponder)“). mbChess schickt dann `go ponder` mit dem
+erwarteten Zug und bei einem Treffer `ponderhit`, sonst `stop` und eine neue Suche.
 
 ### Crafty (nur zum eigenen Gebrauch)
 
@@ -62,6 +83,16 @@ Programmdateien), mit wenigen kleinen Ausnahmen, jeweils mit `mbChess:` markiert
   der ersten Suche mit heutigen Compilern).
 - `glaurung/src/movepick.cpp`: `PhaseTable` beginnt mit `PH_STOP`, damit der Index der
   Hauptsuche nicht −1 ist.
+- `tarrasch/src/mbchess_port.h` (neu): die wenigen Windows-Aufrufe der Tarrasch Toy Engine
+  (`GetTickCount`, Semaphoren, `CreateThread`, `strcpy_s`, `fopen_s` …) für Linux und macOS;
+  `toyengine.cpp`, `ChessEngine.cpp` und `thc.h` binden ihn statt `windows.h` ein.
+
+Texel: übernommen sind `lib/texellib` und `app/texel` (ohne die Werkzeuge, Tests und das Netz-
+Training), gebaut wie upstreams CMake-Projekt, das Netz wird mit `incbin` eingebettet
+(`qmake/texel.pro` schreibt dazu `texel_nndata.cpp` in den Build-Ordner). Die `CMakeLists.txt`
+von upstream liegen noch dabei, werden aber nicht benutzt. Patricia: `engine/src` und
+`engine/nets`; `-Wa,-I<engine>` lässt den Assembler die Netze finden. Patricias Spielstärke
+setzt mbChess über `Skill_Level` (1–20 für etwa 500–3000 Elo, 21 = volle Stärke).
 
 Glaurung: `timeoday.cpp` (nur für MSVC) wird nicht mitgebaut, die fertigen Programme, das
 Makefile und `polyglot.ini` aus dem Original sind nicht übernommen. Glaurung liest
@@ -118,8 +149,9 @@ Standard ist AVX2 auf x86-64 und NEON auf ARM64 (Apple Silicon).
   (Rust 1.93 oder neuer, <https://rustup.rs>). Unter Windows mit MinGW passt die Toolchain
   `x86_64-pc-windows-gnu` (`rustup default stable-x86_64-pc-windows-gnu` oder MSYS2:
   `pacman -S mingw-w64-x86_64-rust`).
-- **Spielstärke-Stufen** (Elo) wirken bei Engines mit `UCI_LimitStrength` (Stockfish, Arasan)
-  oder `Skill Level`. Fruit, Toga und GNU Chess spielen immer mit voller Stärke.
+- **Spielstärke-Stufen** (Elo) wirken bei Engines mit `UCI_LimitStrength` (Stockfish, Arasan,
+  Texel), `Skill Level` oder `Skill_Level` (Patricia). Fruit, Toga, GNU Chess und Tarrasch
+  spielen immer mit voller Stärke.
 
 ## Engines aktualisieren
 

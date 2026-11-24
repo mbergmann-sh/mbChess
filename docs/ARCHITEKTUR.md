@@ -1,6 +1,6 @@
 # mbChess – Architektur (Kurzfassung)
 
-Stand: 23.11.2026. Die ausführliche Planung liegt im Projektplan; hier stehen die Regeln,
+Stand: 24.11.2026. Die ausführliche Planung liegt im Projektplan; hier stehen die Regeln,
 die beim Programmieren gelten.
 
 ## Schichten
@@ -11,7 +11,7 @@ die beim Programmieren gelten.
    Brett, Fenster und Gegner reden nie direkt miteinander (Vorbild: KDE Knights).
 3. **Spieler-Protokolle** (je Farbe eins): Lokal, DGT-Brett, UCI-Engine, XBoard-Engine, FICS, WLAN-Partner.
 4. **Bibliotheken** (statisch, ohne GUI-Code, mit Unit-Tests): `chesscore`, `pgn`, `book`,
-   `engine`, `net`, `dgt`, `training`.
+   `engine`, `gaviota`, `net`, `dgt`, `training`.
 5. **Plattform** (Qt): QProcess, QSerialPort bzw. JNI unter Android, QTcpSocket/QUdpSocket,
    Qt SQL (SQLite), QtMultimedia (nur `QAudioSink` bzw. unter Qt 5 `QAudioOutput`: ein Audiostrom, Wörter im Speicher), Qt Linguist.
 
@@ -53,9 +53,24 @@ die beim Programmieren gelten.
 
 Mitgeliefert und aus dem Quelltext gebaut (`engines/`, siehe [engines/README.md](../engines/README.md)):
 Stockfish (GPL-3), Arasan (MIT), Toga II (GPL-2+), Fruit 2.1 (GPL-2+), Glaurung 2.2 (GPL-3), GNU Chess (GPL-3, nicht unter
-Windows), Viridithas (AGPL-3, nur mit Rust). Crafty (XBoard-Protokoll, `xboard.cpp` in
+Windows), Viridithas (AGPL-3, nur mit Rust), Texel (GPL-3), Patricia (MIT, C++20), Tarrasch Toy
+Engine (MIT, `mbchess_port.h` ersetzt die Windows-Aufrufe). Crafty (XBoard-Protokoll, `xboard.cpp` in
 der Engine-Bibliothek) wird nicht mitgeliefert: der Build lädt den Quelltext und kompiliert ihn
 nur für den eigenen Gebrauch, der Installer lässt ihn aus (Lizenz erlaubt keine Weitergabe).
+
+Ponder (`GameSettings::ponder`, nur Mensch gegen Engine mit voller Stärke, UCI-Engines mit
+Option `Ponder`): nach dem Engine-Zug startet `GameManager::startPondering()` ein `go ponder`
+auf den erwarteten Zug (aus `bestmove … ponder`, sonst dem zweiten Zug der Hauptvariante,
+`m_ponderNode`/`m_ponderMove`). `startEngineSearch()` schickt bei einem Treffer `ponderhit`
+(`UciEngine::ponderHit()`), sonst wird die Ponder-Suche verworfen und neu gesucht. Während
+des Ponderns ist `m_searchNode` −1: Info-Zeilen und ein `bestmove` der Ponder-Suche gehen ins
+Leere, „Sofort ziehen“ betrifft sie nicht.
+
+Endspiel-Datenbanken (`src/app/tablebases.*`): Syzygy-Ordner für die Engines (`SyzygyPath`),
+Gaviota-Ordner für Texel (`GaviotaTbPath`) und für mbChess selbst: `src/libs/gaviota`
+(Probecode von Miguel A. Ballicora in `gtb/`, C, MIT; `gaviotatb.h` als C++-Schicht mit
+`mbc::Position`, eine globale Tabellenmenge hinter einem Mutex). Die Statuszeile zeigt in der
+Analyse das Ergebnis bei bis zu 5 Steinen.
 
 Engine-Benchmark (`src/app/benchmark.*`, `benchmarkdialog.*`, `benchmarkwindow.*`): `BenchmarkRunner`
 spielt ein Rundenturnier (Kreismethode, 12 feste Eröffnungen, jede mit beiden Farben), je Partie

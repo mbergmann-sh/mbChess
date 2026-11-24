@@ -17,13 +17,14 @@ At a glance:
 
 - **Play** against an engine, against a human on the same board, or watch engine against
   engine, with a chess clock, adjustable strength, opening book and chessbooks.
-- **Engines included**: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess and Viridithas.
+- **Engines included**: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess, Viridithas,
+  Texel, Patricia and the Tarrasch Toy Engine.
   More UCI engines can be added.
 - **Analysis** with an engine, evaluation graph, variations and comments.
 - **Game databases** in PGN format, even with tens of thousands of games.
 - **Board editor** and **mate search**.
 - **Engine benchmark**: a round-robin tournament of the engines under equal conditions.
-- **Endgame tablebases** (Syzygy) to download.
+- **Endgame tablebases**: Syzygy to download, Gaviota with the distance to mate in the analysis.
 - **DGT boards** via USB or Bluetooth.
 - Hundreds of **boards and piece sets**, move sounds and **move announcements** in English or
   German.
@@ -121,6 +122,7 @@ for move sounds, announcements and the DGT board show whether the function is on
 | **Engine** | the opponent. "Other engine…" picks a program file, "Manage…" opens the engine list |
 | **Strength** | from "Beginner (about 1350 Elo)" to "Full strength" |
 | **CPU cores**, **Hash table** | computing power and memory of the engine |
+| **Engine thinks on your time (ponder)** | the engine already searches while you think, on the move it expects from you. If you play it, it answers faster and better. Only at full strength and with engines that can do it (Stockfish, Arasan, Texel, Fruit, Toga II, Glaurung, GNU Chess) |
 | **Time control** | "No clock" or a time with increment, for example 5 min + 3 s |
 | **Always promote to queen** | a pawn on the last rank becomes a queen without asking |
 | **Play from the position on the board** | the game starts from the position set up instead of the initial position |
@@ -278,9 +280,12 @@ step through it with the right arrow key.
 | Stockfish | one of the strongest engines | neural network, mate search, Syzygy |
 | Arasan | very strong | Syzygy, own book |
 | Viridithas | very strong | neural network, Syzygy |
+| Texel | very strong | neural network, Syzygy and Gaviota, adjustable strength |
+| Patricia | strong, very aggressive | neural network, Syzygy, adjustable strength |
 | Toga II, Fruit | medium to strong | classic, PolyGlot book |
 | Glaurung | medium to strong | classic |
 | GNU Chess | medium | own book |
+| Tarrasch Toy Engine | weak | small and simple, good for beginners |
 
 Crafty is not included because its licence forbids redistribution. If you build it yourself,
 put it into the folder `engines` next to the program.
@@ -317,14 +322,22 @@ When the engine plays a book move, "Book move: …" is shown in the engine windo
 # Endgame tablebases
 
 Syzygy endgame tablebases hold the perfect result of every position with few pieces. Engines
-that can read them (Stockfish, Arasan, Viridithas, Crafty) play such endgames without a flaw.
+that can read them (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty) play such endgames
+without a flaw.
 
 ![Downloading endgame tablebases](images/tablebases.png)
 
-**Engines → Endgame tablebases (Syzygy)** shows how many tables are there and downloads the
+**Engines → Endgame tablebases** shows how many tables are there and downloads the
 tables with 3, 4 and 5 pieces: results only (WDL, about 378 MB) or also the distance to the next
 pawn move or capture (WDL + DTZ, about 939 MB, recommended). A cancelled download can be
 continued later. The folder is `Syzygy` next to the program and can be changed.
+
+**Gaviota tables** (files `*.gtb.cp4`) also hold the number of moves to mate. Put them into the
+folder `Gaviota` next to the program or choose another folder in the same dialog; mbChess does
+not download them itself (3–5 pieces, about 6.5 GB). Texel uses them when playing, and in the
+analysis (no engine opponent, no clock) mbChess shows the result of positions with up to 5
+pieces in the status line, for example "Tablebase: White mates in 9 moves." During a game this
+hint is not shown.
 
 # Engine benchmark
 
@@ -380,7 +393,9 @@ it answers, with name, version and the position on the board.
 
 ## Playing
 
-**Board → Use the DGT board** (Ctrl+D, toolbar) switches the board on and off. Make your moves
+**Board → Use the DGT board** (Ctrl+D, toolbar) switches the board on and off. The check mark and
+the icon show a connected board; if none was found, a click searches again, and mbChess connects
+anyway as soon as the board is plugged in or switched on. Make your moves
 on the board: as soon as the board is still for a moment and exactly one legal move fits, it
 is played. The status bar shows the engine's move ("DGT: please play Nf6 on the board"); make
 it on the board. "✓ matches the game" confirms that board and game agree; otherwise it says on
@@ -447,7 +462,8 @@ Next to the program (on Windows usually `C:\mbChess`) are these folders:
 | `engines` | the engines, one per subfolder; put new engines here |
 | `Openings` | opening books in PolyGlot format (`*.bin`) |
 | `Chessbooks` | game databases (`*.pgn`) for the chessbooks |
-| `Syzygy` | endgame tablebases |
+| `Syzygy` | endgame tablebases (Syzygy) |
+| `Gaviota` | endgame tablebases (Gaviota) |
 | `themes` | your own boards and piece sets |
 | `Manual` / `Handbuch` | this manual (CHM on Windows, PDF) |
 
@@ -480,7 +496,7 @@ or later. The licence text is in the file `LICENSE.txt` in the program folder.
 mbChess uses Qt (The Qt Company, LGPL) and material of many free projects: the "cburnett"
 pieces by Colin M.L. Burnett, boards and pieces from AmiChess and Lucas Chess, the voice
 "Thorsten" by Thorsten Müller, the "LibriTTS" voice, the opening names of lichess.org and the
-engines Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess and Viridithas with their
-authors. The full list is in the file `CREDITS.md` of the source code.
+engines Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess, Viridithas, Texel, Patricia and
+the Tarrasch Toy Engine with their authors, and the Gaviota probing code by Miguel A. Ballicora. The full list is in the file `CREDITS.md` of the source code.
 
 Many thanks to DGT for the description of the board protocol.

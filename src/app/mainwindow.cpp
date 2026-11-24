@@ -22,6 +22,7 @@
 #endif
 #include "engineanalysis.h"
 #include "tablebasedialog.h"
+#include "tablebases.h"
 
 #include "boardwidget.h"
 #include "chessclock.h"
@@ -136,9 +137,10 @@ MainWindow::MainWindow(LanguageManager *languages, QWidget *parent)
         m_dgtStatus->setText(tr("not connected"));
         m_dgtStatus->setToolTip(reason + QLatin1Char('\n')
                                 + tr("mbChess connects again as soon as the board answers."));
+        updateDgtStatus(); // icon and menu: no board any more
     });
     connect(m_dgtScanner, &dgt::Scanner::probing, this, [this](const QString &port) {
-        if (!m_dgtQuiet && m_dgtAction->isChecked())
+        if (!m_dgtQuiet && dgtWanted())
             m_dgtStatus->setText(tr("checking %1 ...").arg(port));
     });
     connect(m_dgtScanner, &dgt::Scanner::portProbed, this, [this](const dgt::ProbeResult &r) {
@@ -151,10 +153,7 @@ MainWindow::MainWindow(LanguageManager *languages, QWidget *parent)
     m_dgtWatcher->setInterval(2000);
     connect(m_dgtWatcher, &QTimer::timeout, this, &MainWindow::dgtWatch);
     m_dgtKnownPorts = dgtPortNames();
-    if (dgtsettings::enabled()) {
-        m_dgtAction->setChecked(true);
-        updateDgtIcon();
-    }
+    updateDgtIcon();
     m_dgtWatcher->start();
 #endif
 }
@@ -708,7 +707,7 @@ void MainWindow::retranslateUi()
     m_gameMenu->setTitle(tr("&Game"));
     m_engineMenu->setTitle(tr("&Engines"));
     m_manageEnginesAction->setText(tr("Manage e&ngines..."));
-    m_tablebaseAction->setText(tr("&Endgame tablebases (Syzygy)..."));
+    m_tablebaseAction->setText(tr("&Endgame tablebases..."));
     m_analysisAction->setText(tr("Engine &analysis"));
     m_analysisAction->setToolTip(tr("Engine analysis: an engine searches the position on the board (Alt+F2)"));
     m_analysisEngineMenu->setTitle(tr("Analysis en&gine"));
@@ -1348,15 +1347,34 @@ void MainWindow::updateDgtIcon()
 {
     if (!m_dgtAction)
         return;
-    const bool on = m_dgtAction->isChecked();
-    m_dgtAction->setIcon(guitheme::toolbarIcon(on ? QStringLiteral("dgt") : QStringLiteral("dgt-off")));
-    m_dgtAction->setToolTip(on ? tr("DGT board on (Ctrl+D): moves on the board are played here")
-                               : tr("DGT board off (Ctrl+D)"));
+    // The check mark and the icon show a connected board; "wanted" alone (switched on, but no
+    // board found yet) looks like off, with a tooltip that mbChess waits for the board.
+#ifdef MBCHESS_HAVE_DGT
+    const bool connected = m_dgt && m_dgt->isConnected();
+#else
+    const bool connected = false;
+#endif
+    m_dgtAction->setChecked(connected); // no signal: setDgt() follows only the user's clicks
+    m_dgtAction->setIcon(guitheme::toolbarIcon(connected ? QStringLiteral("dgt") : QStringLiteral("dgt-off")));
+    m_dgtAction->setToolTip(connected ? tr("DGT board on (Ctrl+D): moves on the board are played here")
+                            : dgtWanted() ? tr("No DGT board connected: mbChess uses it as soon as it is "
+                                               "plugged in or switched on (Ctrl+D: search now)")
+                                          : tr("DGT board off (Ctrl+D)"));
+}
+
+bool MainWindow::dgtWanted() const
+{
+#ifdef MBCHESS_HAVE_DGT
+    return dgtsettings::enabled();
+#else
+    return false;
+#endif
 }
 
 void MainWindow::setDgt(bool on)
 {
 #ifdef MBCHESS_HAVE_DGT
+    // A click on the unchecked entry while the board is wanted but not there: search again.
     dgtsettings::setEnabled(on);
     m_dgtUserOff = !on;
     if (on) {
@@ -1404,7 +1422,7 @@ bool MainWindow::dgtStartupCheck(bool quiet)
     // first the stored port, then "blind" all others (new port, other board)
     if (m_dgt->isOpen() || m_dgtDialogOpen)
         return false;
-    const bool want = m_dgtAction->isChecked() || (dgtsettings::autoDetect() && !m_dgtUserOff);
+    const bool want = dgtWanted() || (dgtsettings::autoDetect() && !m_dgtUserOff);
     if (!want)
         return false;
     QVector<dgt::PortInfo> ports;
@@ -1423,7 +1441,7 @@ bool MainWindow::dgtStartupCheck(bool quiet)
             if (i.name != stored)
                 ports << i;
     if (ports.isEmpty()) {
-        if (m_dgtAction->isChecked()) {
+        if (dgtWanted()) {
             m_dgtStatus->setText(tr("no board found"));
             m_dgtStatus->setToolTip(tr("No serial port found."));
         }
@@ -1444,7 +1462,7 @@ void MainWindow::dgtSearch(const QVector<dgt::PortInfo> &ports, bool quiet)
         return;
     m_dgtQuiet = quiet;
     m_dgtFoundPort.clear();
-    if (m_dgtAction->isChecked() && !quiet) {
+    if (dgtWanted() && !quiet) {
         m_dgtStatus->setText(tr("looking for the board ..."));
         m_dgtStatus->setToolTip(QString());
     }
@@ -1456,7 +1474,7 @@ void MainWindow::dgtSearchFinished()
 {
     if (m_dgtDialogOpen || m_dgt->isOpen())
         return;
-    const bool want = m_dgtAction->isChecked() || (dgtsettings::autoDetect() && !m_dgtUserOff);
+    const bool want = dgtWanted() || (dgtsettings::autoDetect() && !m_dgtUserOff);
     if (!m_dgtFoundPort.isEmpty() && want) {
         const int orientation = dgtsettings::orientation();
         m_dgt->setAutoFlip(orientation == 0);
@@ -1466,10 +1484,6 @@ void MainWindow::dgtSearchFinished()
         if (m_dgt->open(m_dgtFoundPort, &error)) {
             dgtsettings::setPort(m_dgtFoundPort);
             dgtsettings::setEnabled(true);
-            {
-                const QSignalBlocker block(m_dgtAction);
-                m_dgtAction->setChecked(true);
-            }
             updateDgtIcon();
             m_dgtStatus->setText(tr("connecting to %1 ...").arg(m_dgtFoundPort));
             m_dgtStatus->setToolTip(QString());
@@ -1480,7 +1494,7 @@ void MainWindow::dgtSearchFinished()
         m_dgtStatus->setToolTip(error);
         return;
     }
-    if (!m_dgtAction->isChecked())
+    if (!dgtWanted())
         return;
     m_dgtStatus->setText(tr("no board found"));
     m_dgtStatus->setToolTip(tr("mbChess connects as soon as the board is plugged in or switched on."));
@@ -1505,7 +1519,7 @@ void MainWindow::dgtWatch()
     m_dgtKnownPorts = current;
     if (m_dgt->isOpen() || m_dgtScanner->isRunning() || m_dgtDialogOpen)
         return;
-    const bool want = m_dgtAction->isChecked() || (dgtsettings::autoDetect() && !m_dgtUserOff);
+    const bool want = dgtWanted() || (dgtsettings::autoDetect() && !m_dgtUserOff);
     if (!want)
         return;
     QVector<dgt::PortInfo> ports;
@@ -1513,7 +1527,7 @@ void MainWindow::dgtWatch()
         if (added.contains(p.name))
             ports << p;
     // a board that was switched off (Bluetooth: the port stays) is asked again every 6 s
-    if (ports.isEmpty() && m_dgtAction->isChecked() && ++m_dgtWatchTicks % 3 == 0 && !dgtsettings::port().isEmpty()) {
+    if (ports.isEmpty() && dgtWanted() && ++m_dgtWatchTicks % 3 == 0 && !dgtsettings::port().isEmpty()) {
         dgt::PortInfo p;
         p.name = dgtsettings::port();
         ports << p;
@@ -1527,7 +1541,7 @@ void MainWindow::dgtDialog()
 #ifdef MBCHESS_HAVE_DGT
     // the dialog probes the ports: free ours
     m_dgtScanner->cancel();
-    const bool wasOn = m_dgtAction->isChecked();
+    const bool wasOn = dgtWanted();
     m_dgt->close();
     m_dgtDialogOpen = true;
     DgtDialog dlg(this);
@@ -1535,10 +1549,7 @@ void MainWindow::dgtDialog()
     m_dgtDialogOpen = false;
     const bool on = accepted ? dlg.useBoard() : wasOn;
     m_dgtUserOff = !on;
-    {
-        const QSignalBlocker block(m_dgtAction);
-        m_dgtAction->setChecked(on);
-    }
+    dgtsettings::setEnabled(on);
     if (on)
         dgtStartupCheck(false);
     updateDgtIcon();
@@ -1595,7 +1606,15 @@ void MainWindow::updateDgtStatus()
 {
     if (!m_dgtStatus)
         return;
-    if (!m_dgtAction->isChecked()) {
+    updateDgtIcon(); // connected or not
+    // Taking the position needs a connected board, and no benchmark that owns the board.
+#ifdef MBCHESS_HAVE_DGT
+    const bool boardThere = m_dgt && m_dgt->isConnected() && dgtWanted();
+#else
+    const bool boardThere = false;
+#endif
+    m_dgtTakeAction->setEnabled(boardThere && !(m_benchmark && m_benchmark->isRunning()));
+    if (!dgtWanted()) {
         m_dgtStatus->hide();
         return;
     }
@@ -1847,7 +1866,7 @@ void MainWindow::updateBenchmarkActions()
     // While the benchmark runs the board and the engines belong to it: everything that would
     // start or load another game, or change the engines, is greyed out until it is over.
     for (QAction *action : { m_newGameAction, m_openAction, m_setFenAction, m_setupPositionAction,
-                             m_mateSearchAction, m_manageEnginesAction, m_dgtTakeAction }) {
+                             m_mateSearchAction, m_manageEnginesAction }) {
         if (action)
             action->setEnabled(!running);
     }
@@ -2279,8 +2298,17 @@ QString MainWindow::statusText() const
         s += QLatin1Char(' ') + tr("The engine is thinking...");
     else if (m_gm->anyEngineStarting())
         s += QLatin1Char(' ') + tr("Starting the engine...");
+    else if (m_gm->isPondering())
+        s += QLatin1Char(' ') + tr("The engine thinks on your time (ponder).");
     if (m_gm->isPlayingMode() && !m_game.isAtLineEnd())
         s += QLatin1Char(' ') + tr("You are looking at an earlier move (End key: back to the game).");
+    // Gaviota tables, only for analysis (no help during a game)
+    if (!m_gm->isPlayingMode()) {
+        const QString tb = tablebases::gaviotaText(pos);
+        if (!tb.isEmpty())
+            //: %1 = "White mates in 5 moves", "Draw" ...
+            s += QLatin1Char(' ') + tr("Tablebase: %1.").arg(tb);
+    }
     return s;
 }
 

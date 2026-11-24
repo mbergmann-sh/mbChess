@@ -141,6 +141,8 @@ QString goCommand(const GoParameters &p)
     QString s = QStringLiteral("go");
     if (p.mate > 0)
         return s + QStringLiteral(" mate %1").arg(p.mate);
+    if (p.ponder)
+        s += QStringLiteral(" ponder");
     if (p.infinite)
         return s + QStringLiteral(" infinite");
     if (p.whiteTime >= 0)
@@ -156,7 +158,7 @@ QString goCommand(const GoParameters &p)
         s += QStringLiteral(" movetime %1").arg(p.moveTime);
     if (p.depth > 0)
         s += QStringLiteral(" depth %1").arg(p.depth);
-    if (s == QLatin1String("go"))
+    if (s == QLatin1String("go") || s == QLatin1String("go ponder"))
         s += QStringLiteral(" infinite");
     return s;
 }
@@ -213,6 +215,9 @@ EngineInfo engineInfo(const QString &path)
         { "glaurung",   "Glaurung",   nullptr },
         { "gnuchess",   "GNU Chess",  "--uci" },
         { "viridithas", "Viridithas", nullptr },
+        { "texel",      "Texel",      nullptr },
+        { "patricia",   "Patricia",   nullptr },
+        { "tarrasch",   "Tarrasch Toy Engine", nullptr },
         { "crafty",     "Crafty",     "xboard" },
     };
     EngineInfo info;
@@ -307,6 +312,7 @@ void UciEngine::start(const QString &program, const QStringList &arguments, Prot
     m_uciOk = false;
     m_discardBestMoves = 0;
     m_outstandingSearches = 0;
+    m_pondering = false;
 
     m_process = new QProcess(this);
     m_process->setWorkingDirectory(QFileInfo(program).absolutePath());
@@ -356,6 +362,7 @@ void UciEngine::quit()
     }
     p->deleteLater();
     m_pendingCommands.clear();
+    m_pondering = false;
     setState(State::NotRunning);
 }
 
@@ -418,7 +425,9 @@ void UciEngine::go(const QString &startFen, const QStringList &uciMoves, const G
     if (m_state == State::Thinking)
         stop(true);
     if (m_protocol == Protocol::XBoard) {
-        xbGo(startFen, uciMoves, params);
+        GoParameters p = params;
+        p.ponder = false; // not offered for XBoard engines
+        xbGo(startFen, uciMoves, p);
         return;
     }
     send(positionCommand(startFen, uciMoves));
@@ -426,7 +435,16 @@ void UciEngine::go(const QString &startFen, const QStringList &uciMoves, const G
     ++m_outstandingSearches;
     m_currentDiscarded = false;
     m_stopSent = false;
+    m_pondering = params.ponder;
     setState(State::Thinking);
+}
+
+void UciEngine::ponderHit()
+{
+    if (!m_pondering || m_state != State::Thinking || m_stopSent)
+        return;
+    m_pondering = false;
+    send(QStringLiteral("ponderhit"));
 }
 
 void UciEngine::stop(bool discardResult)
@@ -445,6 +463,7 @@ void UciEngine::stop(bool discardResult)
         send(QStringLiteral("stop"));
         m_stopSent = true;
     }
+    m_pondering = false;
 }
 
 void UciEngine::onReadyRead()
@@ -480,6 +499,8 @@ void UciEngine::handleLine(const QString &line)
     } else if (trimmed.startsWith(QLatin1String("bestmove"))) {
         const QStringList t = splitTokens(trimmed);
         m_outstandingSearches = qMax(0, m_outstandingSearches - 1);
+        if (m_outstandingSearches == 0)
+            m_pondering = false;
         setState(m_outstandingSearches > 0 ? State::Thinking : State::Ready);
         if (m_discardBestMoves > 0) {
             --m_discardBestMoves;

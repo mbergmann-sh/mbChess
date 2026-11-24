@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// mbChess - "Endgame tablebases" dialog: switch the Syzygy tables on or off, choose
-// their folder, see which tables are there, and download the 3-4-5 piece tables
-// (WDL, optionally DTZ) with progress and cancel. Files already there are skipped,
+// mbChess - "Endgame tablebases" dialog: switch the tables on or off, choose the
+// folders of the Syzygy and the Gaviota tables, see which tables are there, and
+// download the Syzygy 3-4-5 piece tables (WDL, optionally DTZ) with progress and cancel. Files already there are skipped,
 // so an interrupted download simply continues.
 #pragma once
 
@@ -40,6 +40,7 @@ private:
 
     void updateStatus();
     void browse();
+    void updateGaviotaStatus();
     void startDownload();
     void cancelDownload(const QString &message);
     void nextFile();
@@ -52,6 +53,8 @@ private:
     QCheckBox *m_use = nullptr;
     QLineEdit *m_folder = nullptr;
     QLabel *m_status = nullptr;
+    QLineEdit *m_gtbFolder = nullptr;
+    QLabel *m_gtbStatus = nullptr;
     QRadioButton *m_wdlOnly = nullptr;
     QRadioButton *m_withDtz = nullptr;
     QComboBox *m_source = nullptr;

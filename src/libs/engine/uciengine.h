@@ -57,6 +57,7 @@ struct GoParameters
     int depth = 0;
     int mate = 0;           // UCI "go mate N": search for a mate in N moves
     bool infinite = false;
+    bool ponder = false;    // "go ponder": think on the opponent's time (UCI only)
 };
 
 // Parsers (public for unit tests)
@@ -126,6 +127,11 @@ public:
     void go(const QString &startFen, const QStringList &uciMoves, const GoParameters &params);
     // Stops the current search. With discardResult the following bestmove is not reported.
     void stop(bool discardResult = true);
+    // Pondering: a search started with GoParameters::ponder on the position after the
+    // expected move of the opponent. If the opponent plays it, ponderHit() turns it into
+    // the normal search; otherwise stop() it (or go() on the real position).
+    bool isPondering() const { return m_pondering; }
+    void ponderHit();
 
 signals:
     void ready();
@@ -166,6 +172,7 @@ private:
     int m_outstandingSearches = 0;
     bool m_currentDiscarded = false;
     bool m_stopSent = false;
+    bool m_pondering = false;
 
     Protocol m_protocol = Protocol::Uci;
     // XBoard state

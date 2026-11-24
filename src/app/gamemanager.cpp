@@ -67,7 +67,16 @@ QString GameManager::engineDisplayName(const UciEngine *engine) const
 
 bool GameManager::anyEngineThinking() const
 {
-    return m_engine->state() == UciEngine::State::Thinking || m_engine2->state() == UciEngine::State::Thinking;
+    // pondering is thinking on the human's time, not a search for a move
+    for (const UciEngine *e : { m_engine, m_engine2 })
+        if (e->state() == UciEngine::State::Thinking && !e->isPondering())
+            return true;
+    return false;
+}
+
+bool GameManager::isPondering() const
+{
+    return m_engine->isPondering() || m_engine2->isPondering();
 }
 
 bool GameManager::anyEngineStarting() const
@@ -168,6 +177,7 @@ void GameManager::startGame(const GameSettings &settings, const Position &start)
     m_endReason.clear();
     m_engineLine.clear();
     m_searchNode = -1;
+    m_ponderNode = -1;
     m_lastEval = Evaluation();
     loadBook();
     loadChessbook();
@@ -338,6 +348,7 @@ void GameManager::takeBack()
         return; // nothing to take back for a human
     m_engine->stop(true);
     m_searchNode = -1;
+    m_ponderNode = -1;
     m_gameOver = false;
     m_endReason.clear();
     m_game.setResult(Result::Unknown);
@@ -357,7 +368,7 @@ void GameManager::takeBack()
 void GameManager::moveNow()
 {
     for (UciEngine *e : { m_engine, m_engine2 })
-        if (e->state() == UciEngine::State::Thinking)
+        if (e->state() == UciEngine::State::Thinking && !e->isPondering())
             e->stop(false);
 }
 
@@ -412,7 +423,8 @@ void GameManager::connectEngine(UciEngine *e)
         applyEngineBookOptions(e);
         tablebases::applyToEngine(e, tablebases::activePath());
     });
-    connect(e, &UciEngine::bestMove, this, [this, e](const QString &move, const QString &) { onEngineBestMove(e, move); });
+    connect(e, &UciEngine::bestMove, this,
+            [this, e](const QString &move, const QString &ponder) { onEngineBestMove(e, move, ponder); });
     connect(e, &UciEngine::infoReceived, this, [this, e](const SearchInfo &info) { onEngineInfo(e, info); });
     connect(e, &UciEngine::errorOccurred, this, &GameManager::engineError);
     connect(e, &UciEngine::stateChanged, this, &GameManager::changed);
@@ -425,7 +437,7 @@ void GameManager::prepareEngine(UciEngine *e, const QString &path, QString *book
     const EngineEntry entry = enginemanager::entry(path);
     for (auto it = entry.options.cbegin(); it != entry.options.cend(); ++it)
         bookSetup += QLatin1Char('|') + it.key() + QLatin1Char('=') + it.value();
-    bookSetup += QStringLiteral("|tb=") + tablebases::activePath();
+    bookSetup += QStringLiteral("|tb=") + tablebases::activePath() + QStringLiteral("|gtb=") + tablebases::gaviotaActivePath();
     *displayName = entry.name != entry.defaultName ? entry.name : QString();
     const bool sameEngine = e->program() == path && e->state() != UciEngine::State::NotRunning
         && *bookSetupState == bookSetup; // engines read their book only at start
@@ -492,7 +504,12 @@ void GameManager::onEngineReady(UciEngine *engine)
     } else if (engine->hasOption(QStringLiteral("Skill Level"))) {
         const int skill = elo > 0 ? qBound(0, (elo - 1300) * 20 / 1300, 20) : 20;
         engine->setOption(QStringLiteral("Skill Level"), QString::number(skill));
+    } else if (engine->hasOption(QStringLiteral("Skill_Level"))) { // Patricia
+        engine->setOption(QStringLiteral("Skill_Level"), QString::number(enginemanager::patriciaSkillLevel(elo)));
     }
+    // UCI: the GUI tells the engine whether it will be asked to ponder
+    if (engine->hasOption(QStringLiteral("Ponder")))
+        engine->setOption(QStringLiteral("Ponder"), ponderAllowed(engine) ? QStringLiteral("true") : QStringLiteral("false"));
     engine->newGame();
     updatePlayerNames();
     emit changed();
@@ -500,16 +517,8 @@ void GameManager::onEngineReady(UciEngine *engine)
         startEngineSearch();
 }
 
-void GameManager::startEngineSearch()
+engine::GoParameters GameManager::goParameters(Color side) const
 {
-    const Color side = m_game.nodePosition(mainLineEnd()).sideToMove();
-    UciEngine *const engine = engineFor(side);
-    if (engine->state() != UciEngine::State::Ready && engine->state() != UciEngine::State::Thinking)
-        return; // not loaded yet: onEngineReady() starts the search
-    if (m_game.currentNode() != mainLineEnd())
-        m_game.goToNode(mainLineEnd());
-    if (playBookMove())
-        return;
     engine::GoParameters p;
     if (m_clock->timeControl().enabled() && m_settings.strengthElo > 0) {
         // Weaker levels should answer quickly, as a human of that strength would,
@@ -524,16 +533,76 @@ void GameManager::startEngineSearch()
     } else {
         p.moveTime = m_settings.strengthElo > 0 ? 1500 : 3000;
     }
-    const QString startFen = m_game.startPosition().toFen() == QLatin1String(Position::StartFen)
-        ? QString() : m_game.startPosition().toFen();
+    return p;
+}
+
+QString GameManager::startFenForEngine() const
+{
+    const QString fen = m_game.startPosition().toFen();
+    return fen == QLatin1String(Position::StartFen) ? QString() : fen;
+}
+
+void GameManager::startEngineSearch()
+{
+    const Color side = m_game.nodePosition(mainLineEnd()).sideToMove();
+    UciEngine *const engine = engineFor(side);
+    if (engine->state() != UciEngine::State::Ready && engine->state() != UciEngine::State::Thinking)
+        return; // not loaded yet: onEngineReady() starts the search
+    if (m_game.currentNode() != mainLineEnd())
+        m_game.goToNode(mainLineEnd());
+    if (engine->isPondering()) {
+        // Did the human play the expected move? Then the ponder search goes on as the
+        // real one ("ponderhit"), with the time it has already used.
+        const Game::NodeId cur = m_game.currentNode();
+        const bool hit = m_ponderNode >= 0 && cur != Game::RootNode && m_game.parent(cur) == m_ponderNode
+            && toUci(m_game.nodeMove(cur)) == m_ponderMove;
+        m_ponderNode = -1;
+        if (hit) {
+            m_engineLine.clear();
+            m_searchNode = cur;
+            m_lastEval = Evaluation();
+            m_lastPv.clear();
+            engine->ponderHit();
+            emit changed();
+            return;
+        }
+        engine->stop(true); // another move: search the real position
+    }
+    if (playBookMove())
+        return;
+    const engine::GoParameters p = goParameters(side);
     m_engineLine.clear();
     m_searchNode = m_game.currentNode();
     m_lastEval = Evaluation();
-    engine->go(startFen, m_game.uciMoves(), p);
+    m_lastPv.clear();
+    engine->go(startFenForEngine(), m_game.uciMoves(), p);
     emit changed();
 }
 
-void GameManager::onEngineBestMove(UciEngine *engine, const QString &move)
+bool GameManager::ponderAllowed(const UciEngine *engine) const
+{
+    // Only against a human and at full strength: in "engine against engine" both would
+    // share the processor, and a weakened engine should not get extra time.
+    return m_settings.ponder && m_settings.hasEngine() && !m_settings.engineVsEngine() && m_settings.strengthElo == 0
+        && !m_suspended && engine->protocol() == engine::Protocol::Uci && engine->hasOption(QStringLiteral("Ponder"));
+}
+
+void GameManager::startPondering(UciEngine *engine, const QString &ponderMove)
+{
+    m_ponderNode = -1;
+    if (m_gameOver || isEngineTurn() || !ponderAllowed(engine) || m_game.currentNode() != mainLineEnd())
+        return;
+    const QString expected = ponderMove.isEmpty() ? m_lastPv.value(1) : ponderMove;
+    if (expected.isEmpty() || parseUci(m_game.position(), expected).isNull())
+        return;
+    engine::GoParameters p = goParameters(~m_game.position().sideToMove());
+    p.ponder = true;
+    m_ponderNode = m_game.currentNode();
+    m_ponderMove = expected;
+    engine->go(startFenForEngine(), m_game.uciMoves() << expected, p);
+}
+
+void GameManager::onEngineBestMove(UciEngine *engine, const QString &move, const QString &ponder)
 {
     const Game::NodeId from = m_searchNode;
     if (from >= 0 && m_game.isValidNode(from) && engine != engineFor(m_game.nodePosition(from).sideToMove()))
@@ -554,6 +623,7 @@ void GameManager::onEngineBestMove(UciEngine *engine, const QString &move)
     if (m_lastEval.valid)
         m_game.setEvaluation(m_game.currentNode(), m_lastEval);
     afterMove();
+    startPondering(engine, ponder);
 }
 
 void GameManager::onEngineInfo(UciEngine *engine, const SearchInfo &info)
@@ -565,6 +635,8 @@ void GameManager::onEngineInfo(UciEngine *engine, const SearchInfo &info)
     if (engine != engineFor(engineSide))
         return;
     m_engineLine = engineInfoText(m_game.nodePosition(m_searchNode), engineSide, info, &m_lastEval);
+    if (!info.pv.isEmpty())
+        m_lastPv = info.pv;
     emit engineOutputChanged(m_engineLine);
 }
 
@@ -753,13 +825,14 @@ bool GameManager::playBookMove()
         m_engineLine += QStringLiteral(" (%1)").arg(source);
     m_searchNode = m_game.currentNode();
     m_lastEval = Evaluation();
+    m_lastPv.clear(); // no pondering after a book move
     const QString uci = toUci(m);
     const Game::NodeId from = m_searchNode;
     const quint64 hash = pos.hash();
     QTimer::singleShot(400, this, [this, uci, from, hash] {
         // only if nothing happened in between (new game, take back, ...)
         if (m_searchNode == from && m_game.isValidNode(from) && m_game.nodePosition(from).hash() == hash)
-            onEngineBestMove(engineFor(m_game.nodePosition(from).sideToMove()), uci);
+            onEngineBestMove(engineFor(m_game.nodePosition(from).sideToMove()), uci, QString());
     });
     emit changed();
     return true;

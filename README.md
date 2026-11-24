@@ -26,7 +26,8 @@ Freies Schachprogramm (GPL-3.0-or-later) in C++/Qt für Windows, Linux, macOS un
 > (60.000 Partien, 16 MB in wenigen Sekunden) werden im Hintergrund eingelesen; die Partie selbst
 > wird erst beim Öffnen gelesen.
 >
-> Engines: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess und Viridithas liegen im Quelltext in
+> Engines: Stockfish, Arasan, Fruit, Toga II, Glaurung, GNU Chess, Viridithas, Texel, Patricia und die
+> Tarrasch Toy Engine liegen im Quelltext in
 > `engines/` und werden mitgebaut (Netze lädt der Build einmalig herunter). Crafty (XBoard)
 > lädt der Build als Quelltext herunter und kompiliert es nur für den eigenen Gebrauch (Lizenz
 > verbietet die Weitergabe, daher nicht im Installer). Das Programm sucht
@@ -71,10 +72,13 @@ Freies Schachprogramm (GPL-3.0-or-later) in C++/Qt für Windows, Linux, macOS un
 > selbst wieder (abschaltbar im DGT-Dialog).
 > Startbildschirm mit Foto, Ladeschritten und Fortschrittsbalken (Menü „Ansicht → Startbildschirm
 > anzeigen“, Einstellung `ui/splash`).
-> Menü „Engines → Endspiel-Datenbanken (Syzygy)“: Syzygy-Tabellen mit 3, 4 und 5 Steinen
+> Menü „Engines → Endspiel-Datenbanken“: Syzygy-Tabellen mit 3, 4 und 5 Steinen
 > (WDL etwa 378 MB, mit DTZ etwa 939 MB) herunterladen, mit Fortschritt, Abbruch und Fortsetzen;
-> Ordner `Syzygy` neben dem Programm (änderbar). Stockfish, Arasan, Viridithas und Crafty nutzen
-> sie automatisch, im Benchmark nur auf Wunsch (Vorgabe aus, wegen der Fairness).
+> Ordner `Syzygy` neben dem Programm (änderbar). Stockfish, Arasan, Viridithas, Texel, Patricia und
+> Crafty nutzen sie automatisch, im Benchmark nur auf Wunsch (Vorgabe aus, wegen der Fairness).
+> Gaviota-Tabellen (`*.gtb.cp4`, Ordner `Gaviota`) nutzt Texel; mbChess zeigt damit in der Analyse
+> den Matt-Abstand bei bis zu 5 Steinen (`src/libs/gaviota`).
+> Ponder: im Dialog „Neue Partie“ wählbar, die Engine rechnet in der Bedenkzeit des Menschen weiter.
 >
 > Sprachaufnahme (`tools/voicerecorder`, Qt 6): wird mitgebaut, wenn sie noch nicht existiert,
 > und ist im Windows-Installer optional wählbar.

@@ -44,6 +44,8 @@ public:
     bool anyEngineThinking() const;
     bool anyEngineStarting() const;
     bool isSearching() const { return m_searchNode >= 0; }
+    // The engine thinks on the human's time (ponder, New game dialog).
+    bool isPondering() const;
 
     bool isGameOver() const { return m_gameOver; }
     QString endReason() const { return m_endReason; }
@@ -118,7 +120,11 @@ private:
     void applyUserEngineOptions(mbc::engine::UciEngine *engine);
     void applyEngineBookOptions(mbc::engine::UciEngine *engine);
     void onEngineReady(mbc::engine::UciEngine *engine);
-    void onEngineBestMove(mbc::engine::UciEngine *engine, const QString &move);
+    void onEngineBestMove(mbc::engine::UciEngine *engine, const QString &move, const QString &ponder);
+    bool ponderAllowed(const mbc::engine::UciEngine *engine) const;
+    void startPondering(mbc::engine::UciEngine *engine, const QString &ponderMove);
+    mbc::engine::GoParameters goParameters(mbc::Color side) const;
+    QString startFenForEngine() const;
     void onEngineInfo(mbc::engine::UciEngine *engine, const mbc::engine::SearchInfo &info);
     void onFlagFell(mbc::Color side);
     void startEngineSearch();
@@ -148,6 +154,9 @@ private:
     QString m_engineLine;
     mbc::Game::NodeId m_searchNode = -1;  // where the running engine search started
     mbc::Evaluation m_lastEval;           // last score of that search (White's view)
+    QStringList m_lastPv;                 // its last main line (ponder move if bestmove has none)
+    mbc::Game::NodeId m_ponderNode = -1;  // pondering: the human moves from here ...
+    QString m_ponderMove;                 // ... and the engine expects this move (UCI)
 
     mbc::book::PolyglotBook m_book;      // opening book for the engine's first moves
     mbc::book::PolyglotBook m_chessbook; // built from game databases (chessbooks)

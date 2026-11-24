@@ -4,113 +4,113 @@
 <context>
     <name>Benchmark</name>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="25" />
+        <location filename="../src/app/benchmark.cpp" line="26" />
         <source>Italian Game</source>
         <translation>Italienische Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="26" />
+        <location filename="../src/app/benchmark.cpp" line="27" />
         <source>Queen's Gambit Declined</source>
         <translation>Abgelehntes Damengambit</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="27" />
+        <location filename="../src/app/benchmark.cpp" line="28" />
         <source>Sicilian Defence</source>
         <translation>Sizilianische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="28" />
+        <location filename="../src/app/benchmark.cpp" line="29" />
         <source>King's Indian Defence</source>
         <translation>Königsindische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="29" />
+        <location filename="../src/app/benchmark.cpp" line="30" />
         <source>Ruy Lopez</source>
         <translation>Spanische Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="30" />
+        <location filename="../src/app/benchmark.cpp" line="31" />
         <source>Slav Defence</source>
         <translation>Slawische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="31" />
+        <location filename="../src/app/benchmark.cpp" line="32" />
         <source>French Defence</source>
         <translation>Französische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="32" />
+        <location filename="../src/app/benchmark.cpp" line="33" />
         <source>Nimzo-Indian Defence</source>
         <translation>Nimzowitsch-Indische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="33" />
+        <location filename="../src/app/benchmark.cpp" line="34" />
         <source>Caro-Kann Defence</source>
         <translation>Caro-Kann-Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="34" />
+        <location filename="../src/app/benchmark.cpp" line="35" />
         <source>English Opening</source>
         <translation>Englische Eröffnung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="35" />
+        <location filename="../src/app/benchmark.cpp" line="36" />
         <source>Reti Opening</source>
         <translation>Réti-Eröffnung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="36" />
+        <location filename="../src/app/benchmark.cpp" line="37" />
         <source>Scandinavian Defence</source>
         <translation>Skandinavische Verteidigung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="65" />
+        <location filename="../src/app/benchmark.cpp" line="66" />
         <source>Engine did not start</source>
         <translation>Engine ist nicht gestartet</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="336" />
-        <location filename="../src/app/benchmark.cpp" line="390" />
+        <location filename="../src/app/benchmark.cpp" line="339" />
+        <location filename="../src/app/benchmark.cpp" line="393" />
         <source>Time forfeit</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="343" />
+        <location filename="../src/app/benchmark.cpp" line="346" />
         <source>Illegal move</source>
         <translation>Ungültiger Zug</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="352" />
+        <location filename="../src/app/benchmark.cpp" line="355" />
         <source>Checkmate</source>
         <translation>Schachmatt</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="355" />
+        <location filename="../src/app/benchmark.cpp" line="358" />
         <source>Stalemate</source>
         <translation>Patt</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="358" />
+        <location filename="../src/app/benchmark.cpp" line="361" />
         <source>Insufficient material</source>
         <translation>Ungenügendes Material</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="361" />
+        <location filename="../src/app/benchmark.cpp" line="364" />
         <source>Fifty-move rule</source>
         <translation>50-Züge-Regel</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="364" />
+        <location filename="../src/app/benchmark.cpp" line="367" />
         <source>Threefold repetition</source>
         <translation>Dreifache Stellungswiederholung</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="370" />
+        <location filename="../src/app/benchmark.cpp" line="373" />
         <source>Move limit (adjudicated)</source>
         <translation>Zuglimit (remis gewertet)</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmark.cpp" line="381" />
+        <location filename="../src/app/benchmark.cpp" line="384" />
         <source>Engine error</source>
         <translation>Engine-Fehler</translation>
     </message>
@@ -199,8 +199,13 @@
     </message>
     <message>
         <location filename="../src/app/benchmarkdialog.cpp" line="98" />
-        <source>Engines with a strength setting (UCI_Elo or Skill Level) play at about this rating, the others at full strength. Without the limit all play at full strength.</source>
-        <translation>Engines mit einer Stärke-Einstellung (UCI_Elo oder Skill Level) spielen etwa mit dieser Wertung, die anderen mit voller Stärke. Ohne Begrenzung spielen alle mit voller Stärke.</translation>
+        <source>Engines with a strength setting (UCI_Elo, Skill Level or Skill_Level) play at about this rating, the others at full strength. Without the limit all play at full strength.</source>
+        <translation>Engines mit einer Stärke-Einstellung (UCI_Elo, Skill Level oder Skill_Level) spielen etwa mit dieser Wertung, die anderen mit voller Stärke. Ohne die Begrenzung spielen alle mit voller Stärke.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/benchmarkdialog.cpp" line="113" />
+        <source>Off by default: the tables help only some engines (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty), which makes the comparison less fair.</source>
+        <translation>Standardmäßig aus: Die Tabellen helfen nur einigen Engines (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty), das macht den Vergleich weniger fair.</translation>
     </message>
     <message>
         <location filename="../src/app/benchmarkdialog.cpp" line="104" />
@@ -216,11 +221,6 @@
         <location filename="../src/app/benchmarkdialog.cpp" line="112" />
         <source>Endgame tablebases for the engines that can use them</source>
         <translation>Endspiel-Datenbanken für die Engines, die sie nutzen können</translation>
-    </message>
-    <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="113" />
-        <source>Off by default: the tables help only some engines (Stockfish, Arasan, Viridithas, Crafty), which makes the comparison less fair.</source>
-        <translation>Standardmäßig aus: Die Datenbanken helfen nur einigen Engines (Stockfish, Arasan, Viridithas, Crafty), das macht den Vergleich weniger fair.</translation>
     </message>
     <message>
         <location filename="../src/app/benchmarkdialog.cpp" line="120" />
@@ -253,33 +253,33 @@
         <translation>Benchmark &amp;starten</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/benchmarkdialog.cpp" line="183" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="185" />
         <source>%n min</source>
         <translation>
             <numerusform>%n min</numerusform><numerusform>%n min</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="186" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="188" />
         <source>%1 days %2 h</source>
         <translation>%1 Tage %2 h</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="187" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="189" />
         <source>%1 h %2 min</source>
         <translation>%1 h %2 min</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="187" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="189" />
         <source>%1 h</source>
         <translation>%1 h</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="208" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="210" />
         <source>Choose at least two engines.</source>
         <translation>Bitte mindestens zwei Engines auswählen.</translation>
     </message>
     <message>
-        <location filename="../src/app/benchmarkdialog.cpp" line="212" />
+        <location filename="../src/app/benchmarkdialog.cpp" line="214" />
         <source>%1 engines, %2 games, takes up to about &lt;b&gt;%3&lt;/b&gt; (finished about %4 if started now).</source>
         <translation>%1 Engines, %2 Partien, dauert bis zu etwa &lt;b&gt;%3&lt;/b&gt; (bei Start jetzt fertig etwa um %4).</translation>
     </message>
@@ -1128,118 +1128,118 @@ Figur vom Brett ziehen oder rechts anklicken entfernt sie. Strg+Ziehen kopiert e
 <context>
     <name>GameManager</name>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="126" />
+        <location filename="../src/app/gamemanager.cpp" line="135" />
         <source>Checkmate.</source>
         <translation>Schachmatt.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="127" />
+        <location filename="../src/app/gamemanager.cpp" line="136" />
         <source>Stalemate.</source>
         <translation>Patt.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="128" />
+        <location filename="../src/app/gamemanager.cpp" line="137" />
         <source>Draw: insufficient material.</source>
         <translation>Remis: ungenügendes Material.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="129" />
+        <location filename="../src/app/gamemanager.cpp" line="138" />
         <source>Draw: fifty-move rule.</source>
         <translation>Remis: 50-Züge-Regel.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="130" />
+        <location filename="../src/app/gamemanager.cpp" line="139" />
         <source>Draw: threefold repetition.</source>
         <translation>Remis: dreifache Stellungswiederholung.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="188" />
+        <location filename="../src/app/gamemanager.cpp" line="198" />
         <source>Drawn by lot: you play White.</source>
         <translation>Ausgelost: Sie spielen Weiß.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="189" />
+        <location filename="../src/app/gamemanager.cpp" line="199" />
         <source>Drawn by lot: you play Black.</source>
         <translation>Ausgelost: Sie spielen Schwarz.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="203" />
+        <location filename="../src/app/gamemanager.cpp" line="213" />
         <source>Game loaded.</source>
         <translation>Partie geladen.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="243" />
+        <location filename="../src/app/gamemanager.cpp" line="253" />
         <source>Player</source>
         <translation>Spieler</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="250" />
-        <location filename="../src/app/gamemanager.cpp" line="300" />
-        <location filename="../src/app/gamemanager.cpp" line="372" />
+        <location filename="../src/app/gamemanager.cpp" line="260" />
+        <location filename="../src/app/gamemanager.cpp" line="310" />
+        <location filename="../src/app/gamemanager.cpp" line="383" />
         <source>White</source>
         <translation>Weiß</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="252" />
-        <location filename="../src/app/gamemanager.cpp" line="300" />
-        <location filename="../src/app/gamemanager.cpp" line="372" />
+        <location filename="../src/app/gamemanager.cpp" line="262" />
+        <location filename="../src/app/gamemanager.cpp" line="310" />
+        <location filename="../src/app/gamemanager.cpp" line="383" />
         <source>Black</source>
         <translation>Schwarz</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="300" />
+        <location filename="../src/app/gamemanager.cpp" line="310" />
         <source>%1 lost on time.</source>
         <translation>%1 hat die Zeit überschritten.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="372" />
+        <location filename="../src/app/gamemanager.cpp" line="383" />
         <source>%1 resigns.</source>
         <translation>%1 gibt auf.</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="547" />
+        <location filename="../src/app/gamemanager.cpp" line="616" />
         <source>The engine sent an illegal move: %1</source>
         <translation>Die Engine hat einen ungültigen Zug gesendet: %1</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="574" />
+        <location filename="../src/app/gamemanager.cpp" line="646" />
         <source>Depth %1</source>
         <translation>Tiefe %1</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="588" />
+        <location filename="../src/app/gamemanager.cpp" line="660" />
         <source>%1 kN/s</source>
         <translation>%1 kN/s</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="634" />
+        <location filename="../src/app/gamemanager.cpp" line="706" />
         <source>Opening book %1 could not be read: %2</source>
         <translation>Eröffnungsbuch %1 konnte nicht gelesen werden: %2</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="681" />
+        <location filename="../src/app/gamemanager.cpp" line="753" />
         <source>reading games...</source>
         <translation>lese Partien ...</translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="697" />
+        <location filename="../src/app/gamemanager.cpp" line="769" />
         <source>reading games... %1 %</source>
         <translation>lese Partien ... %1 %</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/gamemanager.cpp" line="719" />
+        <location filename="../src/app/gamemanager.cpp" line="791" />
         <source>Chessbook ready: %n game(s) read.</source>
         <translation>
             <numerusform>Chessbook fertig: %n Partie gelesen.</numerusform><numerusform>Chessbook fertig: %n Partien gelesen.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/gamemanager.cpp" line="744" />
+        <location filename="../src/app/gamemanager.cpp" line="816" />
         <source>chessbook: %n game(s), %1 %</source>
         <translation>
             <numerusform>Chessbook: %n Partie, %1 %</numerusform><numerusform>Chessbook: %n Partien, %1 %</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/gamemanager.cpp" line="751" />
+        <location filename="../src/app/gamemanager.cpp" line="823" />
         <source>Book move: %1</source>
         <translation>Buchzug: %1</translation>
     </message>
@@ -1256,152 +1256,152 @@ Figur vom Brett ziehen oder rechts anklicken entfernt sie. Strg+Ziehen kopiert e
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="686" />
+        <location filename="../src/app/mainwindow.cpp" line="685" />
         <source>mbChess</source>
         <translation>mbChess</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="687" />
+        <location filename="../src/app/mainwindow.cpp" line="686" />
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="692" />
+        <location filename="../src/app/mainwindow.cpp" line="691" />
         <source>&amp;Copy FEN</source>
         <translation>FEN &amp;kopieren</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="186" />
-        <location filename="../src/app/mainwindow.cpp" line="693" />
+        <location filename="../src/app/mainwindow.cpp" line="185" />
+        <location filename="../src/app/mainwindow.cpp" line="692" />
         <source>&amp;Quit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="723" />
+        <location filename="../src/app/mainwindow.cpp" line="722" />
         <source>&amp;Board</source>
         <translation>&amp;Brett</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="720" />
+        <location filename="../src/app/mainwindow.cpp" line="719" />
         <source>&amp;Take back move</source>
         <translation>Zug &amp;zurücknehmen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="688" />
+        <location filename="../src/app/mainwindow.cpp" line="687" />
         <source>&amp;New game...</source>
         <translation>&amp;Neue Partie...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="689" />
+        <location filename="../src/app/mainwindow.cpp" line="688" />
         <source>&amp;Open game (PGN)...</source>
         <translation>Partie ö&amp;ffnen (PGN)...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="690" />
+        <location filename="../src/app/mainwindow.cpp" line="689" />
         <source>&amp;Save game as PGN...</source>
         <translation>Partie als PGN &amp;speichern...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="691" />
+        <location filename="../src/app/mainwindow.cpp" line="690" />
         <source>Set position from &amp;FEN...</source>
         <translation>Stellung aus &amp;FEN setzen...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="708" />
+        <location filename="../src/app/mainwindow.cpp" line="707" />
         <source>&amp;Game</source>
         <translation>&amp;Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="721" />
+        <location filename="../src/app/mainwindow.cpp" line="720" />
         <source>&amp;Move now!</source>
         <translation>Sofort &amp;ziehen!</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="722" />
+        <location filename="../src/app/mainwindow.cpp" line="721" />
         <source>&amp;Resign</source>
         <translation>&amp;Aufgeben</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="724" />
+        <location filename="../src/app/mainwindow.cpp" line="723" />
         <source>&amp;Flip board</source>
         <translation>Brett &amp;drehen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="725" />
+        <location filename="../src/app/mainwindow.cpp" line="724" />
         <source>Show &amp;coordinates</source>
         <translation>&amp;Koordinaten anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="740" />
+        <location filename="../src/app/mainwindow.cpp" line="739" />
         <source>Window &amp;theme</source>
         <translation>Fenster-&amp;Design</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="745" />
+        <location filename="../src/app/mainwindow.cpp" line="744" />
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="748" />
+        <location filename="../src/app/mainwindow.cpp" line="747" />
         <source>&amp;Language</source>
         <translation>&amp;Sprache</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="749" />
+        <location filename="../src/app/mainwindow.cpp" line="748" />
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="750" />
+        <location filename="../src/app/mainwindow.cpp" line="749" />
         <source>&amp;About mbChess</source>
         <translation>Ü&amp;ber mbChess</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="752" />
+        <location filename="../src/app/mainwindow.cpp" line="751" />
         <source>About &amp;Qt</source>
         <translation>Über &amp;Qt</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="753" />
+        <location filename="../src/app/mainwindow.cpp" line="752" />
         <source>e.g. e4, Nf3, O-O or g1f3</source>
         <translation>z. B. e4, Sf3, O-O oder g1f3</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="754" />
+        <location filename="../src/app/mainwindow.cpp" line="753" />
         <source>Move with the mouse (click the piece, then the target square, or drag it), or type a move in algebraic or UCI notation.</source>
         <translation>Mit der Maus ziehen (Figur anklicken, dann das Zielfeld, oder die Figur ziehen) oder einen Zug in algebraischer oder UCI-Notation eingeben.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="756" />
+        <location filename="../src/app/mainwindow.cpp" line="755" />
         <source>&amp;Move</source>
         <translation>&amp;Ziehen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2182" />
+        <location filename="../src/app/mainwindow.cpp" line="2201" />
         <source>%1 kN/s</source>
         <translation>%1 kN/s</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="733" />
-        <location filename="../src/app/mainwindow.cpp" line="841" />
+        <location filename="../src/app/mainwindow.cpp" line="732" />
+        <location filename="../src/app/mainwindow.cpp" line="840" />
         <source>Engine</source>
         <translation>Engine</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="130" />
+        <location filename="../src/app/mainwindow.cpp" line="131" />
         <source>DGT board connected on %1.</source>
         <translation>DGT-Brett an %1 verbunden.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1372" />
-        <location filename="../src/app/mainwindow.cpp" line="1489" />
-        <location filename="../src/app/mainwindow.cpp" line="1647" />
-        <location filename="../src/app/mainwindow.cpp" line="1651" />
+        <location filename="../src/app/mainwindow.cpp" line="1390" />
+        <location filename="../src/app/mainwindow.cpp" line="1503" />
+        <location filename="../src/app/mainwindow.cpp" line="1666" />
+        <location filename="../src/app/mainwindow.cpp" line="1670" />
         <source>DGT board</source>
         <translation>DGT-Brett</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1490" />
+        <location filename="../src/app/mainwindow.cpp" line="1504" />
         <source>No DGT board was found. Is it connected and switched on?
 
 Open the DGT board settings?</source>
@@ -1410,1019 +1410,1035 @@ Open the DGT board settings?</source>
 Die Einstellungen für das DGT-Brett öffnen?</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="173" />
+        <location filename="../src/app/mainwindow.cpp" line="172" />
         <source>&lt;p&gt;A game is running. If you quit now, it is ended (save it first with File &gt; Save game as PGN if you want to keep it).&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine Partie läuft. Wenn Sie jetzt beenden, ist sie vorbei (vorher mit Datei &gt; Partie als PGN speichern sichern, wenn Sie sie behalten möchten).&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="94" />
+        <location filename="../src/app/mainwindow.cpp" line="95" />
         <source>Window, board styles and piece sets</source>
         <translation>Fenster, Brettoptiken und Figurensätze</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="114" />
+        <location filename="../src/app/mainwindow.cpp" line="115" />
         <source>Engines, opening book and chessbooks</source>
         <translation>Engines, Eröffnungsbuch und Chessbooks</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="122" />
+        <location filename="../src/app/mainwindow.cpp" line="123" />
         <source>Texts and window layout</source>
         <translation>Texte und Fensteranordnung</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="138" />
+        <location filename="../src/app/mainwindow.cpp" line="139" />
         <source>mbChess connects again as soon as the board answers.</source>
         <translation>mbChess verbindet sich wieder, sobald das Brett antwortet.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="176" />
+        <location filename="../src/app/mainwindow.cpp" line="175" />
         <source>&lt;p&gt;Your game may contain unsaved data: moves, variations or comments that are not saved in a PGN file yet. After quitting they cannot be saved any more.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Ihre Partie könnte ungesicherte Daten enthalten: Züge, Varianten oder Kommentare, die noch nicht in einer PGN-Datei gespeichert sind. Nach dem Beenden lassen sie sich nicht mehr speichern.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="179" />
+        <location filename="../src/app/mainwindow.cpp" line="178" />
         <source>&lt;p&gt;The engine benchmark is still running (game %1 of %2). It is &lt;b&gt;cancelled&lt;/b&gt; now; the results are lost unless you save the games in the results window first.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Der Engine-Benchmark läuft noch (Partie %1 von %2). Er wird jetzt &lt;b&gt;abgebrochen&lt;/b&gt;; die Ergebnisse gehen verloren, wenn Sie die Partien nicht vorher im Ergebnisfenster speichern.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="183" />
+        <location filename="../src/app/mainwindow.cpp" line="182" />
         <source>&lt;p&gt;Quit mbChess anyway?&lt;/p&gt;</source>
         <translation>&lt;p&gt;mbChess trotzdem beenden?&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="184" />
+        <location filename="../src/app/mainwindow.cpp" line="183" />
         <source>Quit mbChess</source>
         <translation>mbChess beenden</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="185" />
-        <location filename="../src/app/mainwindow.cpp" line="1262" />
+        <location filename="../src/app/mainwindow.cpp" line="184" />
+        <location filename="../src/app/mainwindow.cpp" line="1261" />
         <source>&amp;Save game...</source>
         <translation>Partie &amp;speichern...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="187" />
-        <location filename="../src/app/mainwindow.cpp" line="1264" />
+        <location filename="../src/app/mainwindow.cpp" line="186" />
+        <location filename="../src/app/mainwindow.cpp" line="1263" />
         <source>&amp;Cancel</source>
         <translation>&amp;Abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="279" />
-        <location filename="../src/app/mainwindow.cpp" line="2114" />
+        <location filename="../src/app/mainwindow.cpp" line="278" />
+        <location filename="../src/app/mainwindow.cpp" line="2133" />
         <source>Engine analysis</source>
         <translation>Engine-Analyse</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="433" />
+        <location filename="../src/app/mainwindow.cpp" line="432" />
         <source>Benchmark cancelled.</source>
         <translation>Benchmark abgebrochen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="521" />
+        <location filename="../src/app/mainwindow.cpp" line="520" />
         <source>Not possible while the benchmark runs.</source>
         <translation>Nicht möglich, solange der Benchmark läuft.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="524" />
-        <location filename="../src/app/mainwindow.cpp" line="1128" />
-        <location filename="../src/app/mainwindow.cpp" line="1200" />
+        <location filename="../src/app/mainwindow.cpp" line="523" />
+        <location filename="../src/app/mainwindow.cpp" line="1127" />
+        <location filename="../src/app/mainwindow.cpp" line="1199" />
         <source>Opening another game ends this game.</source>
         <translation>Das Öffnen einer anderen Partie beendet diese Partie.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="678" />
+        <location filename="../src/app/mainwindow.cpp" line="677" />
         <source>Move sounds are on (click to switch off)</source>
         <translation>Zuggeräusche sind an (Klick schaltet sie aus)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="679" />
+        <location filename="../src/app/mainwindow.cpp" line="678" />
         <source>Move sounds are off (click to switch on)</source>
         <translation>Zuggeräusche sind aus (Klick schaltet sie ein)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="680" />
+        <location filename="../src/app/mainwindow.cpp" line="679" />
         <source>Moves are announced (click to switch off)</source>
         <translation>Züge werden angesagt (Klick schaltet die Ansage aus)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="681" />
+        <location filename="../src/app/mainwindow.cpp" line="680" />
         <source>Moves are not announced (click to switch on)</source>
         <translation>Züge werden nicht angesagt (Klick schaltet die Ansage ein)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="694" />
+        <location filename="../src/app/mainwindow.cpp" line="693" />
         <source>&amp;Benchmarks</source>
         <translation>&amp;Benchmarks</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="695" />
+        <location filename="../src/app/mainwindow.cpp" line="694" />
         <source>&amp;Engine tournament...</source>
         <translation>&amp;Engine-Turnier...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="696" />
+        <location filename="../src/app/mainwindow.cpp" line="695" />
         <source>&amp;Cancel benchmark</source>
         <translation>Benchmark a&amp;bbrechen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="697" />
+        <location filename="../src/app/mainwindow.cpp" line="696" />
         <source>Show &amp;results</source>
         <translation>&amp;Ergebnisse anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="698" />
+        <location filename="../src/app/mainwindow.cpp" line="697" />
         <source>&amp;Follow the games on the board</source>
         <translation>Partien auf dem Brett &amp;verfolgen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="699" />
+        <location filename="../src/app/mainwindow.cpp" line="698" />
         <source>Benchmark:</source>
         <translation>Benchmark:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="700" />
+        <location filename="../src/app/mainwindow.cpp" line="699" />
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="703" />
+        <location filename="../src/app/mainwindow.cpp" line="702" />
         <source>Chessbook:</source>
         <translation>Chessbook:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="704" />
+        <location filename="../src/app/mainwindow.cpp" line="703" />
         <source>Opening:</source>
         <translation>Eröffnung:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="705" />
+        <location filename="../src/app/mainwindow.cpp" line="704" />
         <source>DGT:</source>
         <translation>DGT:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="706" />
+        <location filename="../src/app/mainwindow.cpp" line="705" />
         <source>Cancel the benchmark</source>
         <translation>Benchmark abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="709" />
+        <location filename="../src/app/mainwindow.cpp" line="708" />
         <source>&amp;Engines</source>
         <translation>&amp;Engines</translation>
     </message>
     <message>
         <location filename="../src/app/mainwindow.cpp" line="711" />
-        <source>&amp;Endgame tablebases (Syzygy)...</source>
-        <translation>&amp;Endspiel-Datenbanken (Syzygy)...</translation>
-    </message>
-    <message>
-        <location filename="../src/app/mainwindow.cpp" line="712" />
         <source>Engine &amp;analysis</source>
         <translation>Engine-&amp;Analyse</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="713" />
+        <location filename="../src/app/mainwindow.cpp" line="712" />
         <source>Engine analysis: an engine searches the position on the board (Alt+F2)</source>
         <translation>Engine-Analyse: eine Engine untersucht die Stellung auf dem Brett (Alt+F2)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="714" />
+        <location filename="../src/app/mainwindow.cpp" line="713" />
         <source>Analysis en&amp;gine</source>
         <translation>Analyse-En&amp;gine</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="715" />
+        <location filename="../src/app/mainwindow.cpp" line="714" />
         <source>Analysis &amp;lines</source>
         <translation>Analyse-&amp;Zeilen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="716" />
+        <location filename="../src/app/mainwindow.cpp" line="715" />
         <source>&amp;Mate search...</source>
         <translation>&amp;Matt suchen...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="717" />
+        <location filename="../src/app/mainwindow.cpp" line="716" />
         <source>Mate search: an engine looks for a mate in the position on the board (Ctrl+M)</source>
         <translation>Mattsuche: eine Engine sucht ein Matt in der Stellung auf dem Brett (Strg+M)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="718" />
+        <location filename="../src/app/mainwindow.cpp" line="717" />
         <source>Set &amp;up position...</source>
         <translation>Stellung auf&amp;bauen...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="719" />
+        <location filename="../src/app/mainwindow.cpp" line="718" />
         <source>Set up a position with the board editor (Ctrl+E)</source>
         <translation>Eine Stellung mit dem Brett-Editor aufbauen (Strg+E)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="727" />
+        <location filename="../src/app/mainwindow.cpp" line="726" />
         <source>Go to the &amp;start</source>
         <translation>Zum &amp;Anfang</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="728" />
+        <location filename="../src/app/mainwindow.cpp" line="727" />
         <source>Move &amp;back</source>
         <translation>Einen Zug &amp;zurück</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="729" />
+        <location filename="../src/app/mainwindow.cpp" line="728" />
         <source>Move &amp;forward</source>
         <translation>Einen Zug &amp;vor</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="730" />
+        <location filename="../src/app/mainwindow.cpp" line="729" />
         <source>Go to the &amp;end</source>
         <translation>Zum &amp;Ende</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="731" />
+        <location filename="../src/app/mainwindow.cpp" line="730" />
         <source>&amp;View</source>
         <translation>&amp;Ansicht</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="732" />
+        <location filename="../src/app/mainwindow.cpp" line="731" />
         <source>Clock</source>
         <translation>Uhr</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="734" />
+        <location filename="../src/app/mainwindow.cpp" line="733" />
         <source>Notation</source>
         <translation>Notation</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="735" />
+        <location filename="../src/app/mainwindow.cpp" line="734" />
         <source>Evaluation</source>
         <translation>Bewertung</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="736" />
+        <location filename="../src/app/mainwindow.cpp" line="735" />
         <source>Games</source>
         <translation>Partien</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="737" />
+        <location filename="../src/app/mainwindow.cpp" line="736" />
         <source>P&amp;revious game</source>
         <translation>&amp;Vorherige Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="738" />
+        <location filename="../src/app/mainwindow.cpp" line="737" />
         <source>Ne&amp;xt game</source>
         <translation>&amp;Nächste Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="739" />
+        <location filename="../src/app/mainwindow.cpp" line="738" />
         <source>&amp;Reset window layout</source>
         <translation>Fensteranordnung &amp;zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="741" />
+        <location filename="../src/app/mainwindow.cpp" line="740" />
         <source>Show the &amp;start screen</source>
         <translation>Start&amp;bildschirm anzeigen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="742" />
+        <location filename="../src/app/mainwindow.cpp" line="741" />
         <source>The start screen with the progress of loading, when mbChess starts</source>
         <translation>Der Startbildschirm mit dem Ladefortschritt beim Start von mbChess</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="745" />
+        <location filename="../src/app/mainwindow.cpp" line="744" />
         <source>Dark design</source>
         <translation>Dunkles Design</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="747" />
+        <location filename="../src/app/mainwindow.cpp" line="746" />
         <source>Toolbar</source>
         <translation>Werkzeugleiste</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="751" />
+        <location filename="../src/app/mainwindow.cpp" line="750" />
         <source>&amp;Manual</source>
         <translation>&amp;Handbuch</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="796" />
+        <location filename="../src/app/mainwindow.cpp" line="795" />
         <source>New game</source>
         <translation>Neue Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="796" />
+        <location filename="../src/app/mainwindow.cpp" line="795" />
         <source>A new game ends this game.</source>
         <translation>Eine neue Partie beendet diese Partie.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="907" />
+        <location filename="../src/app/mainwindow.cpp" line="906" />
         <source>Comment</source>
         <translation>Kommentar</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="907" />
+        <location filename="../src/app/mainwindow.cpp" line="906" />
         <source>Comment after %1:</source>
         <translation>Kommentar nach %1:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1084" />
+        <location filename="../src/app/mainwindow.cpp" line="1083" />
         <source>Classic (cburnett)</source>
         <translation>Klassisch (cburnett)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1086" />
+        <location filename="../src/app/mainwindow.cpp" line="1085" />
         <source>Crystal</source>
         <translation>Kristall</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1086" />
+        <location filename="../src/app/mainwindow.cpp" line="1085" />
         <source>AmiChess</source>
         <translation>AmiChess</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1087" />
+        <location filename="../src/app/mainwindow.cpp" line="1086" />
         <source>Fire</source>
         <translation>Feuer</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1087" />
+        <location filename="../src/app/mainwindow.cpp" line="1086" />
         <source>Ice</source>
         <translation>Eis</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1088" />
+        <location filename="../src/app/mainwindow.cpp" line="1087" />
         <source>Marble, brown</source>
         <translation>Marmor, braun</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1088" />
+        <location filename="../src/app/mainwindow.cpp" line="1087" />
         <source>Marble, grey</source>
         <translation>Marmor, grau</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1089" />
+        <location filename="../src/app/mainwindow.cpp" line="1088" />
         <source>Metal</source>
         <translation>Metall</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1089" />
+        <location filename="../src/app/mainwindow.cpp" line="1088" />
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1090" />
+        <location filename="../src/app/mainwindow.cpp" line="1089" />
         <source>Redwood</source>
         <translation>Rotholz</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1090" />
+        <location filename="../src/app/mainwindow.cpp" line="1089" />
         <source>Water</source>
         <translation>Wasser</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1091" />
+        <location filename="../src/app/mainwindow.cpp" line="1090" />
         <source>Wood, light</source>
         <translation>Holz, hell</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1091" />
+        <location filename="../src/app/mainwindow.cpp" line="1090" />
         <source>Wood, parquet</source>
         <translation>Holz, Parkett</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1101" />
+        <location filename="../src/app/mainwindow.cpp" line="1100" />
         <source>Board &amp;style</source>
         <translation>Brett&amp;optik</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1102" />
+        <location filename="../src/app/mainwindow.cpp" line="1101" />
         <source>&amp;Pieces</source>
         <translation>&amp;Figuren</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1103" />
+        <location filename="../src/app/mainwindow.cpp" line="1102" />
         <source>Move &amp;sounds</source>
         <translation>Zug&amp;geräusche</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1104" />
+        <location filename="../src/app/mainwindow.cpp" line="1103" />
         <source>&amp;Announce moves</source>
         <translation>Züge &amp;ansagen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1105" />
+        <location filename="../src/app/mainwindow.cpp" line="1104" />
         <source>&amp;Voice</source>
         <translation>&amp;Stimme</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1106" />
+        <location filename="../src/app/mainwindow.cpp" line="1105" />
         <source>Use the &amp;DGT board</source>
         <translation>DGT-Brett &amp;verwenden</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1107" />
+        <location filename="../src/app/mainwindow.cpp" line="1106" />
         <source>Take the position from the DG&amp;T board...</source>
         <translation>Stellung vom DG&amp;T-Brett übernehmen...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1108" />
+        <location filename="../src/app/mainwindow.cpp" line="1107" />
         <source>DGT boa&amp;rd settings...</source>
         <translation>DGT-B&amp;rett einstellen...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1111" />
+        <location filename="../src/app/mainwindow.cpp" line="1110" />
         <source>Automatic (program language)</source>
         <translation>Automatisch (Programmsprache)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1111" />
+        <location filename="../src/app/mainwindow.cpp" line="1110" />
         <source>German (Thorsten)</source>
         <translation>Deutsch (Thorsten)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1112" />
+        <location filename="../src/app/mainwindow.cpp" line="1111" />
         <source>English (LibriTTS)</source>
         <translation>Englisch (LibriTTS)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1112" />
+        <location filename="../src/app/mainwindow.cpp" line="1111" />
         <source>English (AmiChess original)</source>
         <translation>Englisch (AmiChess-Original)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="516" />
-        <location filename="../src/app/mainwindow.cpp" line="524" />
-        <location filename="../src/app/mainwindow.cpp" line="1128" />
-        <location filename="../src/app/mainwindow.cpp" line="1131" />
-        <location filename="../src/app/mainwindow.cpp" line="1144" />
-        <location filename="../src/app/mainwindow.cpp" line="1157" />
-        <location filename="../src/app/mainwindow.cpp" line="1178" />
-        <location filename="../src/app/mainwindow.cpp" line="1194" />
-        <location filename="../src/app/mainwindow.cpp" line="1200" />
+        <location filename="../src/app/mainwindow.cpp" line="515" />
+        <location filename="../src/app/mainwindow.cpp" line="523" />
+        <location filename="../src/app/mainwindow.cpp" line="1127" />
+        <location filename="../src/app/mainwindow.cpp" line="1130" />
+        <location filename="../src/app/mainwindow.cpp" line="1143" />
+        <location filename="../src/app/mainwindow.cpp" line="1156" />
+        <location filename="../src/app/mainwindow.cpp" line="1177" />
+        <location filename="../src/app/mainwindow.cpp" line="1193" />
+        <location filename="../src/app/mainwindow.cpp" line="1199" />
         <source>Open game</source>
         <translation>Partie öffnen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1133" />
+        <location filename="../src/app/mainwindow.cpp" line="1132" />
         <source>PGN files (*.pgn);;All files (*)</source>
         <translation>PGN-Dateien (*.pgn);;Alle Dateien (*)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="516" />
-        <location filename="../src/app/mainwindow.cpp" line="1144" />
+        <location filename="../src/app/mainwindow.cpp" line="515" />
+        <location filename="../src/app/mainwindow.cpp" line="1143" />
         <source>The file could not be opened:
 %1</source>
         <translation>Die Datei konnte nicht geöffnet werden:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="136" />
-        <location filename="../src/app/mainwindow.cpp" line="1479" />
+        <location filename="../src/app/mainwindow.cpp" line="137" />
+        <location filename="../src/app/mainwindow.cpp" line="1493" />
         <source>not connected</source>
         <translation>nicht verbunden</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="142" />
+        <location filename="../src/app/mainwindow.cpp" line="144" />
         <source>checking %1 ...</source>
         <translation>prüfe %1 ...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="434" />
+        <location filename="../src/app/mainwindow.cpp" line="433" />
         <source>Benchmark finished: the results are in File &gt; Benchmarks &gt; Show results.</source>
         <translation>Benchmark beendet: Die Ergebnisse stehen unter Datei &gt; Benchmarks &gt; Ergebnisse anzeigen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="702" />
-        <location filename="../src/app/mainwindow.cpp" line="1587" />
+        <location filename="../src/app/mainwindow.cpp" line="701" />
+        <location filename="../src/app/mainwindow.cpp" line="1598" />
         <source>Ready</source>
         <translation>Bereit</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="710" />
+        <location filename="../src/app/mainwindow.cpp" line="709" />
         <source>Manage e&amp;ngines...</source>
         <translation>Engines &amp;verwalten...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1157" />
+        <location filename="../src/app/mainwindow.cpp" line="710" />
+        <source>&amp;Endgame tablebases...</source>
+        <translation>&amp;Endspiel-Datenbanken...</translation>
+    </message>
+    <message>
+        <location filename="../src/app/mainwindow.cpp" line="1156" />
         <source>The file contains no games.</source>
         <translation>Die Datei enthält keine Partien.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1191" />
+        <location filename="../src/app/mainwindow.cpp" line="1190" />
         <source>Loaded "%1".</source>
         <translation>„%1“ geladen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1194" />
+        <location filename="../src/app/mainwindow.cpp" line="1193" />
         <source>Some moves could not be read:
 %1</source>
         <translation>Einige Züge konnten nicht gelesen werden:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1219" />
-        <location filename="../src/app/mainwindow.cpp" line="1229" />
+        <location filename="../src/app/mainwindow.cpp" line="1218" />
+        <location filename="../src/app/mainwindow.cpp" line="1228" />
         <source>Save game</source>
         <translation>Partie speichern</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1220" />
+        <location filename="../src/app/mainwindow.cpp" line="1219" />
         <source>PGN files (*.pgn)</source>
         <translation>PGN-Dateien (*.pgn)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1229" />
+        <location filename="../src/app/mainwindow.cpp" line="1228" />
         <source>The game could not be saved:
 %1</source>
         <translation>Die Partie konnte nicht gespeichert werden:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1233" />
+        <location filename="../src/app/mainwindow.cpp" line="1232" />
         <source>Game saved to "%1".</source>
         <translation>Partie in „%1“ gespeichert.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1263" />
+        <location filename="../src/app/mainwindow.cpp" line="1262" />
         <source>&amp;Continue</source>
         <translation>&amp;Fortfahren</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1263" />
+        <location filename="../src/app/mainwindow.cpp" line="1262" />
         <source>&amp;Discard</source>
         <translation>&amp;Verwerfen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1264" />
+        <location filename="../src/app/mainwindow.cpp" line="1263" />
         <source>&amp;Back to the game</source>
         <translation>&amp;Zurück zur Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1285" />
-        <location filename="../src/app/mainwindow.cpp" line="1656" />
+        <location filename="../src/app/mainwindow.cpp" line="1284" />
+        <location filename="../src/app/mainwindow.cpp" line="1675" />
         <source>Set up position</source>
         <translation>Stellung aufbauen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1286" />
+        <location filename="../src/app/mainwindow.cpp" line="1285" />
         <source>If you apply a new position in the board editor, the game is ended. With "Discard" it goes on.</source>
         <translation>Wenn Sie im Brett-Editor eine neue Stellung übernehmen, wird die Partie beendet. Mit „Verwerfen“ geht sie weiter.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1294" />
+        <location filename="../src/app/mainwindow.cpp" line="1293" />
         <source>Position set up. Play it with File &gt; New game, or look for a mate with Engines &gt; Mate search.</source>
         <translation>Stellung aufgebaut. Spielen mit Datei &gt; Neue Partie, Matt suchen mit Engines &gt; Matt suchen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1300" />
+        <location filename="../src/app/mainwindow.cpp" line="1299" />
         <source>Mate search</source>
         <translation>Mattsuche</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1301" />
+        <location filename="../src/app/mainwindow.cpp" line="1300" />
         <source>Help from an engine ends the game: the board becomes an analysis board.</source>
         <translation>Hilfe von einer Engine beendet die Partie: das Brett wird zum Analysebrett.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1326" />
+        <location filename="../src/app/mainwindow.cpp" line="1325" />
         <source>The solution was added to the game (step through it with the right arrow key).</source>
         <translation>Die Lösung wurde in die Partie eingefügt (mit der Pfeiltaste nach rechts durchgehen).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1353" />
+        <location filename="../src/app/mainwindow.cpp" line="1359" />
         <source>DGT board on (Ctrl+D): moves on the board are played here</source>
         <translation>DGT-Brett an (Strg+D): Züge auf dem Brett werden hier gespielt</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1354" />
+        <location filename="../src/app/mainwindow.cpp" line="1360" />
+        <source>No DGT board connected: mbChess uses it as soon as it is plugged in or switched on (Ctrl+D: search now)</source>
+        <translation>Kein DGT-Brett verbunden: mbChess nutzt es, sobald es angeschlossen oder eingeschaltet wird (Strg+D: jetzt suchen)</translation>
+    </message>
+    <message>
+        <location filename="../src/app/mainwindow.cpp" line="1362" />
         <source>DGT board off (Ctrl+D)</source>
         <translation>DGT-Brett aus (Strg+D)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1373" />
+        <location filename="../src/app/mainwindow.cpp" line="1391" />
         <source>This mbChess was built without Qt Serial Port, so it cannot talk to a DGT board. Add "Qt Serial Port" to the Qt kit with the Qt Maintenance Tool and build mbChess again (qmake, then build).</source>
         <translation>Dieses mbChess wurde ohne Qt Serial Port gebaut und kann deshalb nicht mit einem DGT-Brett sprechen. Füge „Qt Serial Port“ mit dem Qt Maintenance Tool zum Qt-Kit hinzu und baue mbChess neu (qmake, dann Erstellen).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1427" />
-        <location filename="../src/app/mainwindow.cpp" line="1485" />
+        <location filename="../src/app/mainwindow.cpp" line="1445" />
+        <location filename="../src/app/mainwindow.cpp" line="1499" />
         <source>no board found</source>
         <translation>kein Brett gefunden</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1428" />
+        <location filename="../src/app/mainwindow.cpp" line="1446" />
         <source>No serial port found.</source>
         <translation>Kein serieller Anschluss gefunden.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1578" />
+        <location filename="../src/app/mainwindow.cpp" line="1589" />
         <source>paused while the benchmark runs</source>
         <translation>pausiert, solange der Benchmark läuft</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1580" />
+        <location filename="../src/app/mainwindow.cpp" line="1591" />
         <source>paused: engine against engine</source>
         <translation>pausiert: Engine gegen Engine</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1606" />
+        <location filename="../src/app/mainwindow.cpp" line="1625" />
         <source>DGT board on %1</source>
         <translation>DGT-Brett an %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1608" />
+        <location filename="../src/app/mainwindow.cpp" line="1627" />
         <source>Version %1</source>
         <translation>Version %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1610" />
+        <location filename="../src/app/mainwindow.cpp" line="1629" />
         <source>Black at the connector side</source>
         <translation>Schwarz auf der Anschlussseite</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1615" />
+        <location filename="../src/app/mainwindow.cpp" line="1634" />
         <source>Moves on the board are ignored until the run is over.</source>
         <translation>Züge auf dem Brett werden ignoriert, bis der Lauf vorbei ist.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1622" />
+        <location filename="../src/app/mainwindow.cpp" line="1641" />
         <source>✓ matches the game</source>
         <translation>✓ stimmt mit der Partie überein</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1623" />
+        <location filename="../src/app/mainwindow.cpp" line="1642" />
         <source>The board matches the game.</source>
         <translation>Das Brett stimmt mit der Partie überein.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1634" />
+        <location filename="../src/app/mainwindow.cpp" line="1653" />
         <source>Board: %1</source>
         <translation>Brett: %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1647" />
+        <location filename="../src/app/mainwindow.cpp" line="1666" />
         <source>No DGT board is connected (Board &gt; Use the DGT board).</source>
         <translation>Es ist kein DGT-Brett verbunden (Brett &gt; DGT-Brett verwenden).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1652" />
+        <location filename="../src/app/mainwindow.cpp" line="1671" />
         <source>The DGT board is paused while a benchmark or an engine-against-engine game runs.</source>
         <translation>Das DGT-Brett pausiert, solange ein Benchmark oder eine Partie Engine gegen Engine läuft.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1657" />
+        <location filename="../src/app/mainwindow.cpp" line="1676" />
         <source>If you apply the position of the DGT board, the game is ended. With "Discard" it goes on.</source>
         <translation>Wenn Sie die Stellung des DGT-Bretts übernehmen, wird die Partie beendet. Mit „Verwerfen“ geht sie weiter.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1677" />
-        <location filename="../src/app/mainwindow.cpp" line="1680" />
+        <location filename="../src/app/mainwindow.cpp" line="1696" />
+        <location filename="../src/app/mainwindow.cpp" line="1699" />
         <source>Set position</source>
         <translation>Stellung setzen</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1677" />
+        <location filename="../src/app/mainwindow.cpp" line="1696" />
         <source>A new position from a FEN ends the game.</source>
         <translation>Eine neue Stellung aus einer FEN beendet die Partie.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1680" />
+        <location filename="../src/app/mainwindow.cpp" line="1699" />
         <source>FEN:</source>
         <translation>FEN:</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1686" />
+        <location filename="../src/app/mainwindow.cpp" line="1705" />
         <source>Invalid FEN</source>
         <translation>Ungültige FEN</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1686" />
+        <location filename="../src/app/mainwindow.cpp" line="1705" />
         <source>The FEN could not be read:
 %1</source>
         <translation>Die FEN konnte nicht gelesen werden:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1692" />
+        <location filename="../src/app/mainwindow.cpp" line="1711" />
         <source>FEN copied to the clipboard.</source>
         <translation>FEN in die Zwischenablage kopiert.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1702" />
+        <location filename="../src/app/mainwindow.cpp" line="1721" />
         <source>The game is over.</source>
         <translation>Die Partie ist beendet.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1704" />
+        <location filename="../src/app/mainwindow.cpp" line="1723" />
         <source>Go to the end of the game to make a move.</source>
         <translation>Gehen Sie ans Ende der Partie, um zu ziehen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1706" />
+        <location filename="../src/app/mainwindow.cpp" line="1725" />
         <source>Please wait, the engine is to move.</source>
         <translation>Bitte warten, die Engine ist am Zug.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1719" />
+        <location filename="../src/app/mainwindow.cpp" line="1738" />
         <source>"%1" is not a legal move here.</source>
         <translation>„%1“ ist hier kein gültiger Zug.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1770" />
-        <location filename="../src/app/mainwindow.cpp" line="1783" />
+        <location filename="../src/app/mainwindow.cpp" line="1789" />
+        <location filename="../src/app/mainwindow.cpp" line="1802" />
         <source>Manual</source>
         <translation>Handbuch</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1771" />
+        <location filename="../src/app/mainwindow.cpp" line="1790" />
         <source>The manual was not found. It belongs in the folder "%1" next to the program.</source>
         <translation>Das Handbuch wurde nicht gefunden. Es gehört in den Ordner „%1“ neben dem Programm.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1784" />
+        <location filename="../src/app/mainwindow.cpp" line="1803" />
         <source>No program to show "%1" was found. Please install a PDF viewer.</source>
         <translation>Es wurde kein Programm gefunden, das „%1“ anzeigen kann. Bitte installieren Sie einen PDF-Betrachter.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1791" />
+        <location filename="../src/app/mainwindow.cpp" line="1810" />
         <source>About mbChess</source>
         <translation>Über mbChess</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1817" />
+        <location filename="../src/app/mainwindow.cpp" line="1836" />
         <source>%1 "%2"</source>
         <comment>version number and version name</comment>
         <translation>%1 „%2“</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1864" />
+        <location filename="../src/app/mainwindow.cpp" line="1883" />
         <source>%1 vs. %2  (%3/%4)</source>
         <translation>%1 vs. %2  (%3/%4)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1868" />
+        <location filename="../src/app/mainwindow.cpp" line="1887" />
         <source>Game %1 of %2: %3 against %4</source>
         <translation>Partie %1 von %2: %3 gegen %4</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1874" />
+        <location filename="../src/app/mainwindow.cpp" line="1893" />
         <source>about %1 left</source>
         <translation>noch etwa %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1875" />
+        <location filename="../src/app/mainwindow.cpp" line="1894" />
         <source>Expected end: about %1</source>
         <translation>Voraussichtliches Ende: etwa %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1886" />
-        <location filename="../src/app/mainwindow.cpp" line="1896" />
-        <location filename="../src/app/mainwindow.cpp" line="1902" />
-        <location filename="../src/app/mainwindow.cpp" line="1928" />
-        <location filename="../src/app/mainwindow.cpp" line="1958" />
-        <location filename="../src/app/mainwindow.cpp" line="2041" />
+        <location filename="../src/app/mainwindow.cpp" line="1905" />
+        <location filename="../src/app/mainwindow.cpp" line="1915" />
+        <location filename="../src/app/mainwindow.cpp" line="1921" />
+        <location filename="../src/app/mainwindow.cpp" line="1947" />
+        <location filename="../src/app/mainwindow.cpp" line="1977" />
+        <location filename="../src/app/mainwindow.cpp" line="2060" />
         <source>Engine benchmark</source>
         <translation>Engine-Benchmark</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1887" />
+        <location filename="../src/app/mainwindow.cpp" line="1906" />
         <source>The benchmark needs at least two engines (menu Engines &gt; Manage engines).</source>
         <translation>Der Benchmark braucht mindestens zwei Engines (Menü Engines &gt; Engines verwalten).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1897" />
-        <location filename="../src/app/mainwindow.cpp" line="1929" />
+        <location filename="../src/app/mainwindow.cpp" line="1916" />
+        <location filename="../src/app/mainwindow.cpp" line="1948" />
         <source>If you follow the benchmark on the board, this game is &lt;b&gt;ended&lt;/b&gt;: the board shows the benchmark games from the initial position.</source>
         <translation>Wenn Sie den Benchmark auf dem Brett verfolgen, wird diese Partie &lt;b&gt;beendet&lt;/b&gt;: Das Brett zeigt die Benchmark-Partien ab der Grundstellung.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2042" />
+        <location filename="../src/app/mainwindow.cpp" line="2061" />
         <source>Cancel the running benchmark? The games played so far are kept.</source>
         <translation>Den laufenden Benchmark abbrechen? Die bisher gespielten Partien bleiben erhalten.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2107" />
+        <location filename="../src/app/mainwindow.cpp" line="2126" />
         <source>No engine analysis while you follow the benchmark.</source>
         <translation>Keine Engine-Analyse, solange Sie den Benchmark verfolgen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2108" />
+        <location filename="../src/app/mainwindow.cpp" line="2127" />
         <source>No engine analysis during a game: resign or finish it first.</source>
         <translation>Keine Engine-Analyse während einer Partie: erst aufgeben oder zu Ende spielen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2114" />
+        <location filename="../src/app/mainwindow.cpp" line="2133" />
         <source>There is no engine (menu Engines &gt; Manage engines).</source>
         <translation>Es ist keine Engine vorhanden (Menü Engines &gt; Engines verwalten).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2144" />
+        <location filename="../src/app/mainwindow.cpp" line="2163" />
         <source>No moves possible in this position.</source>
         <translation>In dieser Stellung ist kein Zug möglich.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2144" />
+        <location filename="../src/app/mainwindow.cpp" line="2163" />
         <source>Analysing...</source>
         <translation>Analysiere...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2168" />
+        <location filename="../src/app/mainwindow.cpp" line="2187" />
         <source>depth %1</source>
         <translation>Tiefe %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/mainwindow.cpp" line="2177" />
+        <location filename="../src/app/mainwindow.cpp" line="2196" />
         <source>Analysis: %1 (%n line(s))</source>
         <translation>
             <numerusform>Analyse: %1 (%n Zeile)</numerusform><numerusform>Analyse: %1 (%n Zeilen)</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2180" />
+        <location filename="../src/app/mainwindow.cpp" line="2199" />
         <source>- this engine shows only one line</source>
         <translation>- diese Engine zeigt nur eine Zeile</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2206" />
+        <location filename="../src/app/mainwindow.cpp" line="2225" />
         <source>Endgame tablebases take effect with the next game.</source>
         <translation>Die Endspiel-Datenbanken gelten ab der nächsten Partie.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2215" />
+        <location filename="../src/app/mainwindow.cpp" line="2234" />
         <source>Changed engine settings take effect with the next game.</source>
         <translation>Geänderte Engine-Einstellungen gelten ab der nächsten Partie.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2256" />
+        <location filename="../src/app/mainwindow.cpp" line="2275" />
         <source>No game yet: &lt;a href="new"&gt;start a new game&lt;/a&gt; (%1) or open one.</source>
         <translation>Noch keine Partie: &lt;a href="new"&gt;neue Partie starten&lt;/a&gt; (%1) oder eine Partie öffnen.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2266" />
+        <location filename="../src/app/mainwindow.cpp" line="2285" />
         <source>Set opening: %1 (%2 moves, set up at once).</source>
         <extracomment>%1 = opening name, %2 = number of moves; the benchmark sets these moves up at once</extracomment>
         <translation>Vorgegebene Eröffnung: %1 (%2 Züge, auf einmal aufgebaut).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2279" />
+        <location filename="../src/app/mainwindow.cpp" line="2298" />
         <source>The engine is thinking...</source>
         <translation>Die Engine rechnet...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2140" />
-        <location filename="../src/app/mainwindow.cpp" line="2281" />
+        <location filename="../src/app/mainwindow.cpp" line="2159" />
+        <location filename="../src/app/mainwindow.cpp" line="2300" />
         <source>Starting the engine...</source>
         <translation>Engine wird gestartet...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2283" />
+        <location filename="../src/app/mainwindow.cpp" line="2302" />
+        <source>The engine thinks on your time (ponder).</source>
+        <translation>Die Engine denkt in Ihrer Bedenkzeit mit (Ponder).</translation>
+    </message>
+    <message>
+        <location filename="../src/app/mainwindow.cpp" line="2304" />
         <source>You are looking at an earlier move (End key: back to the game).</source>
         <translation>Sie sehen einen früheren Zug an (Ende-Taste: zurück zur Partie).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2315" />
-        <location filename="../src/app/mainwindow.cpp" line="2321" />
-        <location filename="../src/app/mainwindow.cpp" line="2322" />
+        <location filename="../src/app/mainwindow.cpp" line="2310" />
+        <source>Tablebase: %1.</source>
+        <extracomment>%1 = "White mates in 5 moves", "Draw" ...</extracomment>
+        <translation>Endspiel-Datenbank: %1.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/mainwindow.cpp" line="2343" />
+        <location filename="../src/app/mainwindow.cpp" line="2349" />
+        <location filename="../src/app/mainwindow.cpp" line="2350" />
         <source>Engine: %1</source>
         <translation>Engine: %1</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/mainwindow.cpp" line="2325" />
+        <location filename="../src/app/mainwindow.cpp" line="2353" />
         <source>%n core(s)</source>
         <translation>
             <numerusform>%n Kern</numerusform><numerusform>%n Kerne</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2329" />
+        <location filename="../src/app/mainwindow.cpp" line="2357" />
         <source>No game started yet</source>
         <translation>Noch keine Partie gestartet</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2332" />
+        <location filename="../src/app/mainwindow.cpp" line="2360" />
         <source>No engine (human against human)</source>
         <translation>Keine Engine (Mensch gegen Mensch)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1957" />
-        <location filename="../src/app/mainwindow.cpp" line="2276" />
+        <location filename="../src/app/mainwindow.cpp" line="1976" />
+        <location filename="../src/app/mainwindow.cpp" line="2295" />
         <source>White</source>
         <translation>Weiß</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1957" />
-        <location filename="../src/app/mainwindow.cpp" line="2276" />
+        <location filename="../src/app/mainwindow.cpp" line="1976" />
+        <location filename="../src/app/mainwindow.cpp" line="2295" />
         <source>Black</source>
         <translation>Schwarz</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1078" />
+        <location filename="../src/app/mainwindow.cpp" line="1077" />
         <source>Grey (mbChess)</source>
         <translation>Grau (mbChess)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1080" />
+        <location filename="../src/app/mainwindow.cpp" line="1079" />
         <source>mbChess (classic)</source>
         <translation>mbChess (klassisch)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1082" />
+        <location filename="../src/app/mainwindow.cpp" line="1081" />
         <source>Wooden discs (mbChess)</source>
         <translation>Holzscheiben (mbChess)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1147" />
+        <location filename="../src/app/mainwindow.cpp" line="1146" />
         <source>Reading "%1"...</source>
         <translation>Lese „%1“...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1178" />
+        <location filename="../src/app/mainwindow.cpp" line="1177" />
         <source>The game could not be read:
 %1</source>
         <translation>Die Partie konnte nicht gelesen werden:
 %1</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1190" />
+        <location filename="../src/app/mainwindow.cpp" line="1189" />
         <source>Game %1 of %2 from "%3".</source>
         <translation>Partie %1 von %2 aus „%3“.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1256" />
+        <location filename="../src/app/mainwindow.cpp" line="1255" />
         <source>&lt;p&gt;A game is running.&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine Partie läuft.&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1257" />
+        <location filename="../src/app/mainwindow.cpp" line="1256" />
         <source>&lt;p&gt;Your game may contain unsaved data: moves, variations or comments that are not saved in a PGN file yet. If you go on, they are lost.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Ihre Partie könnte ungesicherte Daten enthalten: Züge, Varianten oder Kommentare, die noch nicht in einer PGN-Datei gespeichert sind. Wenn Sie fortfahren, gehen sie verloren.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1260" />
+        <location filename="../src/app/mainwindow.cpp" line="1259" />
         <source>&lt;p&gt;Save it first with File &gt; Save game as PGN if you want to keep it.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Speichern Sie sie vorher mit Datei &gt; Partie als PGN speichern, wenn Sie sie behalten möchten.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1448" />
+        <location filename="../src/app/mainwindow.cpp" line="1466" />
         <source>looking for the board ...</source>
         <translation>suche das Brett ...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1474" />
+        <location filename="../src/app/mainwindow.cpp" line="1488" />
         <source>connecting to %1 ...</source>
         <translation>verbinde mit %1 ...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1486" />
+        <location filename="../src/app/mainwindow.cpp" line="1500" />
         <source>mbChess connects as soon as the board is plugged in or switched on.</source>
         <translation>mbChess verbindet sich, sobald das Brett eingesteckt oder eingeschaltet wird.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1628" />
+        <location filename="../src/app/mainwindow.cpp" line="1647" />
         <source>please play %1 on the board</source>
         <translation>bitte %1 auf dem Brett ziehen</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/mainwindow.cpp" line="1633" />
+        <location filename="../src/app/mainwindow.cpp" line="1652" />
         <source>the board differs on %n square(s)</source>
         <translation>
             <numerusform>Brett weicht auf %n Feld ab</numerusform><numerusform>Brett weicht auf %n Feldern ab</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1639" />
+        <location filename="../src/app/mainwindow.cpp" line="1658" />
         <source>not available</source>
         <translation>nicht verfügbar</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1811" />
+        <location filename="../src/app/mainwindow.cpp" line="1830" />
         <source>&lt;h3&gt;mbChess %1&lt;/h3&gt;&lt;p&gt;A chess program for Windows, Linux, macOS and Android.&lt;/p&gt;&lt;p&gt;&amp;copy; Michael Bergmann 2026&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3 or later.&lt;/p&gt;&lt;p&gt;Chess pieces: "cburnett" by Colin M.L. Burnett (GPL-2.0-or-later).&lt;/p&gt;&lt;p&gt;Built with Qt %2.&lt;/p&gt;</source>
         <translation>&lt;h3&gt;mbChess %1&lt;/h3&gt;&lt;p&gt;Ein Schachprogramm für Windows, Linux, macOS und Android.&lt;/p&gt;&lt;p&gt;&amp;copy; Michael Bergmann 2026&lt;/p&gt;&lt;p&gt;Lizenziert unter der GNU General Public License, Version 3 oder neuer.&lt;/p&gt;&lt;p&gt;Schachfiguren: „cburnett“ von Colin M.L. Burnett (GPL-2.0-or-later).&lt;/p&gt;&lt;p&gt;Erstellt mit Qt %2.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1903" />
+        <location filename="../src/app/mainwindow.cpp" line="1922" />
         <source>&lt;p&gt;The benchmark plays %1 games and can take a long time: up to about &lt;b&gt;%2&lt;/b&gt; (finished about %3).&lt;/p&gt;&lt;p&gt;The engines use the computer heavily meanwhile. You follow the progress in the status bar and can cancel the benchmark at any time (menu File &gt; Benchmarks or the button next to the progress bar).&lt;/p&gt;&lt;p&gt;&lt;b&gt;While the benchmark runs&lt;/b&gt; you cannot start a new game, open games, set up a position, paste a FEN, search for mates, take the position from the DGT board or manage the engines. These menu items are greyed out until the benchmark is finished or cancelled. The DGT board pauses meanwhile.&lt;/p&gt;&lt;p&gt;Start the benchmark now?&lt;/p&gt;</source>
         <translation>&lt;p&gt;Der Benchmark spielt %1 Partien und kann lange dauern: bis zu etwa &lt;b&gt;%2&lt;/b&gt; (fertig etwa um %3).&lt;/p&gt;&lt;p&gt;Die Engines lasten den Computer währenddessen stark aus. Den Fortschritt verfolgen Sie in der Statusleiste, abbrechen können Sie den Benchmark jederzeit (Menü Datei &gt; Benchmarks oder die Schaltfläche neben dem Fortschrittsbalken).&lt;/p&gt;&lt;p&gt;&lt;b&gt;Solange der Benchmark läuft,&lt;/b&gt; können Sie keine neue Partie beginnen, keine Partien öffnen, keine Stellung aufbauen, keine FEN einfügen, kein Matt suchen, keine Stellung vom DGT-Brett übernehmen und die Engines nicht verwalten. Diese Menüpunkte sind ausgegraut, bis der Benchmark beendet oder abgebrochen ist. Das DGT-Brett pausiert währenddessen.&lt;/p&gt;&lt;p&gt;Benchmark jetzt starten?&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="1998" />
+        <location filename="../src/app/mainwindow.cpp" line="2017" />
         <source>Benchmark game %1 of %2: %3 against %4</source>
         <translation>Benchmark-Partie %1 von %2: %3 gegen %4</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2030" />
+        <location filename="../src/app/mainwindow.cpp" line="2049" />
         <source>%1 against %2: %3 (%4)</source>
         <translation>%1 gegen %2: %3 (%4)</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2263" />
+        <location filename="../src/app/mainwindow.cpp" line="2282" />
         <source>Starting the engines...</source>
         <translation>Die Engines starten...</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2269" />
+        <location filename="../src/app/mainwindow.cpp" line="2288" />
         <source>You are watching: moves are not possible (menu File &gt; Benchmarks).</source>
         <translation>Sie schauen zu: Eigene Züge sind nicht möglich (Menü Datei &gt; Benchmarks).</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2277" />
+        <location filename="../src/app/mainwindow.cpp" line="2296" />
         <source>%1 to move, in check.</source>
         <translation>%1 am Zug, steht im Schach.</translation>
     </message>
     <message>
-        <location filename="../src/app/mainwindow.cpp" line="2277" />
+        <location filename="../src/app/mainwindow.cpp" line="2296" />
         <source>%1 to move.</source>
         <translation>%1 am Zug.</translation>
     </message>
@@ -2681,259 +2697,269 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
         <translation>Volle Spielstärke</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="136" />
+        <location filename="../src/app/newgamedialog.cpp" line="138" />
         <source>New game</source>
         <translation>Neue Partie</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="155" />
+        <location filename="../src/app/newgamedialog.cpp" line="157" />
         <source>Player</source>
         <translation>Spieler</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="156" />
+        <location filename="../src/app/newgamedialog.cpp" line="158" />
         <source>Your &amp;name:</source>
         <translation>Ihr &amp;Name:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="160" />
+        <location filename="../src/app/newgamedialog.cpp" line="162" />
         <source>&amp;Other engine...</source>
         <translation>&amp;Andere Engine...</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="304" />
+        <location filename="../src/app/newgamedialog.cpp" line="313" />
         <source>Engine boo&amp;k:</source>
         <translation>Eng&amp;ine-Buch:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="385" />
+        <location filename="../src/app/newgamedialog.cpp" line="397" />
         <source>No engine found in the folder "%1". Build the engines or choose one with "Other engine".</source>
         <translation>Keine Engine im Ordner „%1“ gefunden. Bauen Sie die Engines oder wählen Sie eine über „Andere Engine“.</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="367" />
+        <location filename="../src/app/newgamedialog.cpp" line="377" />
         <source>&amp;Engine:</source>
         <translation>&amp;Engine:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="140" />
+        <location filename="../src/app/newgamedialog.cpp" line="142" />
         <source>Engine (computer)</source>
         <translation>Engine (Computer)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="141" />
+        <location filename="../src/app/newgamedialog.cpp" line="143" />
         <source>Human (both sides on this board)</source>
         <translation>Mensch (beide Seiten an diesem Brett)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="142" />
+        <location filename="../src/app/newgamedialog.cpp" line="144" />
         <source>Engine against engine</source>
         <translation>Engine gegen Engine</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="145" />
+        <location filename="../src/app/newgamedialog.cpp" line="147" />
         <source>&amp;Opponent:</source>
         <translation>&amp;Gegner:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="148" />
+        <location filename="../src/app/newgamedialog.cpp" line="150" />
         <source>White (you move first)</source>
         <translation>Weiß (Sie ziehen zuerst)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="149" />
+        <location filename="../src/app/newgamedialog.cpp" line="151" />
         <source>Black</source>
         <translation>Schwarz</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="150" />
+        <location filename="../src/app/newgamedialog.cpp" line="152" />
         <source>Random</source>
         <translation>Zufall</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="152" />
+        <location filename="../src/app/newgamedialog.cpp" line="154" />
         <source>&amp;Your colour:</source>
         <translation>&amp;Ihre Farbe:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="161" />
+        <location filename="../src/app/newgamedialog.cpp" line="163" />
         <source>Mana&amp;ge...</source>
         <translation>Ver&amp;walten...</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="162" />
+        <location filename="../src/app/newgamedialog.cpp" line="164" />
         <source>Engine list, names and engine options</source>
         <translation>Engine-Liste, Namen und Engine-Optionen</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="190" />
+        <location filename="../src/app/newgamedialog.cpp" line="192" />
         <source>Engine (&amp;Black):</source>
         <translation>Engine (&amp;Schwarz):</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="204" />
+        <location filename="../src/app/newgamedialog.cpp" line="206" />
         <source>&amp;Strength:</source>
         <translation>&amp;Spielstärke:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="209" />
+        <location filename="../src/app/newgamedialog.cpp" line="211" />
         <source> of %1</source>
         <translation> von %1</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="210" />
+        <location filename="../src/app/newgamedialog.cpp" line="212" />
         <source>CPU &amp;cores:</source>
         <translation>&amp;CPU-Kerne:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="217" />
+        <location filename="../src/app/newgamedialog.cpp" line="219" />
         <source>&amp;Hash table:</source>
         <translation>&amp;Hash-Tabelle:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="228" />
+        <location filename="../src/app/newgamedialog.cpp" line="230" />
         <source>&amp;Time control:</source>
         <translation>&amp;Bedenkzeit:</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="230" />
+        <location filename="../src/app/newgamedialog.cpp" line="232" />
+        <source>Engine thinks on your time (&amp;ponder), if it can</source>
+        <translation>Engine denkt in Ihrer Bedenkzeit mi&amp;t (Ponder), falls sie es kann</translation>
+    </message>
+    <message>
+        <location filename="../src/app/newgamedialog.cpp" line="234" />
+        <source>While you think, the engine already searches its answer to the move it expects from you. This makes it stronger. Only at full strength and only for engines that offer it (e.g. Stockfish, Texel, Arasan).</source>
+        <translation>Während Sie überlegen, sucht die Engine schon ihre Antwort auf den Zug, den sie von Ihnen erwartet. Das macht sie stärker. Nur mit voller Spielstärke und nur bei Engines, die es anbieten (z. B. Stockfish, Texel, Arasan).</translation>
+    </message>
+    <message>
+        <location filename="../src/app/newgamedialog.cpp" line="239" />
         <source>Always promote to &amp;queen</source>
         <translation>Immer in &amp;Dame umwandeln</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="233" />
+        <location filename="../src/app/newgamedialog.cpp" line="242" />
         <source>Play from the position on the boa&amp;rd</source>
         <translation>Von der Stellung auf dem B&amp;rett aus spielen</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="234" />
+        <location filename="../src/app/newgamedialog.cpp" line="243" />
         <source>Off: the game starts from the initial position.</source>
         <translation>Aus: die Partie beginnt mit der Grundstellung.</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="239" />
+        <location filename="../src/app/newgamedialog.cpp" line="248" />
         <source>Opening book and chessbooks</source>
         <translation>Eröffnungsbuch und Chessbooks</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="258" />
+        <location filename="../src/app/newgamedialog.cpp" line="267" />
         <source>Engine also plays from &amp;game databases (chessbooks)</source>
         <translation>Engine spielt auch aus &amp;Partiedatenbanken (Chessbooks)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="263" />
+        <location filename="../src/app/newgamedialog.cpp" line="272" />
         <source>all databases in the folder "Chessbooks"</source>
         <translation>alle Datenbanken im Ordner „Chessbooks“</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="271" />
+        <location filename="../src/app/newgamedialog.cpp" line="280" />
         <source>&amp;Chessbook (PGN):</source>
         <translation>Chessb&amp;ook (PGN):</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="276" />
+        <location filename="../src/app/newgamedialog.cpp" line="285" />
         <source>Moves that scored well in the games of the database are played. Opening books belong in the folder "%1", databases in "%2".</source>
         <translation>Gespielt werden Züge, die in den Partien der Datenbank gut abgeschnitten haben. Eröffnungsbücher gehören in den Ordner „%1“, Datenbanken in „%2“.</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="298" />
+        <location filename="../src/app/newgamedialog.cpp" line="307" />
         <source>Choose an opening book</source>
         <translation>Eröffnungsbuch wählen</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="299" />
-        <location filename="../src/app/newgamedialog.cpp" line="346" />
+        <location filename="../src/app/newgamedialog.cpp" line="308" />
+        <location filename="../src/app/newgamedialog.cpp" line="356" />
         <source>Opening books (*.bin);;All files (*)</source>
         <translation>Eröffnungsbücher (*.bin);;Alle Dateien (*)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="337" />
+        <location filename="../src/app/newgamedialog.cpp" line="347" />
         <source>Other file...</source>
         <translation>Andere Datei...</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="347" />
+        <location filename="../src/app/newgamedialog.cpp" line="357" />
         <source>Game databases (*.pgn);;All files (*)</source>
         <translation>Partiedatenbanken (*.pgn);;Alle Dateien (*)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="348" />
+        <location filename="../src/app/newgamedialog.cpp" line="358" />
         <source>Choose a file</source>
         <translation>Datei wählen</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="367" />
+        <location filename="../src/app/newgamedialog.cpp" line="377" />
         <source>Engine (&amp;White):</source>
         <translation>Engine (&amp;Weiß):</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="448" />
+        <location filename="../src/app/newgamedialog.cpp" line="460" />
         <source>Opening book</source>
         <translation>Eröffnungsbuch</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="241" />
+        <location filename="../src/app/newgamedialog.cpp" line="250" />
         <source>Engine plays from the &amp;opening book</source>
         <translation>Engine spielt aus dem Er&amp;öffnungsbuch</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="246" />
+        <location filename="../src/app/newgamedialog.cpp" line="255" />
         <source>built-in book (mbChess)</source>
         <translation>eingebautes Buch (mbChess)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="291" />
+        <location filename="../src/app/newgamedialog.cpp" line="300" />
         <source>Choose...</source>
         <translation>Wählen...</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="254" />
+        <location filename="../src/app/newgamedialog.cpp" line="263" />
         <source>&amp;Book (PolyGlot):</source>
         <translation>B&amp;uch (PolyGlot):</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="250" />
-        <location filename="../src/app/newgamedialog.cpp" line="267" />
+        <location filename="../src/app/newgamedialog.cpp" line="259" />
+        <location filename="../src/app/newgamedialog.cpp" line="276" />
         <source>up to move </source>
         <translation>bis Zug </translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="285" />
+        <location filename="../src/app/newgamedialog.cpp" line="294" />
         <source>Let the engine use its o&amp;wn book, if it has one</source>
         <translation>Eigenes Buch der Engine &amp;verwenden, falls vorhanden</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="289" />
+        <location filename="../src/app/newgamedialog.cpp" line="298" />
         <source>engine default (PolyGlot engines: mbChess book)</source>
         <translation>Standard der Engine (PolyGlot-Engines: mbChess-Buch)</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="312" />
+        <location filename="../src/app/newgamedialog.cpp" line="321" />
         <source>&amp;Start game</source>
         <translation>Partie &amp;starten</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="388" />
+        <location filename="../src/app/newgamedialog.cpp" line="400" />
         <source>This file does not exist or is not executable.</source>
         <translation>Diese Datei existiert nicht oder ist nicht ausführbar.</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="422" />
+        <location filename="../src/app/newgamedialog.cpp" line="434" />
         <source>Choose a UCI engine</source>
         <translation>UCI-Engine wählen</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="443" />
+        <location filename="../src/app/newgamedialog.cpp" line="455" />
         <source>No engine</source>
         <translation>Keine Engine</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="443" />
+        <location filename="../src/app/newgamedialog.cpp" line="455" />
         <source>Please choose an executable UCI engine first.</source>
         <translation>Bitte wählen Sie zuerst eine ausführbare UCI-Engine.</translation>
     </message>
     <message>
-        <location filename="../src/app/newgamedialog.cpp" line="448" />
+        <location filename="../src/app/newgamedialog.cpp" line="460" />
         <source>The book file "%1" does not exist.</source>
         <translation>Die Buchdatei „%1“ gibt es nicht.</translation>
     </message>
@@ -2977,11 +3003,6 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
         <translation>Endspiel-Datenbanken</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="68" />
-        <source>Syzygy endgame tablebases contain the perfect result of every position with few pieces. Engines that can read them (Stockfish, Arasan, Viridithas, Crafty) then play such endgames without mistakes and see the result early in their search. The other engines play without them.</source>
-        <translation>Syzygy-Endspiel-Datenbanken enthalten das perfekte Ergebnis jeder Stellung mit wenigen Steinen. Engines, die sie lesen können (Stockfish, Arasan, Viridithas, Crafty), spielen solche Endspiele dann fehlerfrei und sehen das Ergebnis schon früh in ihrer Suche. Die übrigen Engines spielen ohne sie.</translation>
-    </message>
-    <message>
         <location filename="../src/app/tablebasedialog.cpp" line="75" />
         <source>&amp;Use endgame tablebases</source>
         <translation>Endspiel-Datenbanken &amp;verwenden</translation>
@@ -2998,111 +3019,148 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
     </message>
     <message>
         <location filename="../src/app/tablebasedialog.cpp" line="88" />
+        <location filename="../src/app/tablebasedialog.cpp" line="121" />
         <source>Folder:</source>
         <translation>Ordner:</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="98" />
-        <source>Download the tables with 3, 4 and 5 pieces</source>
-        <translation>Datenbanken mit 3, 4 und 5 Steinen herunterladen</translation>
+        <location filename="../src/app/tablebasedialog.cpp" line="68" />
+        <source>Syzygy endgame tablebases contain the perfect result of every position with few pieces. Engines that can read them (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty) then play such endgames without mistakes and see the result early in their search. The other engines play without them.</source>
+        <translation>Syzygy-Endspiel-Datenbanken enthalten das perfekte Ergebnis jeder Stellung mit wenigen Steinen. Engines, die sie lesen können (Stockfish, Arasan, Viridithas, Texel, Patricia, Crafty), spielen solche Endspiele dann fehlerfrei und sehen das Ergebnis früh in ihrer Suche. Die anderen Engines spielen ohne sie.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="100" />
+        <location filename="../src/app/tablebasedialog.cpp" line="99" />
+        <source>Gaviota tables (distance to mate)</source>
+        <translation>Gaviota-Tabellen (Abstand bis zum Matt)</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="101" />
+        <source>Gaviota tables (files *.gtb.cp4) give the number of moves to mate. Texel uses them, and mbChess shows the result of positions with up to 5 pieces below the board. Copy the tables into this folder; mbChess does not download them (3-4-5 pieces, about 6.5 GB).</source>
+        <translation>Gaviota-Tabellen (Dateien *.gtb.cp4) enthalten die Zahl der Züge bis zum Matt. Texel nutzt sie, und mbChess zeigt bei Stellungen mit bis zu 5 Steinen das Ergebnis unter dem Brett. Kopieren Sie die Tabellen in diesen Ordner; mbChess lädt sie nicht herunter (3-4-5 Steine, etwa 6,5 GB).</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="109" />
+        <source>C&amp;hoose...</source>
+        <translation>Wäh&amp;len...</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="110" />
+        <source>D&amp;efault</source>
+        <translation>Stan&amp;dard</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="113" />
+        <source>Folder of the Gaviota tables</source>
+        <translation>Ordner der Gaviota-Tabellen</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="130" />
+        <source>Download the Syzygy tables with 3, 4 and 5 pieces</source>
+        <translation>Syzygy-Tabellen mit 3, 4 und 5 Steinen herunterladen</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="132" />
         <source>Results only (WDL, about %1 MB) - enough for the engines' search</source>
         <translation>Nur Ergebnisse (WDL, etwa %1 MB) - genügt für die Suche der Engines</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="102" />
+        <location filename="../src/app/tablebasedialog.cpp" line="134" />
         <source>Results and distance to zeroing (WDL + DTZ, about %1 MB) - recommended</source>
         <translation>Ergebnisse und Abstand zum nächsten Bauernzug/Schlag (WDL + DTZ, etwa %1 MB) - empfohlen</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="110" />
+        <location filename="../src/app/tablebasedialog.cpp" line="142" />
         <source>If a file is missing there, the other servers are tried.</source>
         <translation>Fehlt dort eine Datei, werden die anderen Server versucht.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="111" />
+        <location filename="../src/app/tablebasedialog.cpp" line="143" />
         <source>Server:</source>
         <translation>Server:</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="113" />
+        <location filename="../src/app/tablebasedialog.cpp" line="145" />
         <source>Do&amp;wnload</source>
         <translation>&amp;Herunterladen</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="114" />
+        <location filename="../src/app/tablebasedialog.cpp" line="146" />
         <source>C&amp;ancel download</source>
         <translation>Download &amp;abbrechen</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="116" />
-        <location filename="../src/app/tablebasedialog.cpp" line="381" />
-        <location filename="../src/app/tablebasedialog.cpp" line="394" />
+        <location filename="../src/app/tablebasedialog.cpp" line="148" />
+        <location filename="../src/app/tablebasedialog.cpp" line="427" />
+        <location filename="../src/app/tablebasedialog.cpp" line="442" />
         <source>Download cancelled.</source>
         <translation>Download abgebrochen.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="128" />
+        <location filename="../src/app/tablebasedialog.cpp" line="160" />
         <source>Files that are already there are skipped, so a download can be continued later. The tables with 6 pieces (about 150 GB) are not offered.</source>
         <translation>Bereits vorhandene Dateien werden übersprungen, ein Download lässt sich also später fortsetzen. Die Datenbanken mit 6 Steinen (etwa 150 GB) werden nicht angeboten.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="157" />
+        <location filename="../src/app/tablebasedialog.cpp" line="191" />
         <source>Found: %1 of %2 WDL tables, %3 DTZ tables.</source>
         <translation>Gefunden: %1 von %2 WDL-Tabellen, %3 DTZ-Tabellen.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="159" />
+        <location filename="../src/app/tablebasedialog.cpp" line="193" />
+        <location filename="../src/app/tablebasedialog.cpp" line="205" />
         <source>Complete up to %1 pieces.</source>
         <translation>Vollständig bis %1 Steine.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="161" />
+        <location filename="../src/app/tablebasedialog.cpp" line="195" />
         <source>No tables yet: download them below.</source>
         <translation>Noch keine Tabellen: Unten herunterladen.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="167" />
+        <location filename="../src/app/tablebasedialog.cpp" line="203" />
+        <source>Found: %1 of %2 Gaviota tables.</source>
+        <translation>Gefunden: %1 von %2 Gaviota-Tabellen.</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebasedialog.cpp" line="211" />
         <source>Folder of the endgame tablebases</source>
         <translation>Ordner der Endspiel-Datenbanken</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="204" />
+        <location filename="../src/app/tablebasedialog.cpp" line="250" />
         <source>The folder "%1" cannot be written to. Use "%2" instead?</source>
         <translation>In den Ordner „%1“ kann nicht geschrieben werden. Stattdessen „%2“ verwenden?</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="236" />
+        <location filename="../src/app/tablebasedialog.cpp" line="282" />
         <source>All tables are already there.</source>
         <translation>Alle Tabellen sind bereits vorhanden.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/app/tablebasedialog.cpp" line="256" />
+        <location filename="../src/app/tablebasedialog.cpp" line="302" />
         <source>Download finished: %n file(s) loaded.</source>
         <translation>
             <numerusform>Download beendet: %n Datei geladen.</numerusform><numerusform>Download beendet: %n Dateien geladen.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="257" />
+        <location filename="../src/app/tablebasedialog.cpp" line="303" />
         <source>Download finished: %1 file(s) loaded, %2 could not be loaded. Try again later or with another server.</source>
         <translation>Download beendet: %1 Datei(en) geladen, %2 konnten nicht geladen werden. Bitte später oder mit einem anderen Server erneut versuchen.</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="283" />
-        <location filename="../src/app/tablebasedialog.cpp" line="344" />
+        <location filename="../src/app/tablebasedialog.cpp" line="329" />
+        <location filename="../src/app/tablebasedialog.cpp" line="390" />
         <source>"%1" cannot be written: %2</source>
         <translation>„%1“ kann nicht geschrieben werden: %2</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="298" />
+        <location filename="../src/app/tablebasedialog.cpp" line="344" />
         <source>%1 (file %2 of %3, %4 of about %5 MB) from %6</source>
         <translation>%1 (Datei %2 von %3, %4 von etwa %5 MB) von %6</translation>
     </message>
     <message>
-        <location filename="../src/app/tablebasedialog.cpp" line="378" />
-        <location filename="../src/app/tablebasedialog.cpp" line="391" />
+        <location filename="../src/app/tablebasedialog.cpp" line="424" />
+        <location filename="../src/app/tablebasedialog.cpp" line="439" />
         <source>Cancel the running download?</source>
         <translation>Den laufenden Download abbrechen?</translation>
     </message>
@@ -3133,22 +3191,22 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
 <context>
     <name>main</name>
     <message>
-        <location filename="../src/app/main.cpp" line="54" />
+        <location filename="../src/app/main.cpp" line="56" />
         <source>Settings and language</source>
         <translation>Einstellungen und Sprache</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="64" />
+        <location filename="../src/app/main.cpp" line="66" />
         <source>Looking for a DGT board ...</source>
         <translation>Suche ein DGT-Brett ...</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="71" />
+        <location filename="../src/app/main.cpp" line="73" />
         <source>Opening the game file</source>
         <translation>Öffne die Partiedatei</translation>
     </message>
     <message>
-        <location filename="../src/app/main.cpp" line="74" />
+        <location filename="../src/app/main.cpp" line="76" />
         <source>Ready</source>
         <translation>Bereit</translation>
     </message>
@@ -3179,12 +3237,12 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
 <context>
     <name>mbc::engine::UciEngine</name>
     <message>
-        <location filename="../src/libs/engine/uciengine.cpp" line="317" />
+        <location filename="../src/libs/engine/uciengine.cpp" line="320" />
         <source>The engine "%1" could not be started.</source>
         <translation>Die Engine „%1“ konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location filename="../src/libs/engine/uciengine.cpp" line="319" />
+        <location filename="../src/libs/engine/uciengine.cpp" line="322" />
         <source>The engine "%1" crashed.</source>
         <translation>Die Engine „%1“ ist abgestürzt.</translation>
     </message>
@@ -3197,6 +3255,36 @@ Die Einstellungen für das DGT-Brett öffnen?</translation>
         <location filename="../src/libs/engine/xboard.cpp" line="448" />
         <source>The engine played an illegal move: %1</source>
         <translation>Die Engine hat einen ungültigen Zug gespielt: %1</translation>
+    </message>
+</context>
+<context>
+    <name>tablebases</name>
+    <message>
+        <location filename="../src/app/tablebases.cpp" line="169" />
+        <source>Draw</source>
+        <translation>Remis</translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebases.cpp" line="171" />
+        <source>White has mated</source>
+        <translation>Weiß hat mattgesetzt</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/tablebases.cpp" line="172" />
+        <source>White mates in %n move(s)</source>
+        <translation>
+            <numerusform>Weiß setzt in %n Zug matt</numerusform><numerusform>Weiß setzt in %n Zügen matt</numerusform></translation>
+    </message>
+    <message>
+        <location filename="../src/app/tablebases.cpp" line="175" />
+        <source>Black has mated</source>
+        <translation>Schwarz hat mattgesetzt</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/app/tablebases.cpp" line="176" />
+        <source>Black mates in %n move(s)</source>
+        <translation>
+            <numerusform>Schwarz setzt in %n Zug matt</numerusform><numerusform>Schwarz setzt in %n Zügen matt</numerusform></translation>
     </message>
 </context>
 </TS>

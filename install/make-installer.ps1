@@ -163,6 +163,8 @@ $readme = @{
                      "Copy game collections (*.pgn) here. mbChess builds a book from them, like Crafty does.")
     "Syzygy"     = @("Endspiel-Datenbanken (Syzygy, *.rtbw/*.rtbz). mbChess lädt sie über Engines > Endspiel-Datenbanken herunter.",
                      "Endgame tablebases (Syzygy, *.rtbw/*.rtbz). mbChess downloads them with Engines > Endgame tablebases.")
+    "Gaviota"    = @("Endspiel-Datenbanken (Gaviota, *.gtb.cp4) hierher kopieren. Texel und mbChess selbst lesen sie.",
+                     "Copy endgame tablebases (Gaviota, *.gtb.cp4) here. Texel and mbChess itself read them.")
 }
 foreach ($folder in $readme.Keys) {
     New-Dir (Join-Path $AppData $folder)
@@ -179,6 +181,9 @@ $engineNames = @{
     "glaurung"  = @("Glaurung 2.2", "GPL-3.0-or-later")
     "gnuchess"  = @("GNU Chess", "GPL-3.0-or-later")
     "viridithas"= @("Viridithas", "AGPL-3.0")
+    "texel"     = @("Texel", "GPL-3.0-or-later")
+    "patricia"  = @("Patricia", "MIT")
+    "tarrasch"  = @("Tarrasch Toy Engine", "MIT")
 }
 $engines = @()
 $engineRoot = Join-Path $BinDir "engines"

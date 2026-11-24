@@ -40,6 +40,9 @@ struct GameSettings
     // The engine's own book (UCI options OwnBook / BookFile / BookPath), if it has one.
     bool engineOwnBook = true;
     QString engineBookFile;   // empty: the engine's default, PolyGlot engines get mbChess' book
+    // The engine thinks on the human's time (UCI "go ponder"), if it can. Only against a
+    // human and at full strength.
+    bool ponder = false;
 
     bool hasEngine() const { return mode != HumanVsHuman; }
     bool engineVsEngine() const { return mode == EngineVsEngine; }
@@ -93,6 +96,7 @@ private:
     QComboBox *m_time;
     QLabel *m_engineHint;
     QCheckBox *m_autoQueen;
+    QCheckBox *m_ponder;
     QCheckBox *m_fromPosition;
     QCheckBox *m_useBook;
     QComboBox *m_bookCombo;

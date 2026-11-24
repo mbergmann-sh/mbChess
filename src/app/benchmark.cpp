@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "benchmark.h"
 
+#include "enginemanager.h"
 #include "tablebases.h"
 
 #include <chesscore/notation.h>
@@ -268,7 +269,7 @@ void BenchmarkRunner::applyOptions(UciEngine *e, const EngineEntry &entry)
     set("Ponder", QStringLiteral("false"));
     set("MultiPV", QStringLiteral("1"));
     set("UCI_AnalyseMode", QStringLiteral("false"));
-    tablebases::applyToEngine(e, m_settings.tablebasePath);
+    tablebases::applyToEngine(e, m_settings.tablebasePath, m_settings.gaviotaPath);
 
     const int elo = m_settings.elo;
     if (e->hasOption(QStringLiteral("UCI_LimitStrength")) && e->hasOption(QStringLiteral("UCI_Elo"))) {
@@ -284,6 +285,8 @@ void BenchmarkRunner::applyOptions(UciEngine *e, const EngineEntry &entry)
         const int hi = o.max.isEmpty() ? 20 : o.max.toInt();
         const int skill = elo > 0 ? qBound(0, (elo - 1300) * hi / 1300, hi) : hi;
         e->setOption(QStringLiteral("Skill Level"), QString::number(skill));
+    } else if (e->hasOption(QStringLiteral("Skill_Level"))) { // Patricia
+        e->setOption(QStringLiteral("Skill_Level"), QString::number(enginemanager::patriciaSkillLevel(elo)));
     }
 }
 

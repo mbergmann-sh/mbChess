@@ -66,9 +66,9 @@ TablebaseDialog::TablebaseDialog(QWidget *parent)
 
     auto *layout = new QVBoxLayout(this);
     auto *intro = new QLabel(tr("Syzygy endgame tablebases contain the perfect result of every position with "
-                                "few pieces. Engines that can read them (Stockfish, Arasan, Viridithas, Crafty) "
-                                "then play such endgames without mistakes and see the result early in their "
-                                "search. The other engines play without them."), this);
+                                "few pieces. Engines that can read them (Stockfish, Arasan, Viridithas, Texel, "
+                                "Patricia, Crafty) then play such endgames without mistakes and see the result "
+                                "early in their search. The other engines play without them."), this);
     intro->setWordWrap(true);
     layout->addWidget(intro);
 
@@ -95,7 +95,39 @@ TablebaseDialog::TablebaseDialog(QWidget *parent)
     m_status->setWordWrap(true);
     layout->addWidget(m_status);
 
-    auto *box = new QGroupBox(tr("Download the tables with 3, 4 and 5 pieces"), this);
+    // Gaviota: distance to mate, read by Texel and by mbChess itself
+    auto *gtbBox = new QGroupBox(tr("Gaviota tables (distance to mate)"), this);
+    auto *gtbLayout = new QVBoxLayout(gtbBox);
+    auto *gtbIntro = new QLabel(tr("Gaviota tables (files *.gtb.cp4) give the number of moves to mate. Texel "
+                                   "uses them, and mbChess shows the result of positions with up to 5 pieces "
+                                   "below the board. Copy the tables into this folder; mbChess does not download "
+                                   "them (3-4-5 pieces, about 6.5 GB)."), gtbBox);
+    gtbIntro->setWordWrap(true);
+    gtbLayout->addWidget(gtbIntro);
+    auto *gtbRow = new QHBoxLayout;
+    m_gtbFolder = new QLineEdit(QDir::toNativeSeparators(tablebases::gaviotaFolder()), gtbBox);
+    auto *gtbBrowse = new QPushButton(tr("C&hoose..."), gtbBox);
+    auto *gtbDefault = new QPushButton(tr("D&efault"), gtbBox);
+    gtbDefault->setToolTip(QDir::toNativeSeparators(datafolders::gaviotaFolder()));
+    connect(gtbBrowse, &QPushButton::clicked, this, [this] {
+        const QString dir = QFileDialog::getExistingDirectory(this, tr("Folder of the Gaviota tables"),
+                                                              QDir::fromNativeSeparators(m_gtbFolder->text()));
+        if (!dir.isEmpty())
+            m_gtbFolder->setText(QDir::toNativeSeparators(dir));
+    });
+    connect(gtbDefault, &QPushButton::clicked, this,
+            [this] { m_gtbFolder->setText(QDir::toNativeSeparators(datafolders::gaviotaFolder())); });
+    connect(m_gtbFolder, &QLineEdit::textChanged, this, &TablebaseDialog::updateGaviotaStatus);
+    gtbRow->addWidget(new QLabel(tr("Folder:"), gtbBox));
+    gtbRow->addWidget(m_gtbFolder, 1);
+    gtbRow->addWidget(gtbBrowse);
+    gtbRow->addWidget(gtbDefault);
+    gtbLayout->addLayout(gtbRow);
+    m_gtbStatus = new QLabel(gtbBox);
+    m_gtbStatus->setWordWrap(true);
+    gtbLayout->addWidget(m_gtbStatus);
+
+    auto *box = new QGroupBox(tr("Download the Syzygy tables with 3, 4 and 5 pieces"), this);
     auto *form = new QFormLayout(box);
     m_wdlOnly = new QRadioButton(tr("Results only (WDL, about %1 MB) - enough for the engines' search")
                                      .arg(megabytes(tablebases::WdlBytes)), box);
@@ -130,6 +162,7 @@ TablebaseDialog::TablebaseDialog(QWidget *parent)
     note->setWordWrap(true);
     form->addRow(note);
     layout->addWidget(box);
+    layout->addWidget(gtbBox);
 
     auto *dialogButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(dialogButtons, &QDialogButtonBox::accepted, this, &QDialog::accept);
@@ -139,6 +172,7 @@ TablebaseDialog::TablebaseDialog(QWidget *parent)
 
     setDownloading(false);
     updateStatus();
+    updateGaviotaStatus();
     resize(620, sizeHint().height());
 }
 
@@ -162,6 +196,16 @@ void TablebaseDialog::updateStatus()
     m_status->setText(text);
 }
 
+void TablebaseDialog::updateGaviotaStatus()
+{
+    const QString path = QDir::fromNativeSeparators(m_gtbFolder->text().trimmed());
+    const tablebases::Status st = tablebases::gaviotaStatus(path);
+    QString text = tr("Found: %1 of %2 Gaviota tables.").arg(st.wdl).arg(st.expected);
+    if (st.completeUpTo >= 3)
+        text += QLatin1Char(' ') + tr("Complete up to %1 pieces.").arg(st.completeUpTo);
+    m_gtbStatus->setText(text);
+}
+
 void TablebaseDialog::browse()
 {
     const QString dir = QFileDialog::getExistingDirectory(this, tr("Folder of the endgame tablebases"),
@@ -176,6 +220,8 @@ void TablebaseDialog::setDownloading(bool on)
     m_downloadButton->setEnabled(!on);
     m_cancelButton->setEnabled(on);
     m_folder->setEnabled(!on);
+    if (m_gtbFolder)
+        m_gtbFolder->setEnabled(!on);
     m_wdlOnly->setEnabled(!on);
     m_withDtz->setEnabled(!on);
     m_source->setEnabled(!on);
@@ -382,6 +428,8 @@ void TablebaseDialog::accept()
     }
     tablebases::setEnabled(m_use->isChecked());
     tablebases::setFolder(QDir::fromNativeSeparators(m_folder->text().trimmed()));
+    tablebases::setGaviotaFolder(QDir::fromNativeSeparators(m_gtbFolder->text().trimmed()));
+    tablebases::openGaviotaForGui();
     QDialog::accept();
 }
 

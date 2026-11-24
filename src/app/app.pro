@@ -19,6 +19,7 @@ qtHaveModule(serialport) {
 mbchessLinkLib(pgn)
 mbchessLinkLib(book)
 mbchessLinkLib(engine)
+mbchessLinkLib(gaviota)
 mbchessLinkLib(chesscore)
 
 HEADERS += \

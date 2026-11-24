@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // mbChess - data folders next to the program (as in Fritz): "Openings" for opening books
 // (PolyGlot .bin), "Chessbooks" for game databases (PGN) the engine learns from and
-// "Syzygy" for endgame tablebases (.rtbw/.rtbz).
+// "Syzygy" and "Gaviota" for endgame tablebases (.rtbw/.rtbz, .gtb.cp4).
 #pragma once
 
 #include <QCoreApplication>
@@ -25,6 +25,11 @@ inline QString syzygyFolder()
     return QCoreApplication::applicationDirPath() + QStringLiteral("/Syzygy");
 }
 
+inline QString gaviotaFolder()
+{
+    return QCoreApplication::applicationDirPath() + QStringLiteral("/Gaviota");
+}
+
 // Creates the folders if they are missing (fails silently where the program folder
 // is read-only).
 inline void create()
@@ -32,6 +37,7 @@ inline void create()
     QDir().mkpath(openingsFolder());
     QDir().mkpath(chessbooksFolder());
     QDir().mkpath(syzygyFolder());
+    QDir().mkpath(gaviotaFolder());
 }
 
 } // namespace datafolders

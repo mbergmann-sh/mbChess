@@ -45,4 +45,8 @@ void setOptions(const QString &path, const QMap<QString, QString> &options);
 // therefore not offered in the options dialog.
 bool isManagedOption(const QString &name);
 
+// Patricia's "Skill_Level" (1..20 for 500..3000 Elo, 21 = full strength) for about this
+// Elo (0: full strength).
+int patriciaSkillLevel(int elo);
+
 } // namespace enginemanager

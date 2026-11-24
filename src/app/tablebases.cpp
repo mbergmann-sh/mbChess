@@ -4,6 +4,9 @@
 #include "datafolders.h"
 
 #include <engine/uciengine.h>
+#include <gaviota/gaviotatb.h>
+
+#include <QCoreApplication>
 
 #include <QDir>
 #include <QFileInfo>
@@ -43,6 +46,29 @@ QString activePath()
         return QString();
     const QString f = folder();
     return status(f).wdl > 0 ? QDir::toNativeSeparators(QFileInfo(f).absoluteFilePath()) : QString();
+}
+
+QString gaviotaFolder()
+{
+    const QString f = QSettings().value(QStringLiteral("tablebases/gaviotaFolder")).toString();
+    return f.isEmpty() ? datafolders::gaviotaFolder() : f;
+}
+
+void setGaviotaFolder(const QString &path)
+{
+    QSettings s;
+    if (QDir::cleanPath(path) == QDir::cleanPath(datafolders::gaviotaFolder()))
+        s.remove(QStringLiteral("tablebases/gaviotaFolder"));
+    else
+        s.setValue(QStringLiteral("tablebases/gaviotaFolder"), QDir::cleanPath(path));
+}
+
+QString gaviotaActivePath()
+{
+    if (!enabled())
+        return QString();
+    const QString f = gaviotaFolder();
+    return gaviotaStatus(f).wdl > 0 ? QDir::toNativeSeparators(QFileInfo(f).absoluteFilePath()) : QString();
 }
 
 QStringList tableNames(int maxPieces)
@@ -99,18 +125,79 @@ Status status(const QString &folderPath)
     return st;
 }
 
-bool isTablebaseOption(const QString &name)
+Status gaviotaStatus(const QString &folderPath)
 {
-    return name.compare(QLatin1String("SyzygyPath"), Qt::CaseInsensitive) == 0;
+    // Gaviota names the tables in lower case without the "v": KRPvKR -> krpkr.gtb.cp4
+    Status st;
+    const QDir dir(folderPath);
+    const QStringList names = tableNames(5);
+    st.expected = int(names.size());
+    if (folderPath.isEmpty() || !dir.exists())
+        return st;
+    bool complete[6] = { true, true, true, true, true, true };
+    for (const QString &n : names) {
+        const int pieces = int(n.size()) - 1;
+        QString file = n.toLower();
+        file.remove(QLatin1Char('v'));
+        const QFileInfo fi(dir.filePath(file + QStringLiteral(".gtb.cp4")));
+        if (fi.isFile() && fi.size() > 0)
+            ++st.wdl;
+        else
+            complete[pieces] = false;
+    }
+    for (int p = 3; p <= 5 && complete[p]; ++p)
+        st.completeUpTo = p;
+    return st;
 }
 
-void applyToEngine(mbc::engine::UciEngine *engine, const QString &path)
+void openGaviotaForGui()
 {
-    // Stockfish, Arasan and Viridithas use "SyzygyPath"; for Crafty the XBoard
-    // layer offers the same name and turns it into "tbpath" + "egtb".
+    const QString path = gaviotaActivePath();
+    if (path.isEmpty())
+        mbc::gaviota::close();
+    else
+        mbc::gaviota::open(QDir::fromNativeSeparators(path));
+}
+
+QString gaviotaText(const mbc::Position &pos)
+{
+    mbc::gaviota::Result r;
+    if (!mbc::gaviota::isOpen() || !mbc::gaviota::probe(pos, &r))
+        return QString();
+    switch (r.kind) {
+    case mbc::gaviota::Result::Draw:
+        return QCoreApplication::translate("tablebases", "Draw");
+    case mbc::gaviota::Result::WhiteMates:
+        return r.plies == 0 ? QCoreApplication::translate("tablebases", "White has mated")
+                            : QCoreApplication::translate("tablebases", "White mates in %n move(s)", nullptr,
+                                                          r.movesToMate());
+    case mbc::gaviota::Result::BlackMates:
+        return r.plies == 0 ? QCoreApplication::translate("tablebases", "Black has mated")
+                            : QCoreApplication::translate("tablebases", "Black mates in %n move(s)", nullptr,
+                                                          r.movesToMate());
+    }
+    return QString();
+}
+
+bool isTablebaseOption(const QString &name)
+{
+    return name.compare(QLatin1String("SyzygyPath"), Qt::CaseInsensitive) == 0
+        || name.compare(QLatin1String("GaviotaTbPath"), Qt::CaseInsensitive) == 0;
+}
+
+void applyToEngine(mbc::engine::UciEngine *engine, const QString &path, const QString &gaviotaPath)
+{
+    // Stockfish, Arasan, Viridithas, Texel and Patricia use "SyzygyPath"; for Crafty
+    // the XBoard layer offers the same name and turns it into "tbpath" + "egtb".
     // Without tables the engine keeps its default (no tables).
     if (!path.isEmpty() && engine->hasOption(QStringLiteral("SyzygyPath")))
         engine->setOption(QStringLiteral("SyzygyPath"), path);
+    // Texel: "GaviotaTbPath" (and a bigger cache than its 1 MB default)
+    if (!gaviotaPath.isEmpty() && engine->hasOption(QStringLiteral("GaviotaTbPath"))) {
+        engine->setOption(QStringLiteral("GaviotaTbPath"), gaviotaPath);
+        if (engine->hasOption(QStringLiteral("GaviotaTbCache")))
+            engine->setOption(QStringLiteral("GaviotaTbCache"), QStringLiteral("16"));
+    }
 }
 
 } // namespace tablebases

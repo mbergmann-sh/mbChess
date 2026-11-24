@@ -26,6 +26,7 @@ struct BenchmarkSettings
     int hashMb = 64;
     int elo = 0;                     // 0 = full strength, otherwise limited where the engine can
     QString tablebasePath;           // Syzygy folder for the engines that can use it, empty: none
+    QString gaviotaPath;             // Gaviota folder (Texel), empty: none
     bool followOnBoard = true;       // show the running game on the main board (not used by the runner)
     bool showResultsAtEnd = true;    // open the results window after a complete run (not used by the runner)
 };

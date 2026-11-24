@@ -307,7 +307,7 @@ void BenchmarkWindow::refresh()
                            .arg(set.threads)
                            .arg(set.hashMb)
                            .arg(strength)
-                           .arg(set.tablebasePath.isEmpty() ? QString() : tr(", endgame tablebases where supported")));
+                           .arg(set.tablebasePath.isEmpty() && set.gaviotaPath.isEmpty() ? QString() : tr(", endgame tablebases where supported")));
     m_saveButton->setEnabled(anyGame);
 }
 

@@ -124,12 +124,27 @@ bool isManagedOption(const QString &name)
 {
     static const QStringList managed = {
         QStringLiteral("Hash"), QStringLiteral("Threads"), QStringLiteral("Cores"),
-        QStringLiteral("UCI_LimitStrength"), QStringLiteral("UCI_Elo"), QStringLiteral("Skill Level"),
+        QStringLiteral("UCI_LimitStrength"), QStringLiteral("UCI_Elo"), QStringLiteral("Skill Level"), QStringLiteral("Skill_Level"),
         QStringLiteral("OwnBook"), QStringLiteral("BookFile"), QStringLiteral("Book File"), QStringLiteral("BookPath"),
         QStringLiteral("Ponder"), QStringLiteral("MultiPV"), QStringLiteral("UCI_AnalyseMode"),
         QStringLiteral("UCI_Chess960"), QStringLiteral("UCI_ShowWDL"), QStringLiteral("SyzygyPath"),
+        QStringLiteral("GaviotaTbPath"), QStringLiteral("GaviotaTbCache"),
     };
     return managed.contains(name, Qt::CaseInsensitive);
+}
+
+int patriciaSkillLevel(int elo)
+{
+    // the table in Patricia's uci.h
+    static const int levels[20] = { 500,  800,  1000, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
+                                    1900, 2000, 2100, 2200, 2300, 2400, 2500, 2650, 2800, 3000 };
+    if (elo <= 0)
+        return 21;
+    int best = 0;
+    for (int i = 1; i < 20; ++i)
+        if (qAbs(levels[i] - elo) < qAbs(levels[best] - elo))
+            best = i;
+    return best + 1;
 }
 
 } // namespace enginemanager

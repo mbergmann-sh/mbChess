@@ -101,6 +101,7 @@ GameSettings GameSettings::load()
     g.chessbookDepth = qBound(1, s.value(QStringLiteral("chessbook/depth"), 20).toInt(), 60);
     g.engineOwnBook = s.value(QStringLiteral("book/engineOwnBook"), true).toBool();
     g.engineBookFile = s.value(QStringLiteral("book/engineFile")).toString();
+    g.ponder = s.value(QStringLiteral("engine/ponder"), false).toBool();
     return g;
 }
 
@@ -126,6 +127,7 @@ void GameSettings::save() const
     s.setValue(QStringLiteral("chessbook/depth"), chessbookDepth);
     s.setValue(QStringLiteral("book/engineOwnBook"), engineOwnBook);
     s.setValue(QStringLiteral("book/engineFile"), engineBookFile);
+    s.setValue(QStringLiteral("engine/ponder"), ponder);
 }
 
 // ---------------------------------------------------------------------------
@@ -227,6 +229,13 @@ NewGameDialog::NewGameDialog(const GameSettings &settings, QWidget *parent)
     }
     form->addRow(tr("&Time control:"), m_time);
 
+    m_ponder = new QCheckBox(tr("Engine thinks on your time (&ponder), if it can"), this);
+    m_ponder->setChecked(settings.ponder);
+    m_ponder->setToolTip(tr("While you think, the engine already searches its answer to the move it expects "
+                            "from you. This makes it stronger. Only at full strength and only for engines "
+                            "that offer it (e.g. Stockfish, Texel, Arasan)."));
+    form->addRow(QString(), m_ponder);
+
     m_autoQueen = new QCheckBox(tr("Always promote to &queen"), this);
     m_autoQueen->setChecked(settings.autoQueen);
     form->addRow(QString(), m_autoQueen);
@@ -320,6 +329,7 @@ NewGameDialog::NewGameDialog(const GameSettings &settings, QWidget *parent)
 
     connect(m_mode, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &NewGameDialog::updateEnabled);
     connect(m_engine, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &NewGameDialog::updateEnabled);
+    connect(m_strength, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &NewGameDialog::updateEnabled);
     updateEnabled();
     setMinimumWidth(520);
 }
@@ -372,6 +382,8 @@ void NewGameDialog::updateEnabled()
     for (QWidget *w : std::initializer_list<QWidget *>{ m_engine, m_browse, m_strength, m_threads, m_hash,
                                                         m_engineHint, m_useBook, m_useChessbook, m_ownBook, m_chessbookHint })
         w->setEnabled(engine);
+    // pondering: against a human, at full strength
+    m_ponder->setEnabled(engine && !eve && m_strength->currentData().toInt() == 0);
     for (QWidget *w : std::initializer_list<QWidget *>{ m_bookCombo, m_bookDepth })
         w->setEnabled(engine && m_useBook->isChecked());
     for (QWidget *w : std::initializer_list<QWidget *>{ m_chessbookCombo, m_chessbookDepth })
@@ -484,6 +496,7 @@ GameSettings NewGameDialog::settings() const
     g.chessbookFile = m_chessbookCombo->currentData().toString();
     g.chessbookDepth = m_chessbookDepth->value();
     g.engineOwnBook = m_ownBook->isChecked();
+    g.ponder = m_ponder->isChecked();
     g.engineBookFile = QDir::fromNativeSeparators(m_engineBookFile->text().trimmed());
     return g;
 }
