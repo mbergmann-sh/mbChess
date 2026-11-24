@@ -18,6 +18,7 @@
 #include <QObject>
 
 #include <atomic>
+#include <functional>
 #include <memory>
 
 class ChessClock;
@@ -78,6 +79,12 @@ public:
     // Unsaved data: moves or comments not in a file since loading or saving.
     void markSaved();
     bool hasUnsavedChanges() const;
+
+    // Counts the games started (every startGame(), loadGame(), usePosition()): who started a
+    // game can tell whether it is still running.
+    int gameSerial() const { return m_gameSerial; }
+    // The moves of the built-in player GameSettings::BuiltinTrainer (menu Training).
+    void setTrainerMover(std::function<mbc::Move(const mbc::Position &)> mover) { m_trainerMover = std::move(mover); }
 
     // --- Starting and ending ---
     void startGame(const GameSettings &settings, const mbc::Position &start);
@@ -155,7 +162,9 @@ private:
     QString m_engineLine;
     mbc::Game::NodeId m_searchNode = -1;  // where the running engine search started
     mbc::Evaluation m_lastEval;           // last score of that search (White's view)
-    bool m_builtinThinking = false;       // a player built into mbChess "thinks" (timer)
+    bool m_builtinThinking = false;
+    int m_gameSerial = 0;
+    std::function<mbc::Move(const mbc::Position &)> m_trainerMover;       // a player built into mbChess "thinks" (timer)
     QStringList m_lastPv;                 // its last main line (ponder move if bestmove has none)
     mbc::Game::NodeId m_ponderNode = -1;  // pondering: the human moves from here ...
     QString m_ponderMove;                 // ... and the engine expects this move (UCI)

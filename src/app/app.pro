@@ -35,6 +35,8 @@ HEADERS += \
     gamelistwidget.h \
     gamemanager.h \
     opponents.h \
+    trainer.h \
+    trainingpanel.h \
     guitheme.h \
     soundplayer.h \
     tablebasedialog.h \
@@ -63,6 +65,8 @@ SOURCES += \
     gamelistwidget.cpp \
     gamemanager.cpp \
     opponents.cpp \
+    trainer.cpp \
+    trainingpanel.cpp \
     guitheme.cpp \
     soundplayer.cpp \
     tablebasedialog.cpp \

@@ -3,6 +3,9 @@
     <qresource prefix="/">
         <file>icons/mbchess.svg</file>
         <file>books/mbchess.bin</file>
+        <file>training/mate1.txt</file>
+        <file>training/mate2.txt</file>
+        <file>training/mate3.txt</file>
         <file>openings/a.tsv</file>
         <file>openings/b.tsv</file>
         <file>openings/c.tsv</file>

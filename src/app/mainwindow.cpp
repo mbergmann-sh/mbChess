@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "mainwindow.h"
 
+#include "trainer.h"
+#include "trainingpanel.h"
+
 #include "gamemanager.h"
 
 #include "benchmark.h"
@@ -124,6 +127,7 @@ MainWindow::MainWindow(LanguageManager *languages, QWidget *parent)
     startup::progress(65, tr("Texts and window layout"));
     retranslateUi();
     restoreWindowState();
+    m_trainingDock->hide(); // shown with a training task
 
 #ifdef MBCHESS_HAVE_DGT
     m_dgt = new dgt::Board(this);
@@ -272,6 +276,22 @@ void MainWindow::createUi()
     m_playMenu->addSeparator();
     m_engineVsEngineAction = m_playMenu->addAction(QString(), this, [this] { newGameDialog(true); });
 
+    // Training: puzzles and endgames on the main board, and the mate search
+    m_trainer = new Trainer(m_gm, m_languages, this);
+    m_trainingMenu = menuBar()->addMenu(QString());
+    m_mateMenu = m_trainingMenu->addMenu(QString());
+    connect(m_mateMenu, &QMenu::aboutToShow, this, &MainWindow::fillMateMenu);
+    m_endgameMenu = m_trainingMenu->addMenu(QString());
+    connect(m_endgameMenu, &QMenu::aboutToShow, this, [this] {
+        m_endgameMenu->clear();
+        for (int t = 0; t < Trainer::EndgameCount; ++t) {
+            if (t == Trainer::PawnWin)
+                m_endgameMenu->addSeparator();
+            m_endgameMenu->addAction(Trainer::endgameName(t), this, [this, t] { startEndgameTraining(t); });
+        }
+    });
+    m_trainingMenu->addSeparator();
+
     m_gameMenu = menuBar()->addMenu(QString());
     m_takeBackAction = m_gameMenu->addAction(QString(), m_gm, &GameManager::takeBack);
     m_takeBackAction->setShortcut(QKeySequence::Undo);
@@ -324,7 +344,8 @@ void MainWindow::createUi()
             });
         }
     }
-    m_mateSearchAction = m_engineMenu->addAction(QString(), this, &MainWindow::mateSearch);
+    // the mate search is in the menu Training (since 0.1.16)
+    m_mateSearchAction = m_trainingMenu->addAction(QString(), this, &MainWindow::mateSearch);
     m_mateSearchAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
     m_engineMenu->addSeparator();
     m_manageEnginesAction = m_engineMenu->addAction(QString(), this, &MainWindow::manageEngines);
@@ -547,6 +568,22 @@ void MainWindow::createUi()
     });
     m_gameListDock = makeDock("gameListDock", m_gameList);
 
+    m_trainingPanel = new TrainingPanel(m_trainer, this);
+    m_trainingDock = makeDock("trainingDock", m_trainingPanel);
+    connect(m_trainer, &Trainer::changed, m_trainingPanel, &TrainingPanel::refresh);
+    connect(m_trainer, &Trainer::finished, this, [this](bool solved) {
+        showStatus(m_trainer->message(), 8000);
+        if (!solved)
+            m_sound->announce(QStringLiteral("draw")); // nothing gained
+    });
+    connect(m_trainingPanel, &TrainingPanel::hintRequested, this,
+            [this] { m_trainingPanel->showHelp(m_trainer->hint()); });
+    connect(m_trainingPanel, &TrainingPanel::solutionRequested, this,
+            [this] { m_trainingPanel->showHelp(m_trainer->solution()); });
+    connect(m_trainingPanel, &TrainingPanel::againRequested, this, &MainWindow::trainingAgain);
+    connect(m_trainingPanel, &TrainingPanel::nextRequested, this, &MainWindow::trainingNext);
+    connect(m_trainingPanel, &TrainingPanel::stopRequested, this, &MainWindow::trainingStop);
+
     // Default layout: clock, engine and notation right of the board; below board and
     // right column a strip across the whole width (evaluation graph, later more).
     // The separators between them are splitters: dragging the vertical one scales the board.
@@ -561,6 +598,9 @@ void MainWindow::createUi()
     // with several games is opened.
     tabifyDockWidget(m_graphDock, m_gameListDock);
     m_gameListDock->hide();
+    // The training panel shares the place of the engine panel; shown with a task.
+    tabifyDockWidget(m_engineDock, m_trainingDock);
+    m_trainingDock->hide();
     resizeDocks({ m_notationDock }, { 420 }, Qt::Horizontal);
     setStyleSheet(QStringLiteral(
         "QMainWindow::separator { background: palette(mid); width: 5px; height: 5px; }"
@@ -570,7 +610,7 @@ void MainWindow::createUi()
     m_saveStateTimer->setSingleShot(true);
     m_saveStateTimer->setInterval(1000);
     connect(m_saveStateTimer, &QTimer::timeout, this, &MainWindow::saveWindowState);
-    for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock }) {
+    for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock, m_trainingDock }) {
         connect(dock, &QDockWidget::dockLocationChanged, m_saveStateTimer, qOverload<>(&QTimer::start));
         connect(dock, &QDockWidget::visibilityChanged, m_saveStateTimer, qOverload<>(&QTimer::start));
         connect(dock, &QDockWidget::topLevelChanged, m_saveStateTimer, qOverload<>(&QTimer::start));
@@ -578,7 +618,7 @@ void MainWindow::createUi()
     createToolBar();
 
     m_viewMenu->addAction(m_toolBar->toggleViewAction());
-    for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock })
+    for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock, m_trainingDock })
         m_viewMenu->addAction(dock->toggleViewAction());
     m_viewMenu->addSeparator();
     m_guiThemeMenu = m_viewMenu->addMenu(QString());
@@ -598,7 +638,7 @@ void MainWindow::createUi()
         });
     }
     m_resetLayoutAction = m_viewMenu->addAction(QString(), this, [this] {
-        for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock })
+        for (QDockWidget *dock : { m_clockDock, m_engineDock, m_notationDock, m_graphDock, m_gameListDock, m_trainingDock })
             dock->setFloating(false);
         restoreState(m_defaultLayout, kLayoutVersion);
         m_toolBar->show();
@@ -734,6 +774,12 @@ void MainWindow::retranslateUi()
     m_benchmarkCancelButton->setToolTip(tr("Cancel the benchmark"));
     updateBenchmarkActions();
     m_gameMenu->setTitle(tr("&Game"));
+    m_trainingMenu->setTitle(tr("&Training"));
+    m_mateMenu->setTitle(tr("Find the &mate"));
+    m_endgameMenu->setTitle(tr("&Endgames"));
+    m_trainingDock->setWindowTitle(tr("Training"));
+    m_trainingPanel->retranslate();
+    fillMateMenu();
     m_engineMenu->setTitle(tr("&Engines"));
     m_manageEnginesAction->setText(tr("Manage e&ngines..."));
     m_tablebaseAction->setText(tr("&Endgame tablebases..."));
@@ -921,6 +967,10 @@ void MainWindow::onEngineError(const QString &message)
 void MainWindow::onBoardMove(Move move)
 {
     if (!m_gm->humanMayMove()) {
+        updateView();
+        return;
+    }
+    if (!m_trainer->userMove(move)) { // not the solution of the puzzle: the piece goes back
         updateView();
         return;
     }
@@ -1394,6 +1444,103 @@ void MainWindow::mateSearch()
 }
 
 // ---------------------------------------------------------------------------
+// Training
+
+void MainWindow::fillMateMenu()
+{
+    m_mateMenu->clear();
+    for (int n = 1; n <= 3; ++n)
+        m_mateMenu->addAction(Trainer::mateMenuText(n), this, [this, n] { startMateTraining(n); });
+    m_mateMenu->addSeparator();
+    m_mateMenu->addAction(tr("&Reset progress..."), this, [this] {
+        if (QMessageBox::question(this, tr("Find the mate"),
+                                  tr("Mark all puzzles as unsolved and start again with the easiest ones?"))
+            == QMessageBox::Yes)
+            Trainer::resetMateProgress();
+    });
+}
+
+bool MainWindow::startTraining(const GameSettings &settings, const Position &start, const QString &error, bool ok)
+{
+    if (!ok) {
+        QMessageBox::warning(this, tr("Training"), error);
+        return false;
+    }
+    if (m_analysisAction->isChecked())
+        m_analysisAction->setChecked(false); // no help from an engine
+    startGame(settings, start);
+    m_trainer->started();
+    m_trainingPanel->showHelp(QString());
+    showTrainingPanel();
+    return true;
+}
+
+void MainWindow::showTrainingPanel()
+{
+    m_trainingDock->show();
+    m_trainingDock->raise();
+}
+
+void MainWindow::startMateTraining(int moves)
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    const bool ok = m_trainer->prepareMate(moves, &s, &start, &error);
+    startTraining(s, start, error, ok);
+}
+
+void MainWindow::startEndgameTraining(int type)
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    QApplication::setOverrideCursor(Qt::WaitCursor); // the KPK table is computed on first use
+    const bool ok = m_trainer->prepareEndgame(type, &s, &start, &error);
+    QApplication::restoreOverrideCursor();
+    startTraining(s, start, error, ok);
+}
+
+void MainWindow::trainingAgain()
+{
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    const bool ok = m_trainer->prepareAgain(&s, &start, &error);
+    startTraining(s, start, error, ok);
+}
+
+void MainWindow::trainingNext()
+{
+    if (m_trainer->kind() == Trainer::Kind::Mate)
+        startMateTraining(m_trainer->mateMoves());
+    else if (m_trainer->kind() == Trainer::Kind::Endgame)
+        startEndgameTraining(m_trainer->endgame());
+}
+
+void MainWindow::trainingStop()
+{
+    if (m_trainer->isRunning())
+        toAnalysisBoard();
+    m_trainer->stop();
+    m_trainingDock->hide();
+}
+
+// ---------------------------------------------------------------------------
 // DGT e-board
 
 #ifdef MBCHESS_HAVE_DGT
@@ -1801,6 +1948,10 @@ void MainWindow::enterMove()
         m = parseUci(m_game.position(), text);
     if (m.isNull()) {
         showStatus(tr("\"%1\" is not a legal move here.").arg(m_input->text()), 4000);
+        return;
+    }
+    if (!m_trainer->userMove(m)) {
+        updateView();
         return;
     }
     m_input->clear();

@@ -163,6 +163,7 @@ bool GameManager::hasUnsavedChanges() const
 
 void GameManager::startGame(const GameSettings &settings, const Position &start)
 {
+    ++m_gameSerial;
     m_waitingForGame = false;
     m_positionSetUp = false;
     m_engine->stop(true);
@@ -566,7 +567,7 @@ engine::GoParameters GameManager::goParameters(Color side) const
         p.blackTime = m_clock->remaining(Black);
         p.whiteIncrement = p.blackIncrement = m_clock->timeControl().incrementMs;
     } else {
-        p.moveTime = m_settings.strengthElo > 0 ? 1500 : 3000;
+        p.moveTime = m_settings.moveTimeMs > 0 ? m_settings.moveTimeMs : m_settings.strengthElo > 0 ? 1500 : 3000;
     }
     return p;
 }
@@ -638,7 +639,9 @@ void GameManager::startBuiltinMove()
         m_searchNode = -1;
         if (!m_game.children(from).isEmpty())
             return;
-        const Move m = opponents::builtinMove(m_game.nodePosition(from), m_settings.builtinPlayer);
+        const Move m = m_settings.builtinPlayer == GameSettings::BuiltinTrainer
+            ? (m_trainerMover ? m_trainerMover(m_game.nodePosition(from)) : Move())
+            : opponents::builtinMove(m_game.nodePosition(from), m_settings.builtinPlayer);
         if (m.isNull())
             return;
         if (m_game.currentNode() != from)

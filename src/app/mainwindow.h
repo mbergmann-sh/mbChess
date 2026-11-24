@@ -46,6 +46,8 @@ class GameManager;
 class BenchmarkRunner;
 class BenchmarkWindow;
 class EngineAnalysis;
+class Trainer;
+class TrainingPanel;
 struct BenchmarkGame;
 
 class MainWindow : public QMainWindow
@@ -132,6 +134,16 @@ private:
     void setFenDialog();
     void setupPosition();    // board editor
     void mateSearch();
+
+    // Menu Training
+    void startMateTraining(int moves);
+    void startEndgameTraining(int type);
+    bool startTraining(const GameSettings &settings, const mbc::Position &start, const QString &error, bool ok);
+    void trainingAgain();
+    void trainingNext();
+    void trainingStop();
+    void showTrainingPanel();
+    void fillMateMenu();
     // Asks before a running game ends or unsaved moves/comments are lost (offers to save);
     // true if nothing is at stake or the user agrees. discards = false: the game stays (only
     // the playing ends), so unsaved moves do not matter.
@@ -252,6 +264,12 @@ private:
     GameListWidget *m_gameList = nullptr;
     QAction *m_prevGameAction = nullptr;
     QMenu *m_engineMenu = nullptr;
+    QMenu *m_trainingMenu = nullptr;
+    QMenu *m_mateMenu = nullptr;
+    QMenu *m_endgameMenu = nullptr;
+    Trainer *m_trainer = nullptr;
+    TrainingPanel *m_trainingPanel = nullptr;
+    QDockWidget *m_trainingDock = nullptr;
     QAction *m_manageEnginesAction = nullptr;
     QAction *m_tablebaseAction = nullptr;
     QAction *m_analysisAction = nullptr;

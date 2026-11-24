@@ -49,6 +49,28 @@ die beim Programmieren gelten.
 - Farbwahl: Weiß, Schwarz oder Zufall im Dialog „Neue Partie“. Im späteren Turniermodus werden
   die Farben nach den offiziellen Regeln (FIDE-Paarungsregeln) vergeben.
 
+## Training
+
+Menü „Training“ (`src/app/trainer.*`, Panel `trainingpanel.*` als Dock neben „Engine“): Aufgaben
+laufen als normale Partie auf dem Hauptbrett. `Trainer::prepareMate()`/`prepareEndgame()` liefern
+`GameSettings` und Startstellung, `MainWindow::startTraining()` startet sie, `Trainer::started()`
+merkt sich `GameManager::gameSerial()`: solange die Nummer gleich ist, gehört die Partie zur Aufgabe.
+
+- **Matt finden**: Aufgaben in `resources/training/mate<N>.txt` (`id;FEN;Gegnerzug;Lösung;Wertung`,
+  Lichess-Format: FEN vor dem Gegnerzug), dazu `Training/mate<N>*.txt` und Lichess-CSV-Dateien
+  (Thema `mateIn<N>`) neben dem Programm. Der Verteidiger ist `GameSettings::BuiltinTrainer`: der
+  `GameManager` fragt `Trainer::defenderMove()`, der mit `mbc::MateSolver` (chesscore, vollbreite
+  Suche mit Transpositionstabelle, Matt in 3 unter 0,1 s) die zäheste Verteidigung wählt. Jeder
+  Zug des Benutzers geht vorher durch `Trainer::userMove()`; ein Zug, nach dem kein Matt in der
+  Restzahl mehr erzwungen ist, wird abgewiesen. Fortschritt in `training/mate<N>/solved` (IDs,
+  nur ohne Fehler und ohne Lösung gelöste).
+- **Endspiele**: Zufallsstellungen (`Trainer::generate()`), gegen eine Engine (Texel bevorzugt,
+  1 s je Zug). Prüfung nach jedem Benutzerzug: Gaviota (falls geladen) bzw. `mbc::kpk`
+  (chesscore, KPK-Tabelle per Rückwärtsanalyse, 0,5 MB, beim ersten Gebrauch berechnet).
+
+`tools/puzzletool` (nicht im normalen Build) prüft Aufgabendateien mit dem Matt-Löser;
+`tools/make-mate-puzzles.py` wählt aus der Lichess-Datenbank aus.
+
 ## Engines
 
 Mitgeliefert und aus dem Quelltext gebaut (`engines/`, siehe [engines/README.md](../engines/README.md)):

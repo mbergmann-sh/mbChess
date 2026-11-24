@@ -15,10 +15,14 @@ HEADERS += \
     attacks.h \
     position.h \
     notation.h \
-    game.h
+    game.h \
+    matesolver.h \
+    kpk.h
 
 SOURCES += \
     attacks.cpp \
     position.cpp \
     notation.cpp \
-    game.cpp
+    game.cpp \
+    matesolver.cpp \
+    kpk.cpp

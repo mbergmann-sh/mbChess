@@ -55,7 +55,13 @@ Freies Schachprogramm (GPL-3.0-or-later) in C++/Qt für Windows, Linux, macOS un
 > Rochaderechte, En passant, Zugnummer, FEN-Zeile, Laden/Speichern als .fen, laufende Prüfung
 > der Stellung. Die übernommene Stellung steht als Analysebrett im Hauptfenster; „Neue Partie“
 > bietet dann „Von der Stellung auf dem Brett aus spielen“.
-> Menü „Engines → Matt suchen“ (Strg+M, Werkzeugleiste): für jede Stellung auf dem Brett; Matt in
+> Menü „Training“: „Matt finden“ (Matt in 1, 2, 3; über 2.100 Aufgaben aus der freien
+> Lichess-Datenbank (CC0) und eigene, nach Schwierigkeit geordnet; mbChess verteidigt selbst mit
+> seinem exakten Matt-Löser, falsche Züge werden abgewiesen; Tipp, Lösung, Fortschritt; weitere
+> Aufgaben im Ordner `Training` neben dem Programm, auch Lichess-CSV-Dateien) und „Endspiele“
+> (KDK, KTK, KLLK, KLSK gegen eine Engine mit Zuglimit, geprüft mit den Gaviota-Tabellen, falls
+> vorhanden; König und Bauer gewinnen bzw. remis halten, geprüft mit der eingebauten KPK-Tabelle).
+> Menü „Training → Mattsuche“ (Strg+M, Werkzeugleiste): für jede Stellung auf dem Brett; Matt in
 > höchstens N Zügen, Engine wählbar (Vorgabe Stockfish, der `go mate N` bekommt), Zeitlimit,
 > wahlweise Nebenlösungen (MultiPV). Die Lösung lässt sich als Variante einfügen. Läuft eine
 > Partie, fragen Brett-Editor, Mattsuche und „Stellung aus FEN“ vorher nach.

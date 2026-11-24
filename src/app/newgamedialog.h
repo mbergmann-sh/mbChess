@@ -46,11 +46,14 @@ struct GameSettings
     bool ponder = false;
     // Set by the quick start of the menu "Play" (not stored): the opponent's name and
     // approximate Elo, extra UCI options, or a player built into mbChess (no engine).
-    enum Builtin { NoBuiltin = 0, BuiltinRandom, BuiltinCapturer };
+    // BuiltinTrainer: the defender of a training task (menu Training), see Trainer.
+    enum Builtin { NoBuiltin = 0, BuiltinRandom, BuiltinCapturer, BuiltinTrainer };
     QString opponentName;
     int opponentElo = 0;
     int builtinPlayer = NoBuiltin;
     QMap<QString, QString> engineOptions;
+    // Without a clock: the engine's time per move in ms (0: 1.5 s when held down, else 3 s).
+    int moveTimeMs = 0;
 
     bool hasEngine() const { return mode != HumanVsHuman; }
     bool engineVsEngine() const { return mode == EngineVsEngine; }

@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Tests for chesscore: perft (move generator), FEN, SAN, UCI, game status.
 
+#include <chesscore/kpk.h>
+#include <chesscore/matesolver.h>
 #include <chesscore/notation.h>
 #include <chesscore/position.h>
 
@@ -346,6 +348,75 @@ private slots:
         p.setSideToMove(Black);
         QVERIFY(p.isValid());
         QVERIFY(p.inCheck());
+    }
+
+    // --- mate solver (training "Find the mate") ---
+    void mateSolver_data()
+    {
+        QTest::addColumn<QString>("fen");
+        QTest::addColumn<int>("distance");
+        QTest::addColumn<QString>("key");
+        QTest::newRow("back rank") << "6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1" << 1 << "d1d8";
+        QTest::newRow("Philidor") << "r6k/6pp/7N/8/8/1Q6/8/6K1 w - - 0 1" << 2 << "b3g8";
+        QTest::newRow("Boden") << "2kr4/pp1n4/2n5/8/5B2/5Q2/5PPP/5BK1 w - - 0 1" << 2 << "f3c6";
+        QTest::newRow("smothered in 3") << "5rk1/5Npp/8/8/8/1Q6/6PP/6K1 w - - 0 1" << 3 << "f7h6";
+        QTest::newRow("Black, king hunt") << "r1b1kb1r/pppp1ppp/5q2/4n3/3KP3/2N3PN/PPP4P/R1BQ1B1R b kq - 0 1" << 3
+                                          << "f8c5";
+        QTest::newRow("no mate") << "4k3/8/8/8/8/8/8/4K2R w K - 0 1" << 0 << "";
+    }
+    void mateSolver()
+    {
+        QFETCH(QString, fen);
+        QFETCH(int, distance);
+        QFETCH(QString, key);
+        Position pos;
+        QVERIFY(pos.setFromFen(fen));
+        MateSolver solver;
+        QCOMPARE(solver.mateDistance(pos, 3), distance);
+        if (distance == 0)
+            return;
+        const MoveList keys = solver.keyMoves(pos, distance);
+        QCOMPARE(int(keys.size()), 1);
+        QCOMPARE(toUci(keys.front()), key);
+        // after the key the defender is mated in distance-1, but not sooner
+        const Position next = pos.after(keys.front());
+        QVERIFY(solver.isMatedWithin(next, distance - 1));
+        if (distance > 1)
+            QVERIFY(!solver.isMatedWithin(next, distance - 2));
+        int left = 0;
+        const Move defence = solver.bestDefence(next, distance - 1, &left);
+        if (distance > 1) {
+            QVERIFY(!defence.isNull());
+            QCOMPARE(left, distance - 1);
+        }
+    }
+
+    // --- KPK table (training "Endgames") ---
+    void kpk_data()
+    {
+        QTest::addColumn<QString>("fen");
+        QTest::addColumn<int>("result");
+        const int draw = int(kpk::Result::Draw);
+        const int win = int(kpk::Result::Win);
+        QTest::newRow("king in front, 6th rank") << "4k3/8/4K3/4P3/8/8/8/8 w - - 0 1" << win;
+        QTest::newRow("king in front, 6th rank, Black") << "4k3/8/4K3/4P3/8/8/8/8 b - - 0 1" << win;
+        QTest::newRow("opposition, Black to move") << "4k3/8/4K3/8/4P3/8/8/8 b - - 0 1" << win;
+        QTest::newRow("defender in front") << "8/8/8/4k3/8/8/4P3/4K3 w - - 0 1" << draw;
+        QTest::newRow("rook pawn") << "7k/8/7K/7P/8/8/8/8 w - - 0 1" << draw;
+        QTest::newRow("pawn runs") << "8/8/8/8/P7/8/8/k3K3 w - - 0 1" << win;
+        QTest::newRow("pawn taken") << "8/8/8/8/8/8/Pk6/4K3 b - - 0 1" << draw;
+        QTest::newRow("black pawn, mirrored") << "8/8/8/8/4p3/4k3/8/4K3 w - - 0 1" << win;
+        QTest::newRow("black pawn, 6th rank, Black") << "8/8/8/8/4p3/4k3/8/4K3 b - - 0 1" << win;
+        QTest::newRow("black pawn, stalemate") << "8/8/8/8/8/4k3/4p3/4K3 w - - 0 1" << draw;
+        QTest::newRow("not KPK") << "4k3/8/8/8/8/8/8/R3K3 w - - 0 1" << int(kpk::Result::Unknown);
+    }
+    void kpk()
+    {
+        QFETCH(QString, fen);
+        QFETCH(int, result);
+        Position pos;
+        QVERIFY(pos.setFromFen(fen));
+        QCOMPARE(int(kpk::probe(pos)), result);
     }
 };
 
