@@ -109,7 +109,10 @@ private:
     void benchmarkGameFinished(const BenchmarkGame &game);
 
     // Game flow
-    void newGameDialog();
+    void newGameDialog(bool engineVsEngine = false);
+    // Menu Play: the opponents' submenus, filled when they open (engines may have changed)
+    void fillOpponentMenu(QMenu *menu, int group);
+    void startOpponent(int group, int index);
     void startGame(const GameSettings &settings, const mbc::Position &start);
     void onBoardMove(mbc::Move move);
     void onEngineError(const QString &message);
@@ -188,6 +191,11 @@ private:
     StatusField *m_openingLabel = nullptr;    // in the status bar
 
     QMenu *m_fileMenu = nullptr;
+    QMenu *m_playMenu = nullptr;
+    QMenu *m_beginnerMenu = nullptr;
+    QMenu *m_computerMenu = nullptr;
+    QMenu *m_characterMenu = nullptr;
+    QAction *m_engineVsEngineAction = nullptr;
     QMenu *m_gameMenu = nullptr;
     QMenu *m_boardMenu = nullptr;
     QMenu *m_viewMenu = nullptr;

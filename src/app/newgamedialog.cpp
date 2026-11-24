@@ -370,6 +370,11 @@ void NewGameDialog::fillFileCombo(QComboBox *combo, const QString &folder, const
     });
 }
 
+void NewGameDialog::setEngineVsEngine()
+{
+    m_mode->setCurrentIndex(2);
+}
+
 void NewGameDialog::updateEnabled()
 {
     const bool eve = m_mode->currentIndex() == 2;

@@ -34,6 +34,7 @@ HEADERS += \
     evalgraphwidget.h \
     gamelistwidget.h \
     gamemanager.h \
+    opponents.h \
     guitheme.h \
     soundplayer.h \
     tablebasedialog.h \
@@ -61,6 +62,7 @@ SOURCES += \
     evalgraphwidget.cpp \
     gamelistwidget.cpp \
     gamemanager.cpp \
+    opponents.cpp \
     guitheme.cpp \
     soundplayer.cpp \
     tablebasedialog.cpp \

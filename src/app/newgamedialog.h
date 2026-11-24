@@ -5,6 +5,7 @@
 #include "chessclock.h"
 
 #include <QDialog>
+#include <QMap>
 
 class QCheckBox;
 class QComboBox;
@@ -43,6 +44,13 @@ struct GameSettings
     // The engine thinks on the human's time (UCI "go ponder"), if it can. Only against a
     // human and at full strength.
     bool ponder = false;
+    // Set by the quick start of the menu "Play" (not stored): the opponent's name and
+    // approximate Elo, extra UCI options, or a player built into mbChess (no engine).
+    enum Builtin { NoBuiltin = 0, BuiltinRandom, BuiltinCapturer };
+    QString opponentName;
+    int opponentElo = 0;
+    int builtinPlayer = NoBuiltin;
+    QMap<QString, QString> engineOptions;
 
     bool hasEngine() const { return mode != HumanVsHuman; }
     bool engineVsEngine() const { return mode == EngineVsEngine; }
@@ -65,6 +73,8 @@ public:
     // Offers "play from the position on the board" (only shown after this call).
     void offerBoardPosition(bool checked);
     bool fromBoardPosition() const;
+    // Preselects "engine against engine" (menu Play).
+    void setEngineVsEngine();
 
     struct Level { int elo; const char *name; };
     static const Level kLevels[];

@@ -128,6 +128,7 @@ private:
     void onEngineInfo(mbc::engine::UciEngine *engine, const mbc::engine::SearchInfo &info);
     void onFlagFell(mbc::Color side);
     void startEngineSearch();
+    void startBuiltinMove();
     bool playBookMove();
     void afterMove();
     void checkGameEnd();
@@ -154,6 +155,7 @@ private:
     QString m_engineLine;
     mbc::Game::NodeId m_searchNode = -1;  // where the running engine search started
     mbc::Evaluation m_lastEval;           // last score of that search (White's view)
+    bool m_builtinThinking = false;       // a player built into mbChess "thinks" (timer)
     QStringList m_lastPv;                 // its last main line (ponder move if bestmove has none)
     mbc::Game::NodeId m_ponderNode = -1;  // pondering: the human moves from here ...
     QString m_ponderMove;                 // ... and the engine expects this move (UCI)

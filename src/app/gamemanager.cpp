@@ -5,6 +5,7 @@
 #include "datafolders.h"
 #include "enginemanager.h"
 #include "languagemanager.h"
+#include "opponents.h"
 #include "tablebases.h"
 
 #include <book/bookbuilder.h>
@@ -68,6 +69,8 @@ QString GameManager::engineDisplayName(const UciEngine *engine) const
 bool GameManager::anyEngineThinking() const
 {
     // pondering is thinking on the human's time, not a search for a move
+    if (m_builtinThinking && m_searchNode >= 0)
+        return true;
     for (const UciEngine *e : { m_engine, m_engine2 })
         if (e->state() == UciEngine::State::Thinking && !e->isPondering())
             return true;
@@ -182,6 +185,17 @@ void GameManager::startGame(const GameSettings &settings, const Position &start)
     loadBook();
     loadChessbook();
 
+    m_builtinThinking = false;
+    if (settings.hasEngine() && settings.builtinPlayer != GameSettings::NoBuiltin) {
+        // played by mbChess itself (menu Play > Beginners): no engine
+        m_engine->quit();
+        m_engine2->quit();
+        updatePlayerNames();
+        emit changed();
+        if (isEngineTurn())
+            startEngineSearch();
+        return;
+    }
     if (settings.hasEngine()) {
         prepareEngine(m_engine, settings.enginePath, &m_engineBookSetup, &m_engineDisplayName);
         if (settings.engineVsEngine())
@@ -204,6 +218,9 @@ void GameManager::loadGame(const Game &game)
 {
     GameSettings hvh = m_settings;
     hvh.mode = GameSettings::HumanVsHuman;
+    hvh.builtinPlayer = GameSettings::NoBuiltin;
+    hvh.opponentName.clear();
+    hvh.engineOptions.clear();
     hvh.timeControl = TimeControl();
     startGame(hvh, game.startPosition());
     m_game = game;
@@ -219,6 +236,9 @@ void GameManager::usePosition(const Position &pos)
 {
     GameSettings hvh = m_settings;
     hvh.mode = GameSettings::HumanVsHuman;
+    hvh.builtinPlayer = GameSettings::NoBuiltin;
+    hvh.opponentName.clear();
+    hvh.engineOptions.clear();
     hvh.timeControl = TimeControl();
     startGame(hvh, pos);
     m_positionSetUp = true;
@@ -251,6 +271,15 @@ void GameManager::endGame(Result result, const QString &reason)
 void GameManager::updatePlayerNames()
 {
     const QString player = m_settings.playerName.isEmpty() ? tr("Player") : m_settings.playerName;
+    // An opponent of the menu Play: its name on the clock, with the engine in the PGN
+    QString opponent = engineDisplayName(m_engine);
+    QString opponentTag = opponent;
+    if (!m_settings.opponentName.isEmpty()) {
+        opponent = m_settings.opponentName;
+        opponentTag = m_settings.builtinPlayer != GameSettings::NoBuiltin
+            ? QStringLiteral("%1 (mbChess)").arg(opponent)
+            : QStringLiteral("%1 (%2)").arg(opponent, engineDisplayName(m_engine));
+    }
     QString white, black;
     switch (m_settings.mode) {
     case GameSettings::HumanVsHuman:
@@ -263,10 +292,10 @@ void GameManager::updatePlayerNames()
         break;
     case GameSettings::HumanWhiteVsEngine:
         white = player;
-        black = engineDisplayName(m_engine);
+        black = opponent;
         break;
     case GameSettings::HumanBlackVsEngine:
-        white = engineDisplayName(m_engine);
+        white = opponent;
         black = player;
         break;
     case GameSettings::EngineVsEngine:
@@ -275,8 +304,8 @@ void GameManager::updatePlayerNames()
         break;
     }
     if (m_settings.hasEngine()) {
-        m_game.setTag(QStringLiteral("White"), white);
-        m_game.setTag(QStringLiteral("Black"), black);
+        m_game.setTag(QStringLiteral("White"), m_settings.mode == GameSettings::HumanBlackVsEngine ? opponentTag : white);
+        m_game.setTag(QStringLiteral("Black"), m_settings.mode == GameSettings::HumanWhiteVsEngine ? opponentTag : black);
     }
     emit playerNamesChanged(white, black);
 }
@@ -437,6 +466,8 @@ void GameManager::prepareEngine(UciEngine *e, const QString &path, QString *book
     const EngineEntry entry = enginemanager::entry(path);
     for (auto it = entry.options.cbegin(); it != entry.options.cend(); ++it)
         bookSetup += QLatin1Char('|') + it.key() + QLatin1Char('=') + it.value();
+    for (auto it = m_settings.engineOptions.cbegin(); it != m_settings.engineOptions.cend(); ++it)
+        bookSetup += QStringLiteral("|play:") + it.key() + QLatin1Char('=') + it.value(); // restart for other options
     bookSetup += QStringLiteral("|tb=") + tablebases::activePath() + QStringLiteral("|gtb=") + tablebases::gaviotaActivePath();
     *displayName = entry.name != entry.defaultName ? entry.name : QString();
     const bool sameEngine = e->program() == path && e->state() != UciEngine::State::NotRunning
@@ -507,6 +538,10 @@ void GameManager::onEngineReady(UciEngine *engine)
     } else if (engine->hasOption(QStringLiteral("Skill_Level"))) { // Patricia
         engine->setOption(QStringLiteral("Skill_Level"), QString::number(enginemanager::patriciaSkillLevel(elo)));
     }
+    // extra options of an opponent of the menu Play (e.g. Texel "Materialistic")
+    for (auto it = m_settings.engineOptions.cbegin(); it != m_settings.engineOptions.cend(); ++it)
+        if (engine->hasOption(it.key()))
+            engine->setOption(it.key(), it.value());
     // UCI: the GUI tells the engine whether it will be asked to ponder
     if (engine->hasOption(QStringLiteral("Ponder")))
         engine->setOption(QStringLiteral("Ponder"), ponderAllowed(engine) ? QStringLiteral("true") : QStringLiteral("false"));
@@ -545,6 +580,10 @@ QString GameManager::startFenForEngine() const
 void GameManager::startEngineSearch()
 {
     const Color side = m_game.nodePosition(mainLineEnd()).sideToMove();
+    if (m_settings.hasEngine() && m_settings.builtinPlayer != GameSettings::NoBuiltin) {
+        startBuiltinMove();
+        return;
+    }
     UciEngine *const engine = engineFor(side);
     if (engine->state() != UciEngine::State::Ready && engine->state() != UciEngine::State::Thinking)
         return; // not loaded yet: onEngineReady() starts the search
@@ -576,6 +615,37 @@ void GameManager::startEngineSearch()
     m_lastEval = Evaluation();
     m_lastPv.clear();
     engine->go(startFenForEngine(), m_game.uciMoves(), p);
+    emit changed();
+}
+
+void GameManager::startBuiltinMove()
+{
+    // mbChess plays itself (menu Play > Beginners), after a short pause like a human
+    if (m_game.currentNode() != mainLineEnd())
+        m_game.goToNode(mainLineEnd());
+    m_engineLine.clear();
+    m_searchNode = m_game.currentNode();
+    m_builtinThinking = true;
+    const Game::NodeId from = m_searchNode;
+    const quint64 hash = m_game.position().hash();
+    const int delay = 500 + int(QRandomGenerator::global()->bounded(1000));
+    QTimer::singleShot(delay, this, [this, from, hash] {
+        // only if nothing happened in between (new game, take back, ...)
+        if (m_searchNode != from || !m_game.isValidNode(from) || m_game.nodePosition(from).hash() != hash
+            || m_gameOver || m_settings.builtinPlayer == GameSettings::NoBuiltin)
+            return;
+        m_builtinThinking = false;
+        m_searchNode = -1;
+        if (!m_game.children(from).isEmpty())
+            return;
+        const Move m = opponents::builtinMove(m_game.nodePosition(from), m_settings.builtinPlayer);
+        if (m.isNull())
+            return;
+        if (m_game.currentNode() != from)
+            m_game.goToNode(from);
+        if (m_game.addMove(m))
+            afterMove();
+    });
     emit changed();
 }
 

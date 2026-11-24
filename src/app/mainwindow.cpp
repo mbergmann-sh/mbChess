@@ -8,6 +8,7 @@
 #include "benchmarkwindow.h"
 #include "boardeditordialog.h"
 #include "matesearchdialog.h"
+#include "opponents.h"
 #include "splashscreen.h"
 #include "statusfield.h"
 #ifdef Q_OS_WIN
@@ -220,8 +221,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::createUi()
 {
     m_fileMenu = menuBar()->addMenu(QString());
-    m_newGameAction = m_fileMenu->addAction(QString(), this, &MainWindow::newGameDialog);
-    m_newGameAction->setShortcut(QKeySequence::New);
     m_openAction = m_fileMenu->addAction(QString(), this, &MainWindow::openPgn);
     m_openAction->setShortcut(QKeySequence::Open);
     m_saveAction = m_fileMenu->addAction(QString(), this, &MainWindow::savePgn);
@@ -249,6 +248,29 @@ void MainWindow::createUi()
     m_fileMenu->addSeparator();
     m_quitAction = m_fileMenu->addAction(QString(), this, &QWidget::close);
     m_quitAction->setShortcut(QKeySequence::Quit);
+
+    // Play: new game, quick starts against opponents of fixed strength or style
+    m_playMenu = menuBar()->addMenu(QString());
+    m_newGameAction = m_playMenu->addAction(QString(), this, [this] { newGameDialog(); });
+    m_newGameAction->setShortcut(QKeySequence::New);
+    m_playMenu->addSeparator();
+    m_beginnerMenu = m_playMenu->addMenu(QString());
+    m_computerMenu = m_playMenu->addMenu(QString());
+    m_characterMenu = m_playMenu->addMenu(QString());
+    const QList<QPair<QMenu *, opponents::Group>> opponentMenus = {
+        { m_beginnerMenu, opponents::Group::Beginner },
+        { m_computerMenu, opponents::Group::Computer },
+        { m_characterMenu, opponents::Group::Character },
+    };
+    for (const auto &entry : opponentMenus) {
+        QMenu *menu = entry.first;
+        const int group = int(entry.second);
+        menu->setToolTipsVisible(true);
+        connect(menu, &QMenu::aboutToShow, this, [this, menu, group] { fillOpponentMenu(menu, group); });
+        fillOpponentMenu(menu, group);
+    }
+    m_playMenu->addSeparator();
+    m_engineVsEngineAction = m_playMenu->addAction(QString(), this, [this] { newGameDialog(true); });
 
     m_gameMenu = menuBar()->addMenu(QString());
     m_takeBackAction = m_gameMenu->addAction(QString(), m_gm, &GameManager::takeBack);
@@ -684,7 +706,14 @@ void MainWindow::retranslateUi()
 {
     setWindowTitle(tr("mbChess"));
     m_fileMenu->setTitle(tr("&File"));
+    m_playMenu->setTitle(tr("&Play"));
     m_newGameAction->setText(tr("&New game..."));
+    m_beginnerMenu->setTitle(tr("&Beginners"));
+    m_computerMenu->setTitle(tr("Against the &computer"));
+    m_characterMenu->setTitle(tr("Opponents with c&haracter"));
+    m_engineVsEngineAction->setText(tr("&Engine against engine..."));
+    for (QMenu *menu : { m_beginnerMenu, m_computerMenu, m_characterMenu })
+        menu->clear(); // refilled in the new language when opened
     m_openAction->setText(tr("&Open game (PGN)..."));
     m_saveAction->setText(tr("&Save game as PGN..."));
     m_setFenAction->setText(tr("Set position from &FEN..."));
@@ -790,11 +819,47 @@ void MainWindow::changeEvent(QEvent *event)
 // ---------------------------------------------------------------------------
 // Game flow
 
-void MainWindow::newGameDialog()
+void MainWindow::fillOpponentMenu(QMenu *menu, int group)
+{
+    menu->clear();
+    const QVector<opponents::Opponent> list = opponents::list(opponents::Group(group));
+    const bool running = m_benchmark && m_benchmark->isRunning();
+    for (int i = 0; i < list.size(); ++i) {
+        const opponents::Opponent &o = list.at(i);
+        //: menu Play > Beginners: "1  Novice (about 400 Elo)"
+        QAction *a = menu->addAction(group == int(opponents::Group::Beginner)
+                                         ? QStringLiteral("&%1  %2").arg(i + 1).arg(opponents::menuText(o))
+                                         : opponents::menuText(o),
+                                     this, [this, group, i] { startOpponent(group, i); });
+        a->setToolTip(opponents::toolTip(o));
+        a->setEnabled(!running && opponents::isAvailable(o));
+    }
+}
+
+void MainWindow::startOpponent(int group, int index)
+{
+    const QVector<opponents::Opponent> list = opponents::list(opponents::Group(group));
+    if (index < 0 || index >= list.size() || (m_benchmark && m_benchmark->isRunning()))
+        return;
+    const opponents::Opponent &o = list.at(index);
+    if (!opponents::isAvailable(o)) {
+        QMessageBox::warning(this, tr("New game"), opponents::toolTip(o));
+        return;
+    }
+    if (!confirmEndGame(tr("New game"), tr("A new game ends this game.")))
+        return;
+    const GameSettings s = opponents::quickSettings(opponents::Group(group), o);
+    startGame(s, Position::startPosition());
+    showStatus(tr("New game against \"%1\".").arg(opponents::displayName(o)), 5000);
+}
+
+void MainWindow::newGameDialog(bool engineVsEngine)
 {
     if (!confirmEndGame(tr("New game"), tr("A new game ends this game.")))
         return;
     NewGameDialog dlg(GameSettings::load(), this);
+    if (engineVsEngine)
+        dlg.setEngineVsEngine();
     // the position on the board, if it is not the initial one
     const Position board = m_game.position();
     const bool offer = !m_watching && board.toFen() != QLatin1String(Position::StartFen)
@@ -1865,8 +1930,8 @@ void MainWindow::updateBenchmarkActions()
     m_benchmarkResultsAction->setEnabled(running || !m_benchmark->games().isEmpty());
     // While the benchmark runs the board and the engines belong to it: everything that would
     // start or load another game, or change the engines, is greyed out until it is over.
-    for (QAction *action : { m_newGameAction, m_openAction, m_setFenAction, m_setupPositionAction,
-                             m_mateSearchAction, m_manageEnginesAction }) {
+    for (QAction *action : { m_newGameAction, m_engineVsEngineAction, m_openAction, m_setFenAction,
+                             m_setupPositionAction, m_mateSearchAction, m_manageEnginesAction }) {
         if (action)
             action->setEnabled(!running);
     }
@@ -2344,6 +2409,17 @@ void MainWindow::updateView()
                          .arg(side == 0 ? m_benchmark->currentWhite() : m_benchmark->currentBlack());
         m_engineTitle->setText(title);
         m_engineOutput->setText(m_gm->engineLine());
+    } else if (m_gm->settings().hasEngine() && !m_gm->settings().opponentName.isEmpty()) {
+        const GameSettings &gs = m_gm->settings();
+        QString title = gs.opponentElo > 0
+            ? tr("Opponent: %1 (about %2 Elo)").arg(gs.opponentName).arg(gs.opponentElo)
+            : tr("Opponent: %1").arg(gs.opponentName);
+        if (gs.builtinPlayer != GameSettings::NoBuiltin)
+            title += QLatin1Char('\n') + tr("Built-in player, no engine");
+        else
+            title += QLatin1Char('\n') + tr("Engine: %1").arg(m_gm->engine()->name());
+        m_engineTitle->setText(title);
+        m_engineOutput->setText(gs.builtinPlayer != GameSettings::NoBuiltin ? QString() : m_gm->engineLine());
     } else if (m_gm->settings().hasEngine()) {
         QString title = m_gm->settings().engineVsEngine()
             ? tr("Engine: %1").arg(m_gm->engineDisplayName(m_gm->engineFor(m_game.nodePosition(m_gm->mainLineEnd()).sideToMove())))
