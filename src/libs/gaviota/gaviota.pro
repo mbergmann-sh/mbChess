@@ -18,6 +18,8 @@ SOURCES += gaviotatb.cpp
 GTB = $$PWD/gtb
 # as in upstream's Makefile: zlib with prefixed names (no clash with a system zlib)
 DEFINES += Z_PREFIX NDEBUG
+# MinGW: Windows threads and file functions instead of the POSIX ones (as upstream's makefile.mingw)
+win32-g++: DEFINES += MINGW
 INCLUDEPATH += $$GTB $$GTB/sysport $$GTB/compression $$GTB/compression/liblzf \
     $$GTB/compression/zlib $$GTB/compression/lzma $$GTB/compression/huffman
 
