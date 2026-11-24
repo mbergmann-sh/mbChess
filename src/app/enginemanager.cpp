@@ -135,8 +135,10 @@ bool isManagedOption(const QString &name)
 
 int patriciaSkillLevel(int elo)
 {
-    // the table in Patricia's uci.h
-    static const int levels[20] = { 500,  800,  1000, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
+    // The table in Patricia's uci.h (its own Elo for each level). The three lowest levels
+    // are measured against Texel's UCI_Elo (tools/calibrate-opponents.py, 2026-11-24):
+    // they play stronger than Patricia says (500/800/1000 -> about 850/950/1250).
+    static const int levels[20] = { 850,  950,  1250, 1300, 1350, 1400, 1500, 1600, 1700, 1800,
                                     1900, 2000, 2100, 2200, 2300, 2400, 2500, 2650, 2800, 3000 };
     if (elo <= 0)
         return 21;

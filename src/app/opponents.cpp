@@ -38,6 +38,10 @@ QVector<Opponent> list(Group group)
     // Texel can be held down to below 0 Elo (UCI_Elo -625..2900, calibrated by its
     // author), Patricia makes human-looking mistakes (Skill_Level), Stockfish starts at
     // 1320 Elo, Arasan at 1000.
+    // Beginner Elo values measured 2026-11-24 with tools/calibrate-opponents.py against
+    // Texel's UCI_Elo (20 games per match, 0.5 s per move): random mover below -600,
+    // piece hunter about 200, Patricia Skill_Level 1 about 850, level 2 about 950,
+    // level 3 about 1250 (see enginemanager::patriciaSkillLevel()).
     const QStringList texel{ QStringLiteral("Texel"), QStringLiteral("Patricia") };
     const QStringList patricia{ QStringLiteral("Patricia"), QStringLiteral("Texel") };
     switch (group) {
@@ -46,21 +50,21 @@ QVector<Opponent> list(Group group)
             make(QT_TRANSLATE_NOOP("opponents", "Random mover"),
                  QT_TRANSLATE_NOOP("opponents", "Plays any legal move. For learning how the pieces move and capture. "
                                                 "Played by mbChess itself, without an engine."),
-                 100, 0, {}, {}, GameSettings::BuiltinRandom),
+                 0, 0, {}, {}, GameSettings::BuiltinRandom), // far below Texel's lowest level (-625): no Elo shown
             make(QT_TRANSLATE_NOOP("opponents", "Piece hunter"),
                  QT_TRANSLATE_NOOP("opponents", "Captures whenever it can, the most valuable piece first, even when "
                                                 "the piece is defended. For learning to set traps. Played by mbChess "
                                                 "itself, without an engine."),
-                 250, 0, {}, {}, GameSettings::BuiltinCapturer),
+                 200, 0, {}, {}, GameSettings::BuiltinCapturer),
             make(QT_TRANSLATE_NOOP("opponents", "Novice"),
                  QT_TRANSLATE_NOOP("opponents", "Often misses threats of a single move."), 400, 400, texel),
             make(QT_TRANSLATE_NOOP("opponents", "Beginner"),
                  QT_TRANSLATE_NOOP("opponents", "Usually protects its pieces, but misses forks and skewers."), 600, 600,
                  texel),
             make(QT_TRANSLATE_NOOP("opponents", "Leisure player"),
-                 QT_TRANSLATE_NOOP("opponents", "Likes to attack and makes human mistakes."), 800, 800, patricia),
+                 QT_TRANSLATE_NOOP("opponents", "Likes to attack and makes human mistakes."), 850, 850, patricia),
             make(QT_TRANSLATE_NOOP("opponents", "Advanced beginner"),
-                 QT_TRANSLATE_NOOP("opponents", "Plays actively, loses a piece now and then."), 1000, 1000, patricia),
+                 QT_TRANSLATE_NOOP("opponents", "Plays actively, loses a piece now and then."), 950, 950, patricia),
             make(QT_TRANSLATE_NOOP("opponents", "Hobby player"),
                  QT_TRANSLATE_NOOP("opponents", "Solid; mistakes only in longer variations."), 1200, 1200, texel),
         };

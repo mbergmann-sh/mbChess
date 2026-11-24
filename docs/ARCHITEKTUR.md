@@ -49,6 +49,15 @@ die beim Programmieren gelten.
 - Farbwahl: Weiß, Schwarz oder Zufall im Dialog „Neue Partie“. Im späteren Turniermodus werden
   die Farben nach den offiziellen Regeln (FIDE-Paarungsregeln) vergeben.
 
+## Eichung der Einsteiger-Gegner
+
+`tools/calibrate-opponents.py` (python-chess) misst die Stufen des Menüs „Spielen“ gegen Texel mit
+festem `UCI_Elo` (vom Autor geeicht) als Maßstab: je Gegner drei Matches zu 20 Partien, 0,5 s je Zug,
+10 kurze Eröffnungen mit beiden Farben. Ergebnis vom 2026-11-24: Zufallszieher unter −600 (unter
+Texels kleinster Stufe, daher ohne Elo im Menü), Figurenjäger etwa 200, Patricia `Skill_Level` 1
+etwa 850, 2 etwa 950, 3 etwa 1250 (statt 500/800/1000 laut Patricia). Die Messwerte stehen in
+`enginemanager::patriciaSkillLevel()`; Stufe 5 und 6 heißen jetzt „etwa 850“ bzw. „etwa 950“.
+
 ## Training
 
 Menü „Training“ (`src/app/trainer.*`, Panel `trainingpanel.*` als Dock neben „Engine“): Aufgaben
