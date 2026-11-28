@@ -61,12 +61,27 @@ you also find "mbChess help".
 
 ## Linux and macOS
 
-For Linux the download page offers an archive (`.tar.gz`) with the ready-built program and the
-engines; it needs the system's Qt 6 libraries (Debian 12 and newer, Ubuntu 24.04 and newer).
-Unpack it anywhere and start `mbchess` in the folder `bin`.
+For Debian, Ubuntu and their derivatives the download page offers a Debian package
+(`mbchess_<version>_amd64.deb`). Install it in a terminal with
+
+    sudo apt install ./mbchess_<version>_amd64.deb
+
+`apt` also installs the Qt 6 libraries it needs (Debian 12 and newer, Ubuntu 24.04 and newer).
+The program then lives in `/opt/mbChess`, together with the engines, the voice recorder, the
+manuals and the folders `Openings`, `Chessbooks`, `Syzygy`, `Gaviota` and `Training`; all
+users may write into these folders, so you can put books and game collections there without
+administrator rights. mbChess appears in the applications menu under "Games" and starts in a
+terminal with `mbchess` (the voice recorder with `mbchess-voicerecorder`). Install a new
+version the same way over the old one; remove mbChess with `sudo apt remove mbchess`. Settings
+and games are kept.
+
+For other Linux systems there is an archive (`.tar.gz`) with the ready-built program and the
+engines; it also needs the system's Qt 6 libraries. Unpack it anywhere and start `mbchess` in
+the unpacked folder `mbChess-<version>`.
 
 Or build mbChess from the source code (Qt 6.4 or newer, Qt 5.15 on macOS Catalina). The
-instructions are in the file `README.md` of the source code. The result is in the folder `bin`
+instructions are in the file `README.md` of the source code. On Debian and Ubuntu,
+`sh tools/install-build-deps.sh` first installs all packages that are missing for the build. The result is in the folder `bin`
 of the build folder.
 
 ## Test versions for beta testers

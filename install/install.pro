@@ -1,7 +1,7 @@
 # mbChess - Windows installer as the last build step.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Only built with  qmake CONFIG+=installer  (see mbChess.pro). Runs
+# Only built with  qmake CONFIG+=installer  (see mbChess.pro). Windows: runs
 # make-installer.ps1, which deploys Qt with windeployqt and builds both
 # installers with the Qt Installer Framework into install/output.
 
@@ -18,7 +18,11 @@ win32 {
         -QtBinDir $$shell_quote($$shell_path($$[QT_INSTALL_BINS]))
 } else:unix:!macx:!android {
     # Linux: the build as .tar.gz for the beta testers (tools/make-linux-package.py)
+    # and as Debian package install/output/mbchess_<version>_<arch>.deb (tools/make-deb.py).
+    # Without the .deb:  qmake6 CONFIG+=installer CONFIG+=no_deb
     first.commands = python3 $$shell_quote($$MBCHESS_ROOT/tools/make-linux-package.py) \
+        --build-dir $$shell_quote($$MBCHESS_BUILD_ROOT)
+    !no_deb: first.commands += && python3 $$shell_quote($$MBCHESS_ROOT/tools/make-deb.py) \
         --build-dir $$shell_quote($$MBCHESS_BUILD_ROOT)
 } else {
     first.commands = @echo "mbChess: the installer is only built on Windows and Linux"
@@ -29,6 +33,8 @@ OTHER_FILES += \
     make-installer.bat \
     README.md \
     ../tools/make-linux-package.py \
+    ../tools/make-deb.py \
+    ../tools/install-build-deps.sh \
     config/controlscript.qs \
     packages/mbchess.app/meta/installscript.qs \
     packages/mbchess.manual/meta/installscript.qs \

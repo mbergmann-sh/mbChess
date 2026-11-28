@@ -63,12 +63,28 @@ die „mbChess-Hilfe“.
 
 ## Linux und macOS
 
-Für Linux gibt es auf der Download-Seite ein Archiv (`.tar.gz`) mit dem fertigen Programm und
-den Engines; es braucht die Qt-6-Bibliotheken des Systems (Debian 12 und neuer, Ubuntu 24.04
-und neuer). Entpacken Sie es an einen beliebigen Ort und starten Sie `mbchess` im Ordner `bin`.
+Für Debian, Ubuntu und davon abgeleitete Systeme gibt es auf der Download-Seite ein
+Debian-Paket (`mbchess_<Version>_amd64.deb`). Installieren Sie es im Terminal mit
+
+    sudo apt install ./mbchess_<Version>_amd64.deb
+
+`apt` holt dabei die nötigen Qt-6-Bibliotheken gleich mit (Debian 12 und neuer, Ubuntu 24.04
+und neuer). Das Programm liegt danach mit den Engines, der Sprachaufnahme, den Handbüchern
+und den Ordnern `Openings`, `Chessbooks`, `Syzygy`, `Gaviota` und `Training` in `/opt/mbChess`;
+diese Ordner dürfen alle Benutzer beschreiben, Sie können dort also ohne Administratorrechte
+Bücher und Partiesammlungen ablegen. mbChess erscheint im Anwendungsmenü unter „Spiele“ und
+lässt sich im Terminal mit `mbchess` starten (die Sprachaufnahme mit
+`mbchess-voicerecorder`). Eine neue Version installieren Sie auf dieselbe Weise über die alte;
+entfernen können Sie mbChess mit `sudo apt remove mbchess`. Einstellungen und Partien bleiben
+dabei erhalten.
+
+Für andere Linux-Systeme gibt es ein Archiv (`.tar.gz`) mit dem fertigen Programm und den
+Engines; es braucht ebenfalls die Qt-6-Bibliotheken des Systems. Entpacken Sie es an einen
+beliebigen Ort und starten Sie `mbchess` im entpackten Ordner `mbChess-<Version>`.
 
 Alternativ bauen Sie mbChess aus dem Quelltext (Qt 6.4 oder neuer, unter macOS Catalina
-Qt 5.15). Die Anleitung steht in der Datei `README.md` des Quelltexts. Das Ergebnis liegt im
+Qt 5.15). Die Anleitung steht in der Datei `README.md` des Quelltexts. Unter Debian und Ubuntu
+installiert `sh tools/install-build-deps.sh` vorher alle Pakete, die zum Bauen fehlen. Das Ergebnis liegt im
 Ordner `bin` des Build-Ordners.
 
 ## Testversionen für Beta-Tester

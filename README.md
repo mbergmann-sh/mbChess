@@ -151,6 +151,12 @@ Freies Schachprogramm (GPL-3.0-or-later) in C++/Qt für Windows, Linux, macOS un
 
 C++17 ist erforderlich. Gebaut wird mit **qmake**.
 
+**Debian/Ubuntu:** `sh tools/install-build-deps.sh` zeigt, welche Pakete zum Bauen fehlen
+(Compiler, Qt 6, curl, git, dpkg-dev usw.), und installiert sie nach Rückfrage mit `sudo apt`
+(`-y`: ohne Rückfrage, `--check`: nur anzeigen). Viridithas braucht Rust 1.93 oder neuer; das
+haben die Distributionen noch nicht, deshalb bietet das Skript an, Rust mit rustup für den
+eigenen Benutzer zu installieren (`--no-rust`: ohne, dann fehlt nur Viridithas).
+
 **Qt Multimedia** ist optional und wird für Zuggeräusche und Zugansagen gebraucht. Unter Windows nachinstallieren
 über das Qt-Wartungsprogramm (*Qt 6.x → Zusätzliche Bibliotheken → Qt Multimedia*). Fehlt es, baut
 qmake mbChess ohne Klänge und meldet das.
@@ -199,6 +205,23 @@ Nach einem Release-Build baut `install\make-installer.bat <Build-Ordner>` zwei I
 (Deutsch und Englisch) mit dem Qt Installer Framework nach `install/output/`. Alternativ
 als letzter Build-Schritt: `qmake CONFIG+=installer`. Einzelheiten in
 [install/README.md](install/README.md).
+
+### Debian-Paket (Linux)
+
+Unter Linux baut `qmake6 CONFIG+=installer` (bzw. `make` danach) neben dem `.tar.gz` auch ein
+Debian-Paket `install/output/mbchess_<Version>_amd64.deb` (Skript `tools/make-deb.py`, braucht
+`dpkg-deb`; mit `dpkg-dev` werden die Abhängigkeiten aus den Programmen ermittelt, fehlt es,
+bietet das Skript `tools/install-build-deps.sh` an). Wer das Paket installiert, braucht nichts
+davon: `apt` installiert alle Bibliotheken, die mbChess braucht, selbst mit. Von Hand:
+
+```
+python3 tools/make-deb.py --build-dir <Build-Ordner>       # --install-deps: vorher Pakete prüfen
+sudo apt install ./install/output/mbchess_<Version>_amd64.deb
+```
+
+Das Paket installiert nach `/opt/mbChess` (Programm, Engines ohne Crafty, Sprachaufnahme,
+Handbücher, Datenordner für alle beschreibbar), legt `mbchess` und `mbchess-voicerecorder` in
+`/usr/bin` an und trägt mbChess ins Anwendungsmenü ein. Ohne `.deb`: `CONFIG+=no_deb`.
 
 ### Beta-Downloadseite
 
