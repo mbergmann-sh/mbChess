@@ -15,7 +15,7 @@ CONFIG -= debug_and_release debug_and_release_target
 # Keep the code free of APIs that were already deprecated in Qt 5.15.
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
-MBCHESS_VERSION = 0.1.30
+MBCHESS_VERSION = 0.1.31
 MBCHESS_CODENAME = Uppers and Downers
 DEFINES += MBCHESS_VERSION=\\\"$$MBCHESS_VERSION\\\"
 

@@ -176,6 +176,11 @@ Netze heruntergeladen (etwa 125 MB, dafür wird `curl` benutzt). Ohne Engines: `
 Das Programm liegt danach in `build/bin/` (`mbchess`, `mbchess.exe` bzw. `mbChess.app`).
 In Qt Creator einfach `mbChess.pro` öffnen und das passende Kit wählen.
 
+Aus einem Git-Checkout baut das Projekt genauso. `.gitignore` schließt nur die Build-Ordner
+im Wurzelverzeichnis aus (`/build*/`, `/bin/`, `/lib/`), Quellordner gleichen Namens weiter
+unten (z.B. `engines/texel/lib/`) gehören ins Repository. `git status --ignored` zeigt, ob
+etwas fehlt. `.gitattributes` hält Shell-Skripte und Makefiles auch unter Windows auf LF.
+
 ### Testversionen für Beta-Tester
 
 Seit 0.1.20 läuft jeder Build 42 Tage (6 Wochen) ab seinem ersten Start; jede neue Version

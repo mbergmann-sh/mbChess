@@ -1,4 +1,32 @@
+# Line endings: text files are stored with LF in git; Git for Windows checks them out
+# with CRLF (core.autocrlf). Files that are run by sh/bash or make (also under MSYS2/
+# MinGW on Windows) must keep LF, Windows batch files CRLF.
 * text=auto
-*.png binary
-*.svg text
+*.sh text eol=lf
+*.awk text eol=lf
+*.sed text eol=lf
+*.sin text eol=lf
+*.m4 text eol=lf
+*.ac text eol=lf
+*.am text eol=lf
+*.in text eol=lf
+Makefile* text eol=lf
+engines/gnuchess/configure text eol=lf
+engines/gnuchess/depcomp text eol=lf
+engines/gnuchess/src/gnuchessu text eol=lf
+engines/gnuchess/src/gnuchessx text eol=lf
 *.bat text eol=crlf
+*.ps1 text eol=crlf
+*.svg text
+# Binary data: never convert
+*.png binary
+*.jpg binary
+*.ico binary
+*.icns binary
+*.wav binary
+*.bin binary
+*.nnue binary
+*.zst binary
+*.pdf binary
+*.chm binary
+*.compr binary

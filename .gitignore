@@ -1,7 +1,9 @@
-# Build output
-build*/
-bin/
-lib/
+# Build output of qmake/make. The folders are anchored to the project root ("/"),
+# so that source folders of the same name further down (e.g. engines/texel/lib/,
+# website/site/builds/) stay in git.
+/build*/
+/bin/
+/lib/
 *.o
 *.obj
 *.a
@@ -17,7 +19,6 @@ Makefile*
 *.autosave
 # Engines: keep the upstream Makefiles, ignore downloaded networks
 !engines/**/Makefile*
-!engines/gnuchess/lib/
 engines/viridithas/viridithas.nnue.zst
 engines/viridithas/viridithas.nnue.zst.part
 # Installer output (built, not versioned)

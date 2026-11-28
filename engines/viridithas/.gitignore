@@ -23,10 +23,10 @@ tb5
 *.nnue
 *.nnue.zst
 *.nnue.raw
-src/tablebases/bindings.rs
+# mbChess: bindings.rs is pre-generated (no bindgen/libclang needed) and must stay in git
 perf.data*
 flamegraph.svg
 profdir/*
 stacks.folded
-Cargo.lock
+# mbChess: Cargo.lock stays in git for reproducible builds
 *.book
