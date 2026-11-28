@@ -10,6 +10,12 @@
 #include "benchmarkdialog.h"
 #include "benchmarkwindow.h"
 #include "boardeditordialog.h"
+#include "boardtrainingdialog.h"
+#include "mastergamesdialog.h"
+#include "ratedgame.h"
+#include "betaexpiry.h"
+#include "tutor.h"
+#include "tutordialog.h"
 #include "matesearchdialog.h"
 #include "opponents.h"
 #include "splashscreen.h"
@@ -208,6 +214,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
     saveWindowState();
+    m_ratedSerial = -1; // an unfinished rated game counts as lost at the next rated game
     m_gm->stopPlaying();
     if (m_benchmark && m_benchmark->isRunning())
         m_benchmark->cancel();
@@ -276,11 +283,58 @@ void MainWindow::createUi()
     m_playMenu->addSeparator();
     m_engineVsEngineAction = m_playMenu->addAction(QString(), this, [this] { newGameDialog(true); });
 
+    // Tutor: an engine of its own looks at the player's moves in games against the computer
+    m_tutor = new Tutor(this);
+    connect(m_tutor, &Tutor::verdictReady, this, &MainWindow::onTutorVerdict);
+    connect(m_tutor, &Tutor::errorOccurred, this, [this](const QString &message) {
+        showStatus(tr("Tutor: %1").arg(message), 8000);
+    });
+    m_playMenu->addSeparator();
+    m_tutorGameAction = m_playMenu->addAction(QString(), this, [this] {
+        m_tutorAction->setChecked(true);
+        newGameDialog(false, true);
+    });
+    m_tutorAction = m_playMenu->addAction(QString());
+    m_tutorAction->setCheckable(true);
+    m_tutorAction->setChecked(Tutor::isEnabled());
+    connect(m_tutorAction, &QAction::toggled, this, [this](bool on) {
+        Tutor::setEnabled(on);
+        updateView();
+    });
+    m_tutorLevelMenu = m_playMenu->addMenu(QString());
+    auto *levelGroup = new QActionGroup(this);
+    for (int s = Tutor::Inaccuracy; s <= Tutor::Blunder; ++s) {
+        QAction *a = m_tutorLevelMenu->addAction(QString());
+        a->setCheckable(true);
+        a->setChecked(Tutor::level() == s);
+        a->setData(s);
+        levelGroup->addAction(a);
+        connect(a, &QAction::triggered, this, [s] { Tutor::setLevel(Tutor::Severity(s)); });
+        m_tutorLevelActions << a;
+    }
+
+    // Rated game: against an engine at the player's own mbChess rating
+    m_playMenu->addSeparator();
+    m_ratedGameAction = m_playMenu->addAction(QString(), this, &MainWindow::startRatedGame);
+
     // Training: puzzles and endgames on the main board, and the mate search
     m_trainer = new Trainer(m_gm, m_languages, this);
     m_trainingMenu = menuBar()->addMenu(QString());
     m_mateMenu = m_trainingMenu->addMenu(QString());
     connect(m_mateMenu, &QMenu::aboutToShow, this, &MainWindow::fillMateMenu);
+    m_tacticsMenu = m_trainingMenu->addMenu(QString());
+    m_tacticsMenu->setToolTipsVisible(true);
+    connect(m_tacticsMenu, &QMenu::aboutToShow, this, &MainWindow::fillTacticsMenu);
+    m_openingMenu = m_trainingMenu->addMenu(QString());
+    m_openingMenu->setToolTipsVisible(true);
+    connect(m_openingMenu, &QMenu::aboutToShow, this, &MainWindow::fillOpeningMenu);
+    m_masterGamesAction = m_trainingMenu->addAction(QString(), this, [this] {
+        MasterGamesDialog dialog(enginemanager::entry(analysisEnginePath()), m_board->boardTheme(),
+                                 m_board->pieceSet(), m_languages->pieceLetters(), this);
+        dialog.exec();
+    });
+    m_resistanceMenu = m_trainingMenu->addMenu(QString());
+    connect(m_resistanceMenu, &QMenu::aboutToShow, this, &MainWindow::fillResistanceMenu);
     m_endgameMenu = m_trainingMenu->addMenu(QString());
     connect(m_endgameMenu, &QMenu::aboutToShow, this, [this] {
         m_endgameMenu->clear();
@@ -290,6 +344,8 @@ void MainWindow::createUi()
             m_endgameMenu->addAction(Trainer::endgameName(t), this, [this, t] { startEndgameTraining(t); });
         }
     });
+    m_boardTrainingMenu = m_trainingMenu->addMenu(QString());
+    connect(m_boardTrainingMenu, &QMenu::aboutToShow, this, &MainWindow::fillBoardTrainingMenu);
     m_trainingMenu->addSeparator();
 
     m_gameMenu = menuBar()->addMenu(QString());
@@ -752,6 +808,15 @@ void MainWindow::retranslateUi()
     m_computerMenu->setTitle(tr("Against the &computer"));
     m_characterMenu->setTitle(tr("Opponents with c&haracter"));
     m_engineVsEngineAction->setText(tr("&Engine against engine..."));
+    m_tutorGameAction->setText(tr("Game with &tutor..."));
+    m_tutorAction->setText(tr("T&utor helps"));
+    m_ratedGameAction->setText(tr("&Rated game..."));
+    m_tutorAction->setToolTip(tr("In games against the computer the tutor looks at each of your moves and speaks up "
+                                 "before a bad one is played"));
+    m_tutorLevelMenu->setTitle(tr("Tutor speaks &up at"));
+    m_tutorLevelActions.at(0)->setText(tr("&Inaccuracies"));
+    m_tutorLevelActions.at(1)->setText(tr("&Mistakes"));
+    m_tutorLevelActions.at(2)->setText(tr("&Blunders only"));
     for (QMenu *menu : { m_beginnerMenu, m_computerMenu, m_characterMenu })
         menu->clear(); // refilled in the new language when opened
     m_openAction->setText(tr("&Open game (PGN)..."));
@@ -777,6 +842,11 @@ void MainWindow::retranslateUi()
     m_trainingMenu->setTitle(tr("&Training"));
     m_mateMenu->setTitle(tr("Find the &mate"));
     m_endgameMenu->setTitle(tr("&Endgames"));
+    m_tacticsMenu->setTitle(tr("&Tactics"));
+    m_openingMenu->setTitle(tr("&Openings"));
+    m_masterGamesAction->setText(tr("Master &games..."));
+    m_resistanceMenu->setTitle(tr("&Hold out"));
+    m_boardTrainingMenu->setTitle(tr("&Board and memory"));
     m_trainingDock->setWindowTitle(tr("Training"));
     m_trainingPanel->retranslate();
     fillMateMenu();
@@ -787,7 +857,7 @@ void MainWindow::retranslateUi()
     m_analysisAction->setToolTip(tr("Engine analysis: an engine searches the position on the board (Alt+F2)"));
     m_analysisEngineMenu->setTitle(tr("Analysis en&gine"));
     m_analysisLinesMenu->setTitle(tr("Analysis &lines"));
-    m_mateSearchAction->setText(tr("&Mate search..."));
+    m_mateSearchAction->setText(tr("Mate &search..."));
     m_mateSearchAction->setToolTip(tr("Mate search: an engine looks for a mate in the position on the board (Ctrl+M)"));
     m_setupPositionAction->setText(tr("Set &up position..."));
     m_setupPositionAction->setToolTip(tr("Set up a position with the board editor (Ctrl+E)"));
@@ -899,13 +969,15 @@ void MainWindow::startOpponent(int group, int index)
     showStatus(tr("New game against \"%1\".").arg(opponents::displayName(o)), 5000);
 }
 
-void MainWindow::newGameDialog(bool engineVsEngine)
+void MainWindow::newGameDialog(bool engineVsEngine, bool againstEngine)
 {
     if (!confirmEndGame(tr("New game"), tr("A new game ends this game.")))
         return;
     NewGameDialog dlg(GameSettings::load(), this);
     if (engineVsEngine)
         dlg.setEngineVsEngine();
+    else if (againstEngine)
+        dlg.setAgainstEngine();
     // the position on the board, if it is not the initial one
     const Position board = m_game.position();
     const bool offer = !m_watching && board.toFen() != QLatin1String(Position::StartFen)
@@ -930,6 +1002,13 @@ void MainWindow::startGame(const GameSettings &settings, const Position &start)
 
 void MainWindow::onGameEnded(Result result, const QString &reason)
 {
+    if (m_ratedSerial >= 0 && m_ratedSerial == m_gm->gameSerial()) {
+        const bool white = m_ratedWhite;
+        const double score = result == Result::Draw ? 0.5
+            : result == Result::Unknown            ? 0
+            : (result == Result::WhiteWins) == white ? 1 : 0;
+        finishRatedGame(score, result == Result::Unknown);
+    }
     if (result == Result::Draw)
         m_sound->announce(m_game.status() == GameStatus::Stalemate ? QStringLiteral("stalemate")
                                                                     : QStringLiteral("draw"));
@@ -970,11 +1049,125 @@ void MainWindow::onBoardMove(Move move)
         updateView();
         return;
     }
+    if (m_tutor->isChecking())
+        return;
     if (!m_trainer->userMove(move)) { // not the solution of the puzzle: the piece goes back
         updateView();
         return;
     }
-    m_gm->applyMove(move);
+    playUserMove(move);
+}
+
+// A game against the computer where the tutor helps (not in a training task)
+bool MainWindow::tutorGameActive() const
+{
+    return m_tutor && Tutor::isEnabled() && !m_watching && m_gm->isPlayingMode() && !m_gm->isGameOver()
+        && m_gm->settings().hasEngine() && !m_gm->settings().engineVsEngine() && !m_trainer->isOnBoard()
+        && !analysisEnginePath().isEmpty() && !ratedGameActive();
+}
+
+bool MainWindow::ratedGameActive() const
+{
+    return m_ratedSerial >= 0 && m_ratedSerial == m_gm->gameSerial() && !m_gm->isGameOver() && m_gm->isPlayingMode();
+}
+
+void MainWindow::startRatedGame()
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    rated::Record old;
+    if (!ratedGameActive() && rated::resolvePending(&old)) // left unfinished last time
+        QMessageBox::information(this, tr("Rated game"), RatedGameDialog::resultText(old));
+    if (!confirmEndGame(tr("Rated game"), tr("A new game ends this game.")))
+        return;
+    RatedGameDialog dialog(this);
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+    const GameSettings s = dialog.settings();
+    startGame(s, Position::startPosition());
+    m_ratedSerial = m_gm->gameSerial();
+    m_ratedWhite = s.mode == GameSettings::HumanWhiteVsEngine;
+    rated::begin(s);
+    showStatus(tr("Rated game against %1.").arg(s.opponentName), 6000);
+    updateView();
+}
+
+void MainWindow::finishRatedGame(double score, bool abandoned)
+{
+    m_ratedSerial = -1;
+    const rated::Record r = rated::finish(score, abandoned);
+    QTimer::singleShot(0, this, [this, r] {
+        QMessageBox::information(this, tr("Rated game"), RatedGameDialog::resultText(r));
+    });
+}
+
+void MainWindow::playUserMove(Move move)
+{
+    if (!tutorGameActive()) {
+        m_gm->applyMove(move);
+        return;
+    }
+    // the tutor looks at the move first; meanwhile it is shown on the board
+    m_tutorMove = move;
+    m_tutorSerial = m_gm->gameSerial();
+    m_tutorFen = m_game.position().toFen();
+    showStatus(tr("The tutor looks at your move ..."), 0);
+    m_tutor->check(move);
+    if (m_tutor->isChecking())
+        updateView();
+}
+
+void MainWindow::updateTutor()
+{
+    if (!m_tutor || m_tutor->isChecking())
+        return;
+    if (!tutorGameActive()) {
+        m_tutor->stop();
+        return;
+    }
+    const bool userToMove = m_gm->humanMayMove() && m_game.isAtLineEnd();
+    m_tutor->setPosition(userToMove, enginemanager::entry(analysisEnginePath()), m_game.startPosition(),
+                         m_game.uciMoves());
+}
+
+void MainWindow::onTutorVerdict(const Tutor::Verdict &verdict)
+{
+    showStatus(QString(), 0);
+    auto stillValid = [this] {
+        return m_gm->gameSerial() == m_tutorSerial && m_game.position().toFen() == m_tutorFen && m_gm->humanMayMove();
+    };
+    if (!stillValid()) {
+        updateView();
+        return;
+    }
+    if (verdict.severity < Tutor::level()) {
+        m_gm->applyMove(m_tutorMove);
+        return;
+    }
+    updateView();
+    m_board->setPosition(m_game.position().after(m_tutorMove)); // the move stays visible
+    m_board->setLastMove(m_tutorMove);
+    m_board->setMovableColors(false, false);
+    TutorDialog dialog(verdict, m_languages->pieceLetters(), this);
+    dialog.exec();
+    if (!stillValid()) {
+        updateView();
+        return;
+    }
+    switch (dialog.choice()) {
+    case TutorDialog::TakeBack:
+        updateView();
+        showStatus(tr("Think again: it is still your move."), 5000);
+        break;
+    case TutorDialog::PlayBest:
+        m_gm->applyMove(verdict.best);
+        break;
+    case TutorDialog::PlayAnyway:
+        m_gm->applyMove(m_tutorMove);
+        break;
+    }
 }
 
 
@@ -1368,6 +1561,7 @@ bool MainWindow::confirmEndGame(const QString &title, const QString &what, bool 
     if (!running && !unsaved)
         return true;
     QString text = running ? tr("<p>A game is running.</p><p>%1</p>").arg(what)
+            + (ratedGameActive() ? tr("<p>It is a rated game: it then counts as lost.</p>") : QString())
                            : tr("<p>Your game may contain unsaved data: moves, variations or comments that "
                                 "are not saved in a PGN file yet. If you go on, they are lost.</p>");
     if (!unsaved)
@@ -1379,11 +1573,14 @@ bool MainWindow::confirmEndGame(const QString &title, const QString &what, bool 
     box.setDefaultButton(save ? save : back);
     box.setEscapeButton(back);
     box.exec();
+    bool ok = box.clickedButton() == go;
     if (save && box.clickedButton() == save) {
         savePgn();
-        return !m_gm->hasUnsavedChanges(); // saved: go on; dialog cancelled: stay
+        ok = !m_gm->hasUnsavedChanges(); // saved: go on; dialog cancelled: stay
     }
-    return box.clickedButton() == go;
+    if (ok && ratedGameActive())
+        finishRatedGame(0, true); // a rated game left unfinished counts as lost
+    return ok;
 }
 
 void MainWindow::toAnalysisBoard()
@@ -1405,8 +1602,8 @@ void MainWindow::setupPosition()
     if (dlg.exec() != QDialog::Accepted)
         return;
     m_gm->usePosition(dlg.position());
-    showStatus(tr("Position set up. Play it with File > New game, or look for a mate with "
-                                "Engines > Mate search."), 10000);
+    showStatus(tr("Position set up. Play it with Play > New game, or look for a mate with "
+                                "Training > Mate search."), 10000);
 }
 
 void MainWindow::mateSearch()
@@ -1460,6 +1657,115 @@ void MainWindow::fillMateMenu()
     });
 }
 
+void MainWindow::fillBoardTrainingMenu()
+{
+    m_boardTrainingMenu->clear();
+    for (int mode = 0; mode < BoardTrainingDialog::ModeCount; ++mode) {
+        if (mode == BoardTrainingDialog::Memory || mode == BoardTrainingDialog::ChecksCaptures)
+            m_boardTrainingMenu->addSeparator();
+        m_boardTrainingMenu->addAction(BoardTrainingDialog::menuText(mode), this, [this, mode] {
+            BoardTrainingDialog dialog(BoardTrainingDialog::Mode(mode), m_board->boardTheme(), m_board->pieceSet(),
+                                       m_languages->pieceLetters(), this);
+            dialog.exec();
+        });
+    }
+    m_boardTrainingMenu->addSeparator();
+    m_boardTrainingMenu->addAction(tr("&Reset results..."), this, [this] {
+        if (QMessageBox::question(this, tr("Board and memory"), tr("Forget all best times and results?"))
+            == QMessageBox::Yes)
+            BoardTrainingDialog::resetResults();
+    });
+}
+
+void MainWindow::fillTacticsMenu()
+{
+    m_tacticsMenu->clear();
+    QApplication::setOverrideCursor(Qt::WaitCursor); // the puzzles are read on first use
+    m_tacticsMenu->addAction(Trainer::tacticsMenuText(QString()), this, [this] { startTacticsTraining(QString()); });
+    int group = -1;
+    for (const training::TacticTheme &t : training::tacticThemes()) {
+        if (t.group != group) {
+            group = t.group;
+            m_tacticsMenu->addSection(training::tacticGroupName(group));
+        }
+        const QString id = QLatin1String(t.id);
+        m_tacticsMenu->addAction(Trainer::tacticsMenuText(id), this, [this, id] { startTacticsTraining(id); });
+    }
+    QApplication::restoreOverrideCursor();
+    m_tacticsMenu->addSeparator();
+    m_tacticsMenu->addAction(tr("&Reset progress..."), this, [this] {
+        if (QMessageBox::question(this, tr("Tactics"),
+                                  tr("Mark all tactics puzzles as unsolved and start again with the easiest ones?"))
+            == QMessageBox::Yes)
+            Trainer::resetTacticsProgress();
+    });
+}
+
+void MainWindow::fillOpeningMenu()
+{
+    m_openingMenu->clear();
+    m_openingMenu->addSection(tr("Repertoire"));
+    for (const training::Repertoire &r : training::repertoires()) {
+        const QString path = r.path;
+        if (r.color >= 0) {
+            const Color c = Color(r.color);
+            m_openingMenu->addAction(Trainer::openingMenuText(r.name, path, c), this,
+                                     [this, path, c] { startOpeningTraining(path, c); });
+            continue;
+        }
+        QMenu *sub = m_openingMenu->addMenu(r.name);
+        for (const Color c : { White, Black })
+            sub->addAction(Trainer::openingMenuText(c == White ? tr("as White") : tr("as Black"), path, c), this,
+                           [this, path, c] { startOpeningTraining(path, c); });
+    }
+    QAction *folder = m_openingMenu->addAction(tr("Own repertoires (folder)..."), this, [this] {
+        const QString dir = training::repertoireFolder();
+        QDir().mkpath(dir);
+        if (!QDesktopServices::openUrl(QUrl::fromLocalFile(dir)))
+            QMessageBox::information(this, tr("Openings"), tr("Put PGN files with your repertoire (variations "
+                                                              "allowed) into the folder %1.")
+                                                               .arg(QDir::toNativeSeparators(dir)));
+    });
+    folder->setToolTip(tr("PGN files with variations in this folder appear here. The tag [Repertoire \"White\"] "
+                          "or [Repertoire \"Black\"] says which side it is for."));
+    m_openingMenu->addSection(tr("Opening book"));
+    for (const Color c : { White, Black })
+        m_openingMenu->addAction(Trainer::openingMenuText(c == White ? tr("Book moves as &White")
+                                                                     : tr("Book moves as &Black"),
+                                                          QStringLiteral("book"), c),
+                                 this, [this, c] { startOpeningTraining(QStringLiteral("book"), c); });
+}
+
+void MainWindow::startOpeningTraining(const QString &source, Color color)
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    const bool ok = m_trainer->prepareOpening(source, color, &s, &start, &error);
+    startTraining(s, start, error, ok);
+}
+
+void MainWindow::startTacticsTraining(const QString &theme)
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    const bool ok = m_trainer->prepareTactics(theme, &s, &start, &error);
+    startTraining(s, start, error, ok);
+}
+
 bool MainWindow::startTraining(const GameSettings &settings, const Position &start, const QString &error, bool ok)
 {
     if (!ok) {
@@ -1496,6 +1802,57 @@ void MainWindow::startMateTraining(int moves)
     startTraining(s, start, error, ok);
 }
 
+void MainWindow::fillResistanceMenu()
+{
+    m_resistanceMenu->clear();
+    const int limit = Trainer::resistanceLimit();
+    for (Color c : { White, Black }) {
+        const int record = Trainer::resistanceRecord(c, limit);
+        const QString name = c == White ? tr("Play as &White") : tr("Play as &Black");
+        m_resistanceMenu->addAction(record > 0 ? tr("%1 (record: %n move(s))", nullptr, record).arg(name) : name, this,
+                                    [this, c] { startResistanceTraining(c); });
+    }
+    m_resistanceMenu->addSection(tr("The game ends below"));
+    auto *limits = new QActionGroup(m_resistanceMenu);
+    for (int pawns : { 1, 2, 3, 5 }) {
+        QAction *a = m_resistanceMenu->addAction(tr("-%n pawn(s)", nullptr, pawns));
+        a->setCheckable(true);
+        a->setChecked(pawns == limit);
+        limits->addAction(a);
+        connect(a, &QAction::triggered, this, [pawns] { Trainer::setResistanceLimit(pawns); });
+    }
+    m_resistanceMenu->addSection(tr("Engine time per move"));
+    auto *times = new QActionGroup(m_resistanceMenu);
+    const int seconds = Trainer::resistanceSeconds();
+    for (int s : { 1, 2, 5, 10 }) {
+        QAction *a = m_resistanceMenu->addAction(tr("%n second(s)", nullptr, s));
+        a->setCheckable(true);
+        a->setChecked(s == seconds);
+        times->addAction(a);
+        connect(a, &QAction::triggered, this, [s] { Trainer::setResistanceSeconds(s); });
+    }
+    m_resistanceMenu->addSeparator();
+    m_resistanceMenu->addAction(tr("&Reset records..."), this, [this] {
+        if (QMessageBox::question(this, tr("Hold out"), tr("Forget all records?")) == QMessageBox::Yes)
+            Trainer::resetResistanceRecords();
+    });
+}
+
+void MainWindow::startResistanceTraining(Color color)
+{
+    if (m_benchmark && m_benchmark->isRunning()) {
+        showStatus(tr("Not possible while the benchmark runs."), 5000);
+        return;
+    }
+    if (!m_trainer->isOnBoard() && !confirmEndGame(tr("Training"), tr("A training task ends this game.")))
+        return;
+    GameSettings s;
+    Position start;
+    QString error;
+    const bool ok = m_trainer->prepareResistance(color, &s, &start, &error);
+    startTraining(s, start, error, ok);
+}
+
 void MainWindow::startEndgameTraining(int type)
 {
     if (m_benchmark && m_benchmark->isRunning()) {
@@ -1528,8 +1885,14 @@ void MainWindow::trainingNext()
 {
     if (m_trainer->kind() == Trainer::Kind::Mate)
         startMateTraining(m_trainer->mateMoves());
+    else if (m_trainer->kind() == Trainer::Kind::Tactics)
+        startTacticsTraining(m_trainer->tacticTheme());
     else if (m_trainer->kind() == Trainer::Kind::Endgame)
         startEndgameTraining(m_trainer->endgame());
+    else if (m_trainer->kind() == Trainer::Kind::Opening)
+        startOpeningTraining(m_trainer->openingSource(), m_trainer->openingColor());
+    else if (m_trainer->kind() == Trainer::Kind::Resistance)
+        startResistanceTraining(m_trainer->openingColor());
 }
 
 void MainWindow::trainingStop()
@@ -1950,12 +2313,14 @@ void MainWindow::enterMove()
         showStatus(tr("\"%1\" is not a legal move here.").arg(m_input->text()), 4000);
         return;
     }
+    if (m_tutor->isChecking())
+        return;
     if (!m_trainer->userMove(m)) {
         updateView();
         return;
     }
     m_input->clear();
-    m_gm->applyMove(m);
+    playUserMove(m);
 }
 
 void MainWindow::flipBoard()
@@ -2052,6 +2417,9 @@ void MainWindow::showAbout()
                       .arg(tr("%1 \"%2\"", "version number and version name")
                                .arg(QApplication::applicationVersion(), QStringLiteral(MBCHESS_CODENAME)),
                            QString::fromLatin1(qVersion())));
+    const QString betaText = beta::aboutText();
+    if (!betaText.isEmpty())
+        text->setText(text->text() + QStringLiteral("<p><b>") + betaText.toHtmlEscaped() + QStringLiteral("</b></p>"));
 
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok, &dialog);
     connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
@@ -2542,6 +2910,12 @@ void MainWindow::updateView()
         black = !m_gm->settings().isEngineSide(Black);
     }
     m_board->setMovableColors(white, black);
+    const bool tutorChecking = m_tutor && m_tutor->isChecking();
+    if (tutorChecking) { // the move waits for the tutor
+        m_board->setPosition(m_game.position().after(m_tutorMove));
+        m_board->setLastMove(m_tutorMove);
+        m_board->setMovableColors(false, false);
+    }
 
     // Notation and evaluation graph
     m_notation->setPieceLetters(m_languages->pieceLetters());
@@ -2591,11 +2965,12 @@ void MainWindow::updateView()
     m_status->setText(statusText());
     updateOpeningName();
     m_fen->setText(QStringLiteral("FEN: ") + m_game.position().toFen());
-    m_input->setEnabled(mayMove);
-    m_moveButton->setEnabled(mayMove);
+    m_input->setEnabled(mayMove && !tutorChecking);
+    m_moveButton->setEnabled(mayMove && !tutorChecking);
     const bool atStart = m_game.currentNode() == Game::RootNode;
     const bool atEnd = m_game.isAtLineEnd();
-    m_takeBackAction->setEnabled(!m_watching && !atStart && atEnd && !(m_gm->settings().engineVsEngine() && m_gm->isPlayingMode()));
+    m_takeBackAction->setEnabled(!m_watching && !atStart && atEnd && !(m_gm->settings().engineVsEngine() && m_gm->isPlayingMode())
+                                 && !ratedGameActive());
     m_moveNowAction->setEnabled(m_gm->anyEngineThinking());
     m_resignAction->setEnabled(!m_watching && !m_gm->settings().engineVsEngine() && !m_gm->isGameOver() && m_game.plyCount() > 0 && m_game.currentNode() == m_gm->mainLineEnd());
     m_startAction->setEnabled(!atStart);
@@ -2603,5 +2978,6 @@ void MainWindow::updateView()
     m_forwardAction->setEnabled(!atEnd);
     m_endAction->setEnabled(!atEnd);
     updateAnalysis();
+    updateTutor();
     updateDgtStatus();
 }

@@ -76,7 +76,7 @@ void TrainingPanel::showHelp(const QString &text)
 
 void TrainingPanel::refresh()
 {
-    const bool mate = m_trainer->kind() == Trainer::Kind::Mate;
+    const bool mate = m_trainer->kind() == Trainer::Kind::Mate || m_trainer->kind() == Trainer::Kind::Tactics;
     const bool onBoard = m_trainer->isOnBoard();
     const bool running = m_trainer->isRunning();
     m_title->setText(m_trainer->title());
@@ -103,5 +103,6 @@ void TrainingPanel::refresh()
     m_solution->setEnabled(running);
     m_again->setEnabled(m_trainer->kind() != Trainer::Kind::None);
     m_next->setEnabled(m_trainer->kind() != Trainer::Kind::None);
-    m_next->setText(mate ? tr("&Next puzzle") : tr("&New position"));
+    m_next->setText(mate ? tr("&Next puzzle")
+                         : m_trainer->kind() == Trainer::Kind::Resistance ? tr("&New game") : tr("&New position"));
 }

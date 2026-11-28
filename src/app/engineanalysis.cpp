@@ -132,6 +132,15 @@ void EngineAnalysis::analyse(const Position &startPosition, const QStringList &u
     search();
 }
 
+void EngineAnalysis::pause()
+{
+    if (m_engine && m_ready)
+        m_engine->stop(true);
+    m_moves.clear();
+    m_startPosition = Position();
+    m_lines.clear(); // the next analyse() starts a new search
+}
+
 void EngineAnalysis::search()
 {
     // the position analysed

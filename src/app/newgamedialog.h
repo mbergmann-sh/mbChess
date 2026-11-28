@@ -78,6 +78,8 @@ public:
     bool fromBoardPosition() const;
     // Preselects "engine against engine" (menu Play).
     void setEngineVsEngine();
+    // Preselects a game against the engine (menu Play > Game with tutor).
+    void setAgainstEngine();
 
     struct Level { int elo; const char *name; };
     static const Level kLevels[];

@@ -7,6 +7,18 @@
 // mbChess plays the defence itself (GameSettings::BuiltinTrainer): the exact mate solver
 // of chesscore checks each move of the user and finds the most stubborn reply.
 //
+// "Tactics": Lichess puzzles by theme (fork, pin, ...). The opponent plays the moves of
+// the Lichess solution; only the solution move counts (or any mate).
+//
+// "Openings": play the moves of a repertoire (PGN with variations, built in or in the
+// folder "Training/Repertoire") or of the opening book. mbChess plays the other side and
+// picks among the moves of the repertoire (or the book moves by their weight); only a
+// move of the repertoire (the book) counts. A line is done when it ends.
+//
+// "Hold out": a game against a strong engine at full strength. It lasts as long as the
+// engine's evaluation (after each of its moves) stays above a limit, e.g. -2 pawns from
+// the user's view; the record is the number of moves held out.
+//
 // "Endgames": basic mates (KQK, KRK, KBBK, KBNK) and king and pawn against king, from
 // random positions, against an engine. The goal ("mate in at most 15 moves") is checked
 // with the Gaviota tablebases, if they are installed, and the KPK table of chesscore.
@@ -18,7 +30,9 @@
 #include <chesscore/matesolver.h>
 #include <chesscore/position.h>
 
+#include <QHash>
 #include <QObject>
+#include <QPair>
 #include <QStringList>
 #include <QVector>
 
@@ -34,11 +48,37 @@ struct Puzzle
     QString firstMove;   // the opponent's last move (UCI), empty: the task starts at fen
     QStringList solution; // UCI moves, from the position after firstMove
     int rating = 0;
+    QStringList themes;  // Lichess theme names (tactics)
 };
+
+// A theme of Training > Tactics: the Lichess name, the text for the menu and its group.
+struct TacticTheme
+{
+    const char *id;      // "fork"
+    const char *name;    // QT_TRANSLATE_NOOP("Trainer", "Fork")
+    int group;           // 0 basic motifs, 1 combinations, 2 special moves, 3 attack and endgame
+};
+const QVector<TacticTheme> &tacticThemes();
+QString tacticThemeName(const QString &id);   // translated; empty id: "Mixed"
+QString tacticGroupName(int group);
 
 // All puzzles "mate in n" (1..3): built in, then the files of the folder "Training".
 const QVector<Puzzle> &matePuzzles(int n);
+// All tactics puzzles (resources/training/tactics.txt, Training/tactics*.txt, Lichess CSV).
+const QVector<Puzzle> &tacticPuzzles();
+// Those of one theme (empty: all), in order of rating.
+QVector<int> tacticIndexes(const QString &theme);
 QString trainingFolder();   // "Training" next to the program
+
+// Training > Openings: a repertoire file (built in or Training/Repertoire/*.pgn)
+struct Repertoire
+{
+    QString name;        // the Event tag, else the file name
+    QString path;        // ":/training/repertoire/white-italian.pgn"
+    int color = -1;      // the side it is for (tag [Repertoire "White"]), -1: either
+};
+QVector<Repertoire> repertoires();
+QString repertoireFolder();   // Training/Repertoire
 
 } // namespace training
 
@@ -46,7 +86,7 @@ class Trainer : public QObject
 {
     Q_OBJECT
 public:
-    enum class Kind { None, Mate, Endgame };
+    enum class Kind { None, Mate, Tactics, Endgame, Opening, Resistance };
     enum Endgame { QueenMate = 0, RookMate, TwoBishops, BishopKnight, PawnWin, PawnDraw, EndgameCount };
     enum class State { Running, Solved, Failed };
 
@@ -56,6 +96,7 @@ public:
     State state() const { return m_state; }
     int mateMoves() const { return m_mateMoves; }
     int endgame() const { return m_endgame; }
+    QString tacticTheme() const { return m_theme; }
     // The training game is on the board and not decided yet.
     bool isRunning() const;
     // The task is still the game on the board (running or finished).
@@ -64,7 +105,21 @@ public:
     // Prepare a task; the window then starts the game with startGame(*settings, *start)
     // and calls started(). False with *error if there is none.
     bool prepareMate(int n, GameSettings *settings, mbc::Position *start, QString *error);
+    bool prepareTactics(const QString &theme, GameSettings *settings, mbc::Position *start, QString *error);
     bool prepareEndgame(int type, GameSettings *settings, mbc::Position *start, QString *error);
+    // source: the path of a repertoire, or "book" (the opening book of "New game")
+    bool prepareOpening(const QString &source, mbc::Color color, GameSettings *settings, mbc::Position *start,
+                        QString *error);
+    // Hold out: limit in pawns, seconds per engine move
+    bool prepareResistance(mbc::Color color, GameSettings *settings, mbc::Position *start, QString *error);
+    static int resistanceLimit();          // pawns (1..5), menu setting
+    static void setResistanceLimit(int pawns);
+    static int resistanceSeconds();        // per engine move (1..10)
+    static void setResistanceSeconds(int s);
+    static int resistanceRecord(mbc::Color color, int limit);
+    static void resetResistanceRecords();
+    QString openingSource() const { return m_openingSource; }
+    mbc::Color openingColor() const { return m_userColor; }
     // The same task once more.
     bool prepareAgain(GameSettings *settings, mbc::Position *start, QString *error);
     void started();
@@ -86,6 +141,9 @@ public:
     static QString endgameName(int type);
     static QString mateMenuText(int n);   // "Mate in 2 (12 of 719 solved)"
     static void resetMateProgress();
+    static QString tacticsMenuText(const QString &theme);   // "Fork (3 of 378 solved)"
+    static QString openingMenuText(const QString &name, const QString &source, mbc::Color color);
+    static void resetTacticsProgress();
 
 signals:
     void changed();             // texts or state changed
@@ -102,9 +160,18 @@ private:
     QString san(const mbc::Position &pos, mbc::Move m) const;
     QString sanLine(const mbc::Position &pos, const QStringList &uci) const;
     QStringList mainLine(const mbc::Position &pos, int moves);
+    void checkResistance(const mbc::Position &before);
+    void finishResistance(const QString &why, bool wholeGame);
+    QString resistanceEvalText(const mbc::Evaluation &e) const;
+    static QString resistanceEnginePath(QString *name);
     void checkEndgameMove(const mbc::Position &before, mbc::Move move, const mbc::Position &after);
     QString enginePath(QString *name) const;
     bool generate(int type, mbc::Position *pos) const;
+    bool isPuzzle() const { return m_kind == Kind::Mate || m_kind == Kind::Tactics || m_kind == Kind::Opening; }
+    // Openings: the moves of the repertoire (book) in this position, UCI with weight
+    QVector<QPair<QString, int>> openingMoves(const mbc::Position &pos) const;
+    bool openingLineEnds(const mbc::Position &pos) const;
+    int solutionIndex() const;   // the next move of the Lichess solution
 
     GameManager *m_gm;
     LanguageManager *m_languages;
@@ -125,6 +192,23 @@ private:
     int m_puzzleIndex = -1;
     training::Puzzle m_puzzle;
     mbc::MateSolver m_solver;
+
+    // Tactics
+    QString m_theme;              // empty: mixed
+    int m_sinceRetry = 0;         // puzzles since the last one that came again
+
+    // Openings
+    QString m_openingSource;
+    QString m_openingName;
+    QHash<QString, QVector<QPair<QString, int>>> m_openingTree; // position (FEN without counters) -> moves
+    int m_bookDepth = 12;         // the book: up to this full move
+
+    // Hold out
+    int m_resistLimit = 2;        // pawns
+    int m_resistSeconds = 2;
+    QString m_resistEngine;
+    int m_resistMoves = 0;        // moves held out so far
+    mbc::Evaluation m_resistEval; // the engine's last evaluation (White's view)
 
     // Endgames
     int m_endgame = 0;

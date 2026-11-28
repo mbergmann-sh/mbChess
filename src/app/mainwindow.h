@@ -6,6 +6,7 @@
 #pragma once
 
 #include "newgamedialog.h"
+#include "tutor.h"
 
 #include <book/openings.h>
 #include <chesscore/game.h>
@@ -111,7 +112,7 @@ private:
     void benchmarkGameFinished(const BenchmarkGame &game);
 
     // Game flow
-    void newGameDialog(bool engineVsEngine = false);
+    void newGameDialog(bool engineVsEngine = false, bool againstEngine = false);
     // Menu Play: the opponents' submenus, filled when they open (engines may have changed)
     void fillOpponentMenu(QMenu *menu, int group);
     void startOpponent(int group, int index);
@@ -138,6 +139,20 @@ private:
     // Menu Training
     void startMateTraining(int moves);
     void startEndgameTraining(int type);
+    void startTacticsTraining(const QString &theme);
+    void fillOpeningMenu();
+    void startOpeningTraining(const QString &source, mbc::Color color);
+    void fillTacticsMenu();
+    void fillBoardTrainingMenu();
+    void fillResistanceMenu();
+    bool ratedGameActive() const;
+    void startRatedGame();
+    void finishRatedGame(double score, bool abandoned);
+    void startResistanceTraining(mbc::Color color);
+    bool tutorGameActive() const;
+    void playUserMove(mbc::Move move);   // after the checks of board and keyboard input
+    void updateTutor();
+    void onTutorVerdict(const Tutor::Verdict &verdict);
     bool startTraining(const GameSettings &settings, const mbc::Position &start, const QString &error, bool ok);
     void trainingAgain();
     void trainingNext();
@@ -267,7 +282,23 @@ private:
     QMenu *m_trainingMenu = nullptr;
     QMenu *m_mateMenu = nullptr;
     QMenu *m_endgameMenu = nullptr;
+    QMenu *m_tacticsMenu = nullptr;
+    QMenu *m_openingMenu = nullptr;
+    QAction *m_masterGamesAction = nullptr;
+    QMenu *m_resistanceMenu = nullptr;
+    QMenu *m_boardTrainingMenu = nullptr;
     Trainer *m_trainer = nullptr;
+    Tutor *m_tutor = nullptr;
+    QAction *m_tutorGameAction = nullptr;
+    QAction *m_ratedGameAction = nullptr;
+    int m_ratedSerial = -1;           // GameManager::gameSerial() of the rated game
+    bool m_ratedWhite = true;
+    QAction *m_tutorAction = nullptr;
+    QMenu *m_tutorLevelMenu = nullptr;
+    QList<QAction *> m_tutorLevelActions;
+    mbc::Move m_tutorMove;            // the player's move the tutor looks at
+    int m_tutorSerial = -1;
+    QString m_tutorFen;
     TrainingPanel *m_trainingPanel = nullptr;
     QDockWidget *m_trainingDock = nullptr;
     QAction *m_manageEnginesAction = nullptr;

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // mbChess - entry point
 
+#include "betaexpiry.h"
 #include "datafolders.h"
 #include "tablebases.h"
 #include "guitheme.h"
@@ -46,6 +47,10 @@ int main(int argc, char *argv[])
     parser.addOption(fenOption);
     parser.addPositionalArgument(QStringLiteral("file"), QStringLiteral("A PGN file to open."), QStringLiteral("[file.pgn]"));
     parser.process(app);
+
+    // test builds for beta testers: notice at the first start, nothing more after six weeks
+    if (!beta::checkAtStartup())
+        return 0;
 
     // start screen (View > Start screen), it shows what is loaded
     std::unique_ptr<SplashScreen> splash;

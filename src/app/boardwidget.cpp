@@ -174,6 +174,31 @@ void BoardWidget::setEditMode(bool on)
     clearSelection();
 }
 
+void BoardWidget::setSquareMode(bool on)
+{
+    m_squareMode = on;
+    clearSelection();
+}
+
+void BoardWidget::setMark(int sq, const QColor &color, bool frame)
+{
+    if (sq < 0 || sq >= 64)
+        return;
+    if (color.isValid())
+        m_marks.insert(sq, { color, frame });
+    else
+        m_marks.remove(sq);
+    update();
+}
+
+void BoardWidget::clearMarks()
+{
+    if (m_marks.isEmpty())
+        return;
+    m_marks.clear();
+    update();
+}
+
 void BoardWidget::setLastMove(Move move)
 {
     m_lastMove = move;
@@ -460,6 +485,18 @@ void BoardWidget::paintEvent(QPaintEvent *)
         p.fillRect(squareRect(m_lastMove.from()), kLastMove);
         p.fillRect(squareRect(m_lastMove.to()), kLastMove);
     }
+    // Training marks
+    for (auto it = m_marks.cbegin(); it != m_marks.cend(); ++it) {
+        const QRectF r = squareRect(it.key());
+        if (it->frame) {
+            const qreal w = qMax<qreal>(3.0, m_squareSize * 0.08);
+            p.setBrush(Qt::NoBrush);
+            p.setPen(QPen(it->color, w));
+            p.drawRect(r.adjusted(w / 2, w / 2, -w / 2, -w / 2));
+        } else {
+            p.fillRect(r, it->color);
+        }
+    }
     // Selected square
     if (m_selected != NoSquare)
         p.fillRect(squareRect(m_selected), kSelected);
@@ -558,6 +595,12 @@ void BoardWidget::mousePressEvent(QMouseEvent *event)
 {
     if (m_editMode) {
         editPress(event);
+        return;
+    }
+    if (m_squareMode) {
+        const int sq = squareAt(compat::mousePos(event));
+        if (event->button() == Qt::LeftButton && sq != NoSquare)
+            emit squareClicked(sq);
         return;
     }
     if (event->button() == Qt::RightButton) {

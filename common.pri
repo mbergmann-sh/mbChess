@@ -15,9 +15,18 @@ CONFIG -= debug_and_release debug_and_release_target
 # Keep the code free of APIs that were already deprecated in Qt 5.15.
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x050F00
 
-MBCHESS_VERSION = 0.1.17
+MBCHESS_VERSION = 0.1.30
 MBCHESS_CODENAME = Uppers and Downers
 DEFINES += MBCHESS_VERSION=\\\"$$MBCHESS_VERSION\\\"
+
+# Test builds for beta testers stop working this many days after the first start of the
+# version (src/app/betaexpiry.h); 0: no limit (for a release). MBCHESS_BETA_URL: where the
+# testers get the current build, shown in the notices (empty: "from the developer").
+# Both can be set on the qmake command line, e.g. "MBCHESS_BETA_DAYS=0".
+isEmpty(MBCHESS_BETA_DAYS): MBCHESS_BETA_DAYS = 42
+isEmpty(MBCHESS_BETA_URL): MBCHESS_BETA_URL =
+DEFINES += MBCHESS_BETA_DAYS=$$MBCHESS_BETA_DAYS
+!isEmpty(MBCHESS_BETA_URL): DEFINES += MBCHESS_BETA_URL=\\\"$$MBCHESS_BETA_URL\\\"
 
 MBCHESS_ROOT       = $$PWD
 # The engine wrappers (engines/wrapper.pri) pass the build root to the engines' own
@@ -41,7 +50,12 @@ isEmpty(MBCHESS_BUILD_ROOT) {
         equals(mbc_tail, $$mbc_rel/): MBCHESS_BUILD_ROOT = $$mbc_out
     }
 }
-isEmpty(MBCHESS_BUILD_ROOT): error("mbChess: Build-Ordner unbekannt - bitte das ganze Projekt mbChess.pro bauen / unknown build folder - please build the whole project mbChess.pro")
+# Still unknown (subproject in a build folder of its own): build into that folder
+# instead of stopping qmake. The warning names the subproject.
+isEmpty(MBCHESS_BUILD_ROOT) {
+    MBCHESS_BUILD_ROOT = $$clean_path($$OUT_PWD)
+    warning("mbChess: Build-Ordner von $$basename(_PRO_FILE_) unbekannt, baue nach $$MBCHESS_BUILD_ROOT - am besten das ganze Projekt mbChess.pro bauen / unknown build folder of $$basename(_PRO_FILE_), building into $$MBCHESS_BUILD_ROOT - best build the whole project mbChess.pro")
+}
 MBCHESS_LIB_DIR    = $$MBCHESS_BUILD_ROOT/lib
 MBCHESS_BIN_DIR    = $$MBCHESS_BUILD_ROOT/bin
 

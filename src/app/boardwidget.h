@@ -46,6 +46,12 @@ public:
     bool isEditMode() const { return m_editMode; }
     void setPlacePiece(mbc::Piece piece) { m_placePiece = piece; }
     mbc::Piece placePiece() const { return m_placePiece; }
+    // Training: a click only reports its square (squareClicked), nothing is moved.
+    void setSquareMode(bool on);
+    // Coloured marks on squares (training feedback), drawn under the pieces; an
+    // invalid colour removes the mark. frame: only a frame around the square.
+    void setMark(int sq, const QColor &color, bool frame = false);
+    void clearMarks();
     // MIME type of a dragged piece: "<piece>" or "<piece> <source square>"
     static const char *const PieceMimeType;
 
@@ -60,6 +66,8 @@ public:
 signals:
     // A legal move chosen by the user (promotion piece already selected).
     void moveMade(mbc::Move move);
+    // Square mode: the user clicked this square.
+    void squareClicked(int square);
     // Edit mode: the position was changed by the user.
     void positionEdited(const mbc::Position &position);
 
@@ -109,6 +117,9 @@ private:
     QPointF m_dragPos;
     int m_hover = mbc::NoSquare;
     bool m_editMode = false;
+    bool m_squareMode = false;
+    struct Mark { QColor color; bool frame; };
+    QHash<int, Mark> m_marks;
     mbc::Piece m_placePiece = mbc::NoPiece;
     int m_dragSource = mbc::NoSquare;   // edit mode: square of the dragged piece
 

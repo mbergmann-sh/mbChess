@@ -6,6 +6,10 @@
         <file>training/mate1.txt</file>
         <file>training/mate2.txt</file>
         <file>training/mate3.txt</file>
+        <file>training/tactics.txt</file>
+        <file>training/repertoire/white-italian.pgn</file>
+        <file>training/repertoire/black-caro-kann.pgn</file>
+        <file>training/masters/classics.pgn</file>
         <file>openings/a.tsv</file>
         <file>openings/b.tsv</file>
         <file>openings/c.tsv</file>
@@ -14,6 +18,8 @@
         <file>openings/names_de.tsv</file>
         <file>icons/mbchess.png</file>
         <file>images/about.jpg</file>
+        <file>images/tutor.png</file>
+        <file>images/tutor-gekifft.png</file>
         <file>icons/toolbar/new.svg</file>
         <file>icons/toolbar/open.svg</file>
         <file>icons/toolbar/save.svg</file>

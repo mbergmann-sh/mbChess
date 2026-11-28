@@ -7,17 +7,23 @@
 #include "languagemanager.h"
 #include "opponents.h"
 
+#include <book/polyglot.h>
 #include <chesscore/kpk.h>
 #include <chesscore/notation.h>
 #include <gaviota/gaviotatb.h>
+#include <pgn/pgn.h>
 
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <algorithm>
 #include <QHash>
+#include <QLocale>
 #include <QRandomGenerator>
 #include <QSet>
 #include <QSettings>
+#include <QFileInfo>
+#include <QRegularExpression>
 #include <QTextStream>
 
 using namespace mbc;
@@ -26,7 +32,7 @@ namespace training {
 
 namespace {
 
-// One line of the mbChess format: id;fen;first move or -;solution;rating
+// One line of the mbChess format: id;fen;first move or -;solution;rating[;themes]
 bool parseLine(const QString &line, Puzzle *p)
 {
     const QStringList f = line.split(QLatin1Char(';'));
@@ -37,17 +43,22 @@ bool parseLine(const QString &line, Puzzle *p)
     p->firstMove = f.at(2).trimmed() == QLatin1String("-") ? QString() : f.at(2).trimmed();
     p->solution = f.at(3).split(QLatin1Char(' '), Qt::SkipEmptyParts);
     p->rating = f.size() > 4 ? f.at(4).toInt() : 0;
+    if (f.size() > 5)
+        p->themes = f.at(5).split(QLatin1Char(' '), Qt::SkipEmptyParts);
     return !p->id.isEmpty() && !p->fen.isEmpty();
 }
 
 // One line of the Lichess CSV: PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,...
+// n > 0: the mates in n moves; n = 0: tactics (no mates).
 bool parseLichess(const QString &line, int n, Puzzle *p)
 {
     const QStringList f = line.split(QLatin1Char(','));
     if (f.size() < 8 || f.at(0) == QLatin1String("PuzzleId"))
         return false;
-    if (!f.at(7).split(QLatin1Char(' ')).contains(QStringLiteral("mateIn%1").arg(n)))
+    const QStringList themes = f.at(7).split(QLatin1Char(' '), Qt::SkipEmptyParts);
+    if (n > 0 ? !themes.contains(QStringLiteral("mateIn%1").arg(n)) : themes.contains(QStringLiteral("mate")))
         return false;
+    p->themes = themes;
     const QStringList moves = f.at(2).split(QLatin1Char(' '), Qt::SkipEmptyParts);
     if (moves.size() < 2)
         return false;
@@ -93,6 +104,53 @@ QString trainingFolder()
     return datafolders::trainingFolder();
 }
 
+QString repertoireFolder()
+{
+    return trainingFolder() + QStringLiteral("/Repertoire");
+}
+
+QVector<Repertoire> repertoires()
+{
+    QStringList files;
+    const QDir builtIn(QStringLiteral(":/training/repertoire"));
+    for (const QString &name : builtIn.entryList({ QStringLiteral("*.pgn") }, QDir::Files, QDir::Name))
+        files << builtIn.filePath(name);
+    const QDir own(repertoireFolder());
+    for (const QString &name : own.entryList({ QStringLiteral("*.pgn"), QStringLiteral("*.PGN") }, QDir::Files, QDir::Name))
+        files << own.filePath(name);
+    QVector<Repertoire> out;
+    for (const QString &path : files) {
+        QFile f(path);
+        if (!f.open(QIODevice::ReadOnly))
+            continue;
+        // only the tags of the first game
+        const QString head = mbc::pgn::decode(f.read(4096));
+        Repertoire r;
+        r.path = path;
+        r.name = QFileInfo(path).completeBaseName();
+        const QRegularExpression tag(QStringLiteral("\\[(\\w+)\\s+\"([^\"]*)\"\\]"));
+        // [Name_de "..."], [Name_en "..."]: the name in the language of the program
+        const QString nameTag = QStringLiteral("Name_") + LanguageManager::savedLanguage();
+        QString localName;
+        auto it = tag.globalMatch(head);
+        while (it.hasNext()) {
+            const QRegularExpressionMatch m = it.next();
+            if (m.captured(1) == nameTag)
+                localName = m.captured(2);
+            if (m.captured(1) == QLatin1String("Event") && !m.captured(2).isEmpty() && m.captured(2) != QLatin1String("?"))
+                r.name = m.captured(2);
+            if (m.captured(1) == QLatin1String("Repertoire"))
+                r.color = m.captured(2).compare(QLatin1String("White"), Qt::CaseInsensitive) == 0 ? 0
+                    : m.captured(2).compare(QLatin1String("Black"), Qt::CaseInsensitive) == 0      ? 1
+                                                                                                    : -1;
+        }
+        if (!localName.isEmpty())
+            r.name = localName;
+        out << r;
+    }
+    return out;
+}
+
 const QVector<Puzzle> &matePuzzles(int n)
 {
     static QHash<int, QVector<Puzzle>> cache;
@@ -112,13 +170,152 @@ const QVector<Puzzle> &matePuzzles(int n)
     return cache.insert(n, list).value();
 }
 
+const QVector<Puzzle> &tacticPuzzles()
+{
+    static QVector<Puzzle> list;
+    static bool loaded = false;
+    if (loaded)
+        return list;
+    loaded = true;
+    QSet<QString> ids;
+    readFile(QStringLiteral(":/training/tactics.txt"), 0, false, &list, &ids);
+    const QDir dir(trainingFolder());
+    for (const QString &name : dir.entryList({ QStringLiteral("tactics*.txt") }, QDir::Files, QDir::Name))
+        readFile(dir.filePath(name), 0, false, &list, &ids);
+    for (const QString &name : dir.entryList({ QStringLiteral("*.csv") }, QDir::Files, QDir::Name))
+        readFile(dir.filePath(name), 0, true, &list, &ids);
+    // in order of difficulty, own files included
+    std::stable_sort(list.begin(), list.end(), [](const Puzzle &a, const Puzzle &b) { return a.rating < b.rating; });
+    return list;
+}
+
+QVector<int> tacticIndexes(const QString &theme)
+{
+    static QHash<QString, QVector<int>> cache;
+    auto it = cache.find(theme);
+    if (it != cache.end())
+        return it.value();
+    QVector<int> out;
+    const QVector<Puzzle> &list = tacticPuzzles();
+    for (int i = 0; i < list.size(); ++i)
+        if (theme.isEmpty() || list.at(i).themes.contains(theme))
+            out << i;
+    return cache.insert(theme, out).value();
+}
+
+const QVector<TacticTheme> &tacticThemes()
+{
+    // the same list as tools/make-tactics-puzzles.py
+    static const QVector<TacticTheme> themes = {
+        { "hangingPiece", QT_TRANSLATE_NOOP("Trainer", "Hanging piece"), 0 },
+        { "fork", QT_TRANSLATE_NOOP("Trainer", "Fork"), 0 },
+        { "pin", QT_TRANSLATE_NOOP("Trainer", "Pin"), 0 },
+        { "skewer", QT_TRANSLATE_NOOP("Trainer", "Skewer"), 0 },
+        { "discoveredAttack", QT_TRANSLATE_NOOP("Trainer", "Discovered attack"), 0 },
+        { "doubleCheck", QT_TRANSLATE_NOOP("Trainer", "Double check"), 0 },
+        { "trappedPiece", QT_TRANSLATE_NOOP("Trainer", "Trapped piece"), 0 },
+        { "deflection", QT_TRANSLATE_NOOP("Trainer", "Deflection"), 1 },
+        { "attraction", QT_TRANSLATE_NOOP("Trainer", "Attraction"), 1 },
+        { "sacrifice", QT_TRANSLATE_NOOP("Trainer", "Sacrifice"), 1 },
+        { "capturingDefender", QT_TRANSLATE_NOOP("Trainer", "Capture the defender"), 1 },
+        { "clearance", QT_TRANSLATE_NOOP("Trainer", "Clearance"), 1 },
+        { "interference", QT_TRANSLATE_NOOP("Trainer", "Interference"), 1 },
+        { "intermezzo", QT_TRANSLATE_NOOP("Trainer", "Intermediate move"), 1 },
+        { "xRayAttack", QT_TRANSLATE_NOOP("Trainer", "X-ray attack"), 1 },
+        { "quietMove", QT_TRANSLATE_NOOP("Trainer", "Quiet move"), 2 },
+        { "defensiveMove", QT_TRANSLATE_NOOP("Trainer", "Defensive move"), 2 },
+        { "zugzwang", QT_TRANSLATE_NOOP("Trainer", "Zugzwang"), 2 },
+        { "promotion", QT_TRANSLATE_NOOP("Trainer", "Promotion"), 2 },
+        { "kingsideAttack", QT_TRANSLATE_NOOP("Trainer", "Attack on the king"), 3 },
+        { "pawnEndgame", QT_TRANSLATE_NOOP("Trainer", "Pawn endgame"), 3 },
+        { "rookEndgame", QT_TRANSLATE_NOOP("Trainer", "Rook endgame"), 3 },
+    };
+    return themes;
+}
+
+QString tacticThemeName(const QString &id)
+{
+    if (id.isEmpty())
+        return QCoreApplication::translate("Trainer", "Mixed");
+    for (const TacticTheme &t : tacticThemes())
+        if (id == QLatin1String(t.id))
+            return QCoreApplication::translate("Trainer", t.name);
+    return id;
+}
+
+QString tacticGroupName(int group)
+{
+    switch (group) {
+    case 0: return QCoreApplication::translate("Trainer", "Basic motifs");
+    case 1: return QCoreApplication::translate("Trainer", "Combinations");
+    case 2: return QCoreApplication::translate("Trainer", "Special moves");
+    default: return QCoreApplication::translate("Trainer", "Attack and endgame");
+    }
+}
+
 } // namespace training
 
 namespace {
 
+QString tacticsKey(const char *what)
+{
+    return QStringLiteral("training/tactics/%1").arg(QLatin1String(what));
+}
+
+QString tacticsIndexKey(const QString &theme)
+{
+    return QStringLiteral("training/tactics/index/%1").arg(theme.isEmpty() ? QStringLiteral("mixed") : theme);
+}
+
+QSet<QString> settingsSet(const QString &key)
+{
+    const QStringList l = QSettings().value(key).toStringList();
+    return QSet<QString>(l.begin(), l.end());
+}
+
 QString mateKey(int n, const char *what)
 {
     return QStringLiteral("training/mate%1/%2").arg(n).arg(QLatin1String(what));
+}
+
+// "training/opening/<file name or book>/<colour>/<what>"
+QString openingKey(const QString &source, Color color, const char *what)
+{
+    const QString name = source == QLatin1String("book") ? source : QFileInfo(source).fileName();
+    return QStringLiteral("training/opening/%1/%2/%3")
+        .arg(name, color == White ? QStringLiteral("white") : QStringLiteral("black"), QLatin1String(what));
+}
+
+// a position without the move counters, as key of the repertoire tree
+QString positionKey(const Position &pos)
+{
+    return pos.toFen().section(QLatin1Char(' '), 0, 3);
+}
+
+void addTree(const Game &game, Game::NodeId id, QHash<QString, QVector<QPair<QString, int>>> *tree)
+{
+    const Position &pos = game.nodePosition(id);
+    for (Game::NodeId child : game.children(id)) {
+        const QString uci = toUci(game.nodeMove(child));
+        QVector<QPair<QString, int>> &moves = (*tree)[positionKey(pos)];
+        bool found = false;
+        for (auto &m : moves)
+            if (m.first == uci) {
+                ++m.second;
+                found = true;
+            }
+        if (!found)
+            moves.append({ uci, 1 });
+        addTree(game, child, tree);
+    }
+}
+
+QString resistanceKey(Color color, int limit, const char *what)
+{
+    return QStringLiteral("training/resistance/%1/%2/%3")
+        .arg(color == White ? QStringLiteral("white") : QStringLiteral("black"))
+        .arg(limit)
+        .arg(QLatin1String(what));
 }
 
 QString endgameKey(int type, const char *what)
@@ -273,6 +470,194 @@ bool Trainer::prepareMate(int n, GameSettings *settings, Position *start, QStrin
     return true;
 }
 
+QString Trainer::tacticsMenuText(const QString &theme)
+{
+    const QVector<int> idx = training::tacticIndexes(theme);
+    const QSet<QString> solved = settingsSet(tacticsKey("solved"));
+    int done = 0;
+    for (int i : idx)
+        if (solved.contains(training::tacticPuzzles().at(i).id))
+            ++done;
+    //: menu Training > Tactics: "Fork (3 of 378 solved)"
+    return tr("%1 (%2 of %3 solved)").arg(training::tacticThemeName(theme)).arg(done).arg(idx.size());
+}
+
+void Trainer::resetTacticsProgress()
+{
+    QSettings().remove(QStringLiteral("training/tactics"));
+}
+
+bool Trainer::prepareTactics(const QString &theme, GameSettings *settings, Position *start, QString *error)
+{
+    const QVector<training::Puzzle> &all = training::tacticPuzzles();
+    const QVector<int> idx = training::tacticIndexes(theme);
+    if (idx.isEmpty()) {
+        *error = tr("There are no puzzles for \"%1\".").arg(training::tacticThemeName(theme));
+        return false;
+    }
+    QSettings s;
+    const QSet<QString> solved = settingsSet(tacticsKey("solved"));
+    const QStringList retry = s.value(tacticsKey("retry")).toStringList();
+    int index = s.value(tacticsIndexKey(theme), -1).toInt();
+    if (m_kind == Kind::Tactics && m_theme == theme)
+        index = m_puzzleIndex;
+    int pick = -1;
+    // a puzzle that went wrong comes again after three others
+    if (m_sinceRetry >= 3) {
+        for (const QString &id : retry) {
+            for (int k = 0; k < idx.size(); ++k)
+                if (all.at(idx.at(k)).id == id) {
+                    pick = k;
+                    break;
+                }
+            if (pick >= 0)
+                break;
+        }
+    }
+    if (pick >= 0) {
+        m_sinceRetry = 0;
+    } else {
+        ++m_sinceRetry;
+        for (int k = 1; k <= idx.size(); ++k) {
+            const int i = (index + k) % idx.size();
+            if (!solved.contains(all.at(idx.at(i)).id) && !retry.contains(all.at(idx.at(i)).id)) {
+                pick = i;
+                break;
+            }
+        }
+        if (pick < 0)
+            pick = (index + 1) % idx.size();
+        s.setValue(tacticsIndexKey(theme), pick);
+    }
+    const training::Puzzle &p = all.at(idx.at(pick));
+    Position pos;
+    if (!pos.setFromFen(p.fen)) {
+        *error = tr("The puzzle %1 has an invalid position.").arg(p.id);
+        return false;
+    }
+    Position task = pos;
+    if (!p.firstMove.isEmpty())
+        task.makeMove(parseUci(pos, p.firstMove));
+
+    m_kind = Kind::Tactics;
+    m_theme = theme;
+    m_puzzleIndex = pick;
+    m_puzzle = p;
+    m_start = pos;
+    m_taskPosition = task;
+    m_offset = p.firstMove.isEmpty() ? 0 : 1;
+    m_userColor = task.sideToMove();
+
+    GameSettings g = baseSettings();
+    g.builtinPlayer = GameSettings::BuiltinTrainer;
+    g.enginePath.clear();
+    g.opponentName = tr("Puzzle");
+    *settings = g;
+    *start = pos;
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+// Openings
+
+QString Trainer::openingMenuText(const QString &name, const QString &source, Color color)
+{
+    QSettings s;
+    const int done = s.value(openingKey(source, color, "perfect"), 0).toInt();
+    const int tries = s.value(openingKey(source, color, "tries"), 0).toInt();
+    if (tries == 0)
+        return name;
+    //: menu Training > Openings: "Italian Game (5 of 7 lines without a mistake)"
+    return tr("%1 (%2 of %3 lines without a mistake)").arg(name).arg(done).arg(tries);
+}
+
+bool Trainer::prepareOpening(const QString &source, Color color, GameSettings *settings, Position *start,
+                             QString *error)
+{
+    QHash<QString, QVector<QPair<QString, int>>> tree;
+    QString name;
+    if (source == QLatin1String("book")) {
+        const GameSettings g = GameSettings::load();
+        const QString file = g.bookFile.isEmpty() ? QStringLiteral(":/books/mbchess.bin") : g.bookFile;
+        QFile f(file);
+        mbc::book::PolyglotBook book;
+        QString err;
+        if (!f.open(QIODevice::ReadOnly) || !book.setData(f.readAll(), &err)) {
+            *error = tr("The opening book %1 cannot be read. %2").arg(QDir::toNativeSeparators(file), err);
+            return false;
+        }
+        m_bookDepth = qBound(4, g.bookDepth, 20);
+        // the book as a tree: all positions reachable with book moves up to the depth
+        QVector<Position> todo { Position::startPosition() };
+        QSet<QString> seen;
+        while (!todo.isEmpty()) {
+            const Position pos = todo.takeLast();
+            const QString key = positionKey(pos);
+            if (seen.contains(key) || pos.fullmoveNumber() > m_bookDepth)
+                continue;
+            seen.insert(key);
+            QVector<QPair<QString, int>> moves;
+            for (const mbc::book::BookMove &b : book.moves(pos)) {
+                if (b.weight <= 0 || !pos.isLegal(b.move))
+                    continue;
+                moves.append({ toUci(b.move), b.weight });
+                todo.append(pos.after(b.move));
+            }
+            if (!moves.isEmpty())
+                tree.insert(key, moves);
+        }
+        name = g.bookFile.isEmpty() ? tr("mbChess opening book") : QFileInfo(file).completeBaseName();
+    } else {
+        QVector<Game> games;
+        QString err;
+        if (!mbc::pgn::readFile(source, &games, &err) || games.isEmpty()) {
+            *error = tr("The repertoire %1 cannot be read. %2").arg(QDir::toNativeSeparators(source), err);
+            return false;
+        }
+        for (const Game &g : games)
+            if (g.startPosition() == Position::startPosition())
+                addTree(g, Game::RootNode, &tree);
+        name = QFileInfo(source).completeBaseName();
+        for (const training::Repertoire &r : training::repertoires())
+            if (r.path == source)
+                name = r.name;
+    }
+    if (!tree.contains(positionKey(Position::startPosition()))) {
+        *error = tr("%1 has no moves from the initial position.").arg(name);
+        return false;
+    }
+
+    m_kind = Kind::Opening;
+    m_openingSource = source;
+    m_openingName = name;
+    m_openingTree = tree;
+    m_userColor = color;
+    m_start = Position::startPosition();
+    m_taskPosition = m_start;
+    m_offset = 0;
+    m_puzzle = training::Puzzle();
+
+    GameSettings g = baseSettings();
+    g.builtinPlayer = GameSettings::BuiltinTrainer;
+    g.enginePath.clear();
+    g.opponentName = name;
+    *settings = g;
+    *start = m_start;
+    return true;
+}
+
+QVector<QPair<QString, int>> Trainer::openingMoves(const Position &pos) const
+{
+    if (m_openingSource == QLatin1String("book") && pos.fullmoveNumber() > m_bookDepth)
+        return {};
+    return m_openingTree.value(positionKey(pos));
+}
+
+bool Trainer::openingLineEnds(const Position &pos) const
+{
+    return pos.status() != GameStatus::Ongoing || openingMoves(pos).isEmpty();
+}
+
 bool Trainer::prepareAgain(GameSettings *settings, Position *start, QString *error)
 {
     if (m_kind == Kind::None) {
@@ -280,17 +665,19 @@ bool Trainer::prepareAgain(GameSettings *settings, Position *start, QString *err
         return false;
     }
     GameSettings g = baseSettings();
-    if (m_kind == Kind::Mate) {
+    if (isPuzzle()) {
         g.builtinPlayer = GameSettings::BuiltinTrainer;
         g.opponentName = tr("Puzzle");
     } else {
         QString name;
-        g.enginePath = enginePath(&name);
+        g.enginePath = m_kind == Kind::Resistance ? resistanceEnginePath(&name) : enginePath(&name);
         if (g.enginePath.isEmpty()) {
             *error = tr("No engine was found for the defence.");
             return false;
         }
-        g.moveTimeMs = 1000;
+        g.moveTimeMs = m_kind == Kind::Resistance ? m_resistSeconds * 1000 : 1000;
+        if (m_kind == Kind::Resistance)
+            g.opponentName = name;
     }
     m_solver.clear();
     *settings = g;
@@ -309,6 +696,19 @@ void Trainer::started()
         m_message = m_offset ? tr("Watch the opponent's move, then find the mate.") : tr("Find the mate.");
         QSettings s;
         s.setValue(mateKey(m_mateMoves, "tries"), s.value(mateKey(m_mateMoves, "tries"), 0).toInt() + 1);
+    } else if (m_kind == Kind::Tactics) {
+        m_message = tr("Watch the opponent's move, then find the best move.");
+    } else if (m_kind == Kind::Opening) {
+        m_message = m_userColor == White ? tr("Your move: play the first move of the repertoire.")
+                                         : tr("Watch the opponent's move, then answer with the repertoire.");
+        QSettings s;
+        s.setValue(openingKey(m_openingSource, m_userColor, "tries"),
+                   s.value(openingKey(m_openingSource, m_userColor, "tries"), 0).toInt() + 1);
+    } else if (m_kind == Kind::Resistance) {
+        m_resistMoves = 0;
+        m_resistEval = Evaluation();
+        m_message = m_userColor == White ? tr("Your move. Hold out as long as you can!")
+                                         : tr("%1 begins. Hold out as long as you can!").arg(m_resistEngine);
     } else {
         if (m_endgame == PawnWin || m_endgame == PawnDraw)
             m_message = tr("mbChess knows every king and pawn position and checks each of your moves.");
@@ -329,6 +729,11 @@ void Trainer::stop()
     emit changed();
 }
 
+int Trainer::solutionIndex() const
+{
+    return qMax(0, m_gm->game().nodePly(m_gm->mainLineEnd()) - m_offset);
+}
+
 int Trainer::userMovesDone() const
 {
     const int plies = m_gm->game().nodePly(m_gm->mainLineEnd()) - m_offset;
@@ -337,10 +742,32 @@ int Trainer::userMovesDone() const
 
 Move Trainer::defenderMove(const Position &pos)
 {
-    if (m_kind != Kind::Mate || !isOnBoard())
+    if (!isPuzzle() || !isOnBoard())
         return Move();
+    if (m_kind == Kind::Opening) {
+        // one of the repertoire's moves, by weight
+        const QVector<QPair<QString, int>> moves = openingMoves(pos);
+        int total = 0;
+        for (const auto &m : moves)
+            total += qMax(1, m.second);
+        if (total == 0)
+            return Move();
+        int r = int(QRandomGenerator::global()->bounded(total));
+        for (const auto &m : moves) {
+            r -= qMax(1, m.second);
+            if (r < 0)
+                return parseUci(pos, m.first);
+        }
+        return Move();
+    }
     if (m_offset && pos == m_start)
         return parseUci(pos, m_puzzle.firstMove);
+    if (m_kind == Kind::Tactics) {
+        // the opponent's moves of the Lichess solution
+        const int i = solutionIndex();
+        const Move m = i < m_puzzle.solution.size() ? parseUci(pos, m_puzzle.solution.at(i)) : Move();
+        return !m.isNull() && pos.isLegal(m) ? m : Move();
+    }
     const int left = m_mateMoves - userMovesDone();
     Move m = m_solver.bestDefence(pos, qMax(1, left));
     if (m.isNull()) {
@@ -353,11 +780,41 @@ Move Trainer::defenderMove(const Position &pos)
 
 bool Trainer::userMove(Move move)
 {
-    if (!isRunning() || m_kind != Kind::Mate)
+    if (!isRunning() || !isPuzzle())
         return true;
     const Position &pos = m_gm->game().nodePosition(m_gm->mainLineEnd());
     if (pos.sideToMove() != m_userColor || !pos.isLegal(move))
         return true;
+    if (m_kind == Kind::Opening) {
+        const QString uci = toUci(move);
+        for (const auto &m : openingMoves(pos))
+            if (m.first == uci) {
+                m_message = tr("Correct! Go on.");
+                emit changed();
+                return true;
+            }
+        ++m_mistakes;
+        m_message = m_openingSource == QLatin1String("book")
+            ? tr("%1 is not in the book here. Try again.").arg(san(pos, move))
+            : tr("%1 is not in the repertoire here. Try again.").arg(san(pos, move));
+        emit changed();
+        return false;
+    }
+    if (m_kind == Kind::Tactics) {
+        // the move of the solution, or any mate (as on Lichess)
+        const int i = solutionIndex();
+        const QString expected = m_puzzle.solution.value(i);
+        if (toUci(move) == expected || pos.after(move).isCheckmate()) {
+            if (i + 1 < m_puzzle.solution.size())
+                m_message = tr("Correct! Go on.");
+            emit changed();
+            return true;
+        }
+        ++m_mistakes;
+        m_message = tr("%1 is not the best move. Try again.").arg(san(pos, move));
+        emit changed();
+        return false;
+    }
     const int left = m_mateMoves - userMovesDone();
     const Position next = pos.after(move);
     if (next.isCheckmate() || (left > 1 && m_solver.isMatedWithin(next, left - 1))) {
@@ -423,6 +880,36 @@ QString Trainer::hint()
     if (!isOnBoard())
         return QString();
     const Position &pos = m_gm->game().nodePosition(m_gm->mainLineEnd());
+    static const char *const pieces[] = {
+            QT_TRANSLATE_NOOP("Trainer", "a pawn"), QT_TRANSLATE_NOOP("Trainer", "the knight"),
+            QT_TRANSLATE_NOOP("Trainer", "the bishop"), QT_TRANSLATE_NOOP("Trainer", "the rook"),
+            QT_TRANSLATE_NOOP("Trainer", "the queen"), QT_TRANSLATE_NOOP("Trainer", "the king"),
+    };
+    if (m_kind == Kind::Opening) {
+        if (!isRunning() || pos.sideToMove() != m_userColor)
+            return QString();
+        const QVector<QPair<QString, int>> moves = openingMoves(pos);
+        if (moves.isEmpty())
+            return QString();
+        const Move k = parseUci(pos, moves.constFirst().first);
+        return tr("Move %1.").arg(tr(pieces[typeOf(pos.pieceAt(k.from()))]));
+    }
+    if (m_kind == Kind::Tactics) {
+        if (!isRunning() || pos.sideToMove() != m_userColor)
+            return QString();
+        const Move k = parseUci(pos, m_puzzle.solution.value(solutionIndex()));
+        if (k.isNull())
+            return QString();
+        QString text = tr("Move %1.").arg(tr(pieces[typeOf(pos.pieceAt(k.from()))]));
+        QStringList themes;
+        for (const QString &t : m_puzzle.themes)
+            for (const training::TacticTheme &th : training::tacticThemes())
+                if (t == QLatin1String(th.id) && t != m_theme)
+                    themes << training::tacticThemeName(t);
+        if (!themes.isEmpty())
+            text += QLatin1Char(' ') + tr("Themes: %1.").arg(themes.join(QStringLiteral(", ")));
+        return text;
+    }
     if (m_kind == Kind::Mate) {
         if (!isRunning() || pos.sideToMove() != m_userColor)
             return QString();
@@ -430,11 +917,6 @@ QString Trainer::hint()
         const MoveList keys = m_solver.keyMoves(pos, qMax(1, left));
         if (keys.empty())
             return tr("There is no mate any more: take the last move back.");
-        static const char *const pieces[] = {
-            QT_TRANSLATE_NOOP("Trainer", "a pawn"), QT_TRANSLATE_NOOP("Trainer", "the knight"),
-            QT_TRANSLATE_NOOP("Trainer", "the bishop"), QT_TRANSLATE_NOOP("Trainer", "the rook"),
-            QT_TRANSLATE_NOOP("Trainer", "the queen"), QT_TRANSLATE_NOOP("Trainer", "the king"),
-        };
         const Move k = keys.front();
         const PieceType t = typeOf(pos.pieceAt(k.from()));
         const Position next = pos.after(k);
@@ -447,6 +929,8 @@ QString Trainer::hint()
             text += QLatin1Char(' ') + tr("The first move is a quiet move.");
         return text;
     }
+    if (m_kind == Kind::Resistance)
+        return tr("No help here: you are on your own against %1.").arg(m_resistEngine);
     // Endgames: the tablebases know the best moves
     if (!isRunning() || pos.sideToMove() != m_userColor)
         return QString();
@@ -504,10 +988,29 @@ QString Trainer::hint()
 
 QString Trainer::solution()
 {
-    if (m_kind != Kind::Mate || !isOnBoard())
+    if (!isPuzzle() || !isOnBoard())
         return QString();
     m_helped = true;
     const Position &pos = m_gm->game().nodePosition(m_gm->mainLineEnd());
+    if (m_kind == Kind::Opening) {
+        if (pos.sideToMove() != m_userColor)
+            return QString();
+        QStringList list;
+        for (const auto &m : openingMoves(pos))
+            list << san(pos, parseUci(pos, m.first));
+        emit changed();
+        if (list.isEmpty())
+            return QString();
+        return m_openingSource == QLatin1String("book") ? tr("Book moves: %1").arg(list.join(QStringLiteral(", ")))
+                                                        : tr("Moves of the repertoire: %1").arg(list.join(QStringLiteral(", ")));
+    }
+    if (m_kind == Kind::Tactics) {
+        m_message = tr("The puzzle comes again later.");
+        emit changed();
+        if (pos.sideToMove() != m_userColor)
+            return sanLine(m_taskPosition, m_puzzle.solution);
+        return sanLine(pos, m_puzzle.solution.mid(solutionIndex()));
+    }
     if (pos.sideToMove() != m_userColor) // from the start of the task
         return sanLine(m_taskPosition, m_puzzle.solution);
     const int left = m_mateMoves - userMovesDone();
@@ -532,6 +1035,24 @@ void Trainer::finish(bool solved, const QString &message)
             list << m_puzzle.id;
         s.setValue(mateKey(m_mateMoves, "solved"), list);
     }
+    if (m_kind == Kind::Tactics) {
+        QStringList solved_ = s.value(tacticsKey("solved")).toStringList();
+        QStringList retry = s.value(tacticsKey("retry")).toStringList();
+        retry.removeAll(m_puzzle.id);
+        if (solved && !m_helped && m_mistakes == 0) {
+            if (!solved_.contains(m_puzzle.id))
+                solved_ << m_puzzle.id;
+        } else {
+            retry << m_puzzle.id; // comes again after a few others
+        }
+        s.setValue(tacticsKey("solved"), solved_);
+        s.setValue(tacticsKey("retry"), retry);
+    }
+    if (m_kind == Kind::Opening) {
+        if (solved && !m_helped && m_mistakes == 0)
+            s.setValue(openingKey(m_openingSource, m_userColor, "perfect"),
+                       s.value(openingKey(m_openingSource, m_userColor, "perfect"), 0).toInt() + 1);
+    }
     if (m_kind == Kind::Endgame && solved)
         s.setValue(endgameKey(m_endgame, "solved"), s.value(endgameKey(m_endgame, "solved"), 0).toInt() + 1);
     emit changed();
@@ -544,12 +1065,21 @@ void Trainer::onGameEnded(Result result, const QString &reason)
         return;
     const bool userWon = (result == Result::WhiteWins && m_userColor == White)
         || (result == Result::BlackWins && m_userColor == Black);
-    if (m_kind == Kind::Mate) {
+    if (isPuzzle()) {
         if (userWon)
             finish(true, m_mistakes || m_helped ? tr("Mate! Solved, but with help or mistakes: it comes again later.")
                                                 : tr("Mate! Puzzle solved."));
         else
             finish(false, reason);
+        return;
+    }
+    if (m_kind == Kind::Resistance) {
+        if (userWon || result == Result::Draw) {
+            m_resistMoves = userMovesDone();
+            finishResistance(reason, true);
+        } else {
+            finishResistance(reason, false);
+        }
         return;
     }
     if (m_endgame == PawnDraw) {
@@ -579,6 +1109,8 @@ void Trainer::onGameChanged()
     const int ply = game.nodePly(end);
     if (ply < m_lastPly) { // taken back
         m_lastPly = ply;
+        if (m_kind == Kind::Resistance)
+            m_helped = true;
         emit changed();
         return;
     }
@@ -589,6 +1121,32 @@ void Trainer::onGameChanged()
     const Position &before = game.nodePosition(game.parent(end));
     if (before.sideToMove() == m_userColor && m_kind == Kind::Endgame)
         checkEndgameMove(before, game.nodeMove(end), after);
+    if (m_kind == Kind::Resistance) {
+        checkResistance(before);
+        if (m_state != State::Running)
+            return;
+    }
+    if (m_kind == Kind::Opening) {
+        if (openingLineEnds(after)) {
+            finish(true, m_mistakes || m_helped
+                             ? tr("End of the line, but with help or mistakes. Practise it again!")
+                             : tr("End of the line: all moves right!"));
+            m_gm->stopPlaying();
+            return;
+        }
+        if (after.sideToMove() == m_userColor)
+            m_message = tr("Your move.");
+    }
+    if (m_kind == Kind::Tactics) {
+        if (before.sideToMove() == m_userColor && solutionIndex() >= m_puzzle.solution.size()) {
+            finish(true, m_mistakes || m_helped ? tr("Solved, but with help or mistakes: it comes again later.")
+                                                : tr("Puzzle solved!"));
+            m_gm->stopPlaying();
+            return;
+        }
+        if (after.sideToMove() == m_userColor && ply == m_offset)
+            m_message = tr("Your move: find the best move.");
+    }
     if (m_kind == Kind::Mate && after.sideToMove() == m_userColor) {
         if (ply > m_offset)
             m_message = tr("%n move(s) left to mate.", nullptr, m_mateMoves - userMovesDone());
@@ -844,6 +1402,131 @@ bool Trainer::prepareEndgame(int type, GameSettings *settings, Position *start, 
 }
 
 // ---------------------------------------------------------------------------
+// Hold out
+
+int Trainer::resistanceLimit()
+{
+    return qBound(1, QSettings().value(QStringLiteral("training/resistance/limit"), 2).toInt(), 5);
+}
+
+void Trainer::setResistanceLimit(int pawns)
+{
+    QSettings().setValue(QStringLiteral("training/resistance/limit"), pawns);
+}
+
+int Trainer::resistanceSeconds()
+{
+    return qBound(1, QSettings().value(QStringLiteral("training/resistance/seconds"), 2).toInt(), 10);
+}
+
+void Trainer::setResistanceSeconds(int s)
+{
+    QSettings().setValue(QStringLiteral("training/resistance/seconds"), s);
+}
+
+int Trainer::resistanceRecord(Color color, int limit)
+{
+    return QSettings().value(resistanceKey(color, limit, "record"), 0).toInt();
+}
+
+void Trainer::resetResistanceRecords()
+{
+    QSettings().remove(QStringLiteral("training/resistance/white"));
+    QSettings().remove(QStringLiteral("training/resistance/black"));
+}
+
+QString Trainer::resistanceEnginePath(QString *name)
+{
+    // the strongest engine there is
+    opponents::Opponent o;
+    o.engines = QStringList{ QStringLiteral("Stockfish"), QStringLiteral("Arasan"), QStringLiteral("Texel"),
+                             QStringLiteral("Patricia"), QStringLiteral("Toga II"), QStringLiteral("Fruit") };
+    QString path = opponents::enginePath(o, name);
+    if (path.isEmpty()) {
+        const QVector<EngineEntry> engines = enginemanager::engines();
+        if (!engines.isEmpty()) {
+            path = engines.first().path;
+            if (name)
+                *name = engines.first().name;
+        }
+    }
+    return path;
+}
+
+bool Trainer::prepareResistance(Color color, GameSettings *settings, Position *start, QString *error)
+{
+    QString name;
+    const QString path = resistanceEnginePath(&name);
+    if (path.isEmpty()) {
+        *error = tr("No engine was found. Engines > Manage engines adds one.");
+        return false;
+    }
+    m_kind = Kind::Resistance;
+    m_userColor = color;
+    m_resistLimit = resistanceLimit();
+    m_resistSeconds = resistanceSeconds();
+    m_resistEngine = name;
+    m_start = Position::startPosition();
+    m_taskPosition = m_start;
+    m_offset = 0;
+    GameSettings g = baseSettings();
+    g.enginePath = path;
+    g.moveTimeMs = m_resistSeconds * 1000;
+    g.opponentName = name;
+    *settings = g;
+    *start = m_start;
+    return true;
+}
+
+void Trainer::checkResistance(const Position &before)
+{
+    // after a move of the engine: its evaluation of the position
+    if (before.sideToMove() == m_userColor)
+        return;
+    const Game &game = m_gm->game();
+    const Evaluation e = game.evaluation(m_gm->mainLineEnd());
+    if (!e.valid)
+        return;
+    m_resistEval = e;
+    const int sign = m_userColor == White ? 1 : -1;
+    const bool lost = e.mate ? e.value * sign < 0 : e.value * sign < -100 * m_resistLimit;
+    if (!lost) {
+        m_resistMoves = userMovesDone();
+        m_message = tr("Evaluation %1: you hold out.").arg(resistanceEvalText(e));
+        return;
+    }
+    finishResistance(tr("The evaluation fell to %1.").arg(resistanceEvalText(e)), false);
+    m_gm->stopPlaying();
+}
+
+QString Trainer::resistanceEvalText(const Evaluation &e) const
+{
+    const int v = m_userColor == White ? e.value : -e.value;
+    if (e.mate)
+        return v > 0 ? tr("mate in %n for you", nullptr, v) : tr("mate in %n against you", nullptr, -v);
+    const QLocale locale(LanguageManager::savedLanguage() == QLatin1String("de") ? QLocale::German : QLocale::English);
+    return (v > 0 ? QStringLiteral("+") : v < 0 ? QStringLiteral("\u2212") : QString())
+        + locale.toString(qAbs(v) / 100.0, 'f', 2);
+}
+
+void Trainer::finishResistance(const QString &why, bool wholeGame)
+{
+    const int moves = m_resistMoves;
+    const int record = resistanceRecord(m_userColor, m_resistLimit);
+    QString text = why + QLatin1Char(' ')
+        + (wholeGame ? tr("You held out through the whole game: %n move(s)!", nullptr, moves)
+                     : tr("You held out %n move(s).", nullptr, moves));
+    const bool newRecord = !m_helped && moves > record;
+    if (m_helped)
+        text += QLatin1Char(' ') + tr("Moves were taken back: no record.");
+    else if (newRecord)
+        text += QLatin1Char(' ') + tr("A new record!");
+    if (newRecord)
+        QSettings().setValue(resistanceKey(m_userColor, m_resistLimit, "record"), moves);
+    finish(newRecord || wholeGame, text);
+}
+
+// ---------------------------------------------------------------------------
 // Texts
 
 QString Trainer::title() const
@@ -854,8 +1537,19 @@ QString Trainer::title() const
             .arg(m_puzzleIndex + 1)
             .arg(training::matePuzzles(m_mateMoves).size());
     }
+    if (m_kind == Kind::Tactics) {
+        //: panel Training: "Tactics: Fork - puzzle 15 of 378"
+        return tr("Tactics: %1 - puzzle %2 of %3")
+            .arg(training::tacticThemeName(m_theme))
+            .arg(m_puzzleIndex + 1)
+            .arg(training::tacticIndexes(m_theme).size());
+    }
     if (m_kind == Kind::Endgame)
         return endgameName(m_endgame);
+    if (m_kind == Kind::Opening)
+        return tr("Opening: %1").arg(m_openingName);
+    if (m_kind == Kind::Resistance)
+        return tr("Hold out against %1").arg(m_resistEngine);
     return tr("Training");
 }
 
@@ -863,6 +1557,18 @@ QString Trainer::task() const
 {
     if (m_kind == Kind::Mate)
         return tr("%1 to move mates in %n move(s).", nullptr, m_mateMoves).arg(colorName(m_userColor));
+    if (m_kind == Kind::Tactics)
+        return tr("%1 to move: find the best move and play the whole combination.").arg(colorName(m_userColor));
+    if (m_kind == Kind::Opening)
+        return m_openingSource == QLatin1String("book")
+            ? tr("Play the opening as %1 with moves of the book, up to move %2.").arg(colorName(m_userColor)).arg(m_bookDepth)
+            : tr("Play the repertoire as %1 until the line ends; mbChess plays one of its other lines.")
+                  .arg(colorName(m_userColor));
+    if (m_kind == Kind::Resistance)
+        return tr("Play as %1 against %2 at full strength (%n s per move). The game lasts as long as the "
+                  "engine's evaluation stays above -%3 pawns for you.", nullptr, m_resistSeconds)
+            .arg(colorName(m_userColor), m_resistEngine)
+            .arg(m_resistLimit);
     if (m_kind != Kind::Endgame)
         return tr("Choose a task in the menu Training.");
     switch (m_endgame) {
@@ -881,7 +1587,7 @@ QString Trainer::task() const
 
 QString Trainer::source() const
 {
-    if (m_kind != Kind::Mate)
+    if (!isPuzzle() || m_kind == Kind::Opening)
         return QString();
     const QString id = m_puzzle.id;
     QString text;
@@ -908,6 +1614,33 @@ QString Trainer::progress() const
             text += QStringLiteral(" · ") + tr("mistakes in this puzzle: %1").arg(m_mistakes);
         return text;
     }
+    if (m_kind == Kind::Tactics) {
+        const QSet<QString> solved = settingsSet(tacticsKey("solved"));
+        int done = 0;
+        const QVector<int> idx = training::tacticIndexes(m_theme);
+        for (int i : idx)
+            if (solved.contains(training::tacticPuzzles().at(i).id))
+                ++done;
+        QString text = tr("Solved: %1 of %2").arg(done).arg(idx.size());
+        const int retry = s.value(tacticsKey("retry")).toStringList().size();
+        if (retry > 0)
+            text += QStringLiteral(" · ") + tr("to repeat: %1").arg(retry);
+        if (m_mistakes > 0)
+            text += QStringLiteral(" · ") + tr("mistakes in this puzzle: %1").arg(m_mistakes);
+        return text;
+    }
+    if (m_kind == Kind::Opening) {
+        QString text = tr("Lines without a mistake: %1 of %2")
+                           .arg(s.value(openingKey(m_openingSource, m_userColor, "perfect"), 0).toInt())
+                           .arg(s.value(openingKey(m_openingSource, m_userColor, "tries"), 0).toInt());
+        if (m_mistakes > 0)
+            text += QStringLiteral(" · ") + tr("mistakes in this line: %1").arg(m_mistakes);
+        return text;
+    }
+    if (m_kind == Kind::Resistance)
+        return tr("Moves held out: %1 · record: %2")
+            .arg(m_resistMoves)
+            .arg(resistanceRecord(m_userColor, m_resistLimit));
     if (m_kind == Kind::Endgame)
         return tr("Won: %1 of %2 tries")
             .arg(s.value(endgameKey(m_endgame, "solved"), 0).toInt())

@@ -61,6 +61,38 @@ Freies Schachprogramm (GPL-3.0-or-later) in C++/Qt für Windows, Linux, macOS un
 > Aufgaben im Ordner `Training` neben dem Programm, auch Lichess-CSV-Dateien) und „Endspiele“
 > (KDK, KTK, KLLK, KLSK gegen eine Engine mit Zuglimit, geprüft mit den Gaviota-Tabellen, falls
 > vorhanden; König und Bauer gewinnen bzw. remis halten, geprüft mit der eingebauten KPK-Tabelle).
+> „Training → Taktik“: über 2.300 Lichess-Aufgaben (CC0) zu 22 Themen (Gabel, Fesselung, Spieß,
+> Abzug, Ablenkung, Opfer, Zwischenzug, Zugzwang, Bauern- und Turmendspiel …) oder gemischt; der
+> Gegner spielt die Lichess-Lösung, nur der Lösungszug (oder ein Matt) zählt; verpatzte Aufgaben
+> kommen nach drei anderen wieder; weitere im Ordner `Training` (`tactics*.txt`, Lichess-CSV).
+> „Spielen → Partie mit Tutor“: In Partien gegen den Computer prüft eine eigene Engine (die
+> Analyse-Engine, Vorgabe Stockfish) jeden Zug, bevor er gespielt wird, nach den verlorenen
+> Gewinnchancen wie bei Lichess. Bei einem Fehler (einstellbar: Ungenauigkeit, Fehler, grober
+> Fehler) erklärt der Tutor kurz, was der Gegner darauf spielt und was besser ist; Zurücknehmen,
+> Tutor-Zug oder trotzdem spielen. Bei einem ganz groben Fehler zeigt er ein anderes Bild.
+> „Training → Brett und Gedächtnis“ (eigenes Fenster, ohne Engine): Felder finden, Feldnamen
+> nennen, Hell oder dunkel? (je 20 Felder gegen die Uhr, Bestzeit), Stellung merken (echte
+> Stellungen in sechs Stufen von 3 bis 32 Figuren, aus dem Gedächtnis nachbauen), alle Schachs und
+> Schläge finden, alle Züge finden.
+> „Training → Eröffnungen“: Repertoire üben (mitgeliefert: Italienisch mit Weiß, Caro-Kann mit
+> Schwarz; eigene PGN-Dateien mit Varianten im Ordner `Training/Repertoire`) oder mit dem
+> Eröffnungsbuch üben (eingestelltes PolyGlot-Buch oder das eingebaute). Der Gegner wählt seine
+> Züge zufällig nach Gewicht aus dem Repertoire bzw. Buch, Züge außerhalb werden abgewiesen;
+> Tipp, Lösung, gezählt werden fehlerfrei gespielte Linien.
+> „Training → Partien von Meistern“ (eigenes Fenster): die Züge eines Meisters raten, Seite und
+> Startzug wählbar. Eingebaut sind fünf berühmte Partien (Unsterbliche, Immergrüne, Opernpartie,
+> Réti–Tartakower 1910, Ed. Lasker–Thomas 1912), jede eigene PGN-Datei geht auch. Der Meisterzug
+> bringt 10 Punkte, ein anderer Zug bis zu 8, je nachdem, wie die Analyse-Engine ihn gegen den
+> Meisterzug bewertet; ein Tipp zeigt die Figur und halbiert die Punkte. Bestergebnis je Partie.
+> „Training → Durchhalten“: eine Partie gegen die stärkste vorhandene Engine (Stockfish zuerst) in
+> voller Stärke, 1–10 s je Zug. Sie dauert, solange die Bewertung der Engine für den Spieler über
+> −1/−2/−3/−5 Bauern bleibt; Rekord (durchgehaltene Züge) je Farbe und Grenze, nicht nach
+> Zugrücknahme.
+> „Spielen → Wertungspartie“: Jeder Spieler hat in mbChess eine eigene Elo-Wertung (Start 1200).
+> Gegner ist eine Engine mit genau dieser Spielstärke (Texel zuerst, bis hinunter zu Anfängern
+> kalibriert); Farbe und Bedenkzeit wählbar. Das Ergebnis ändert die Wertung nach der Elo-Formel
+> (K = 40 in den ersten 20 Partien, dann 20). Zugrücknahme und Tutor sind aus; eine nicht beendete
+> Partie zählt als verloren. Verlauf der letzten 50 Partien im Fenster.
 > Menü „Training → Mattsuche“ (Strg+M, Werkzeugleiste): für jede Stellung auf dem Brett; Matt in
 > höchstens N Zügen, Engine wählbar (Vorgabe Stockfish, der `go mate N` bekommt), Zeitlimit,
 > wahlweise Nebenlösungen (MultiPV). Die Lösung lässt sich als Variante einfügen. Läuft eine
@@ -144,12 +176,32 @@ Netze heruntergeladen (etwa 125 MB, dafür wird `curl` benutzt). Ohne Engines: `
 Das Programm liegt danach in `build/bin/` (`mbchess`, `mbchess.exe` bzw. `mbChess.app`).
 In Qt Creator einfach `mbChess.pro` öffnen und das passende Kit wählen.
 
+### Testversionen für Beta-Tester
+
+Seit 0.1.20 läuft jeder Build 42 Tage (6 Wochen) ab seinem ersten Start; jede neue Version
+startet ihre eigenen 6 Wochen. Beim ersten Start weist mbChess darauf hin, in der letzten Woche
+erinnert es, danach nennt es nur noch die Download-Adresse und beendet sich. Einstellbar in
+`common.pri` oder beim Aufruf von qmake:
+
+```sh
+qmake MBCHESS_BETA_URL=https://example.org/mbchess/ ../mbChess.pro   # Download-Adresse in den Hinweisen
+qmake MBCHESS_BETA_DAYS=0 ../mbChess.pro                              # ohne Ablauf (Release)
+```
+
 ### Windows-Installer
 
 Nach einem Release-Build baut `install\make-installer.bat <Build-Ordner>` zwei Installer
 (Deutsch und Englisch) mit dem Qt Installer Framework nach `install/output/`. Alternativ
 als letzter Build-Schritt: `qmake CONFIG+=installer`. Einzelheiten in
 [install/README.md](install/README.md).
+
+### Beta-Downloadseite
+
+`website/` enthält die Downloadseite für Beta-Tester (PHP, mit Download-Zähler). Sie wird
+einmal hochgeladen, danach kommen neue Builds von Hand in `builds/windows/` bzw.
+`builds/linux/`. Unter Linux packt `qmake CONFIG+=installer` den Build als
+`install/output/mbChess-<Version>-linux-x86_64.tar.gz`. Einzelheiten in
+[website/README.md](website/README.md).
 
 ## Aufbau
 

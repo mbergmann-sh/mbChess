@@ -375,6 +375,12 @@ void NewGameDialog::setEngineVsEngine()
     m_mode->setCurrentIndex(2);
 }
 
+void NewGameDialog::setAgainstEngine()
+{
+    if (m_mode->currentIndex() != 0)
+        m_mode->setCurrentIndex(0);
+}
+
 void NewGameDialog::updateEnabled()
 {
     const bool eve = m_mode->currentIndex() == 2;

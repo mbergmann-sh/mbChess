@@ -24,6 +24,7 @@ mbchessLinkLib(chesscore)
 
 HEADERS += \
     benchmark.h \
+    betaexpiry.h \
     benchmarkdialog.h \
     benchmarkwindow.h \
     boardwidget.h \
@@ -37,11 +38,17 @@ HEADERS += \
     opponents.h \
     trainer.h \
     trainingpanel.h \
+    tutor.h \
+    tutordialog.h \
     guitheme.h \
     soundplayer.h \
     tablebasedialog.h \
     engineanalysis.h \
     boardeditordialog.h \
+    boardtrainingdialog.h \
+    mastergamesdialog.h \
+    ratedgame.h \
+    piecepalette.h \
     matesearchdialog.h \
     splashscreen.h \
     statusfield.h \
@@ -55,6 +62,7 @@ HEADERS += \
 
 SOURCES += \
     benchmark.cpp \
+    betaexpiry.cpp \
     benchmarkdialog.cpp \
     benchmarkwindow.cpp \
     boardwidget.cpp \
@@ -67,11 +75,16 @@ SOURCES += \
     opponents.cpp \
     trainer.cpp \
     trainingpanel.cpp \
+    tutor.cpp \
+    tutordialog.cpp \
     guitheme.cpp \
     soundplayer.cpp \
     tablebasedialog.cpp \
     engineanalysis.cpp \
     boardeditordialog.cpp \
+    boardtrainingdialog.cpp \
+    mastergamesdialog.cpp \
+    ratedgame.cpp \
     matesearchdialog.cpp \
     splashscreen.cpp \
     statusfield.cpp \

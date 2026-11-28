@@ -32,6 +32,7 @@ public:
     // Starts (or restarts, if engine or resources changed) the analysis engine.
     void start(const EngineEntry &engine, int threads, int hashMb);
     void stop();                     // quits the engine
+    void pause();                    // the engine stops searching, but keeps running
     bool isRunning() const { return m_running; }
 
     void setMultiPv(int lines);

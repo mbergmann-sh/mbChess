@@ -11,6 +11,7 @@
 | Englische Zugansagen (`sounds/libritts-en`) | Piper-Stimme „LibriTTS“ (Sprecher 100), erzeugt mit `tools/make-speech.py` | CC BY 4.0 (LibriTTS) | [LibriTTS](http://www.openslr.org/60/) |
 | Eröffnungsnamen (`src/app/resources/openings/*.tsv`) und daraus erzeugtes Eröffnungsbuch `books/mbchess.bin` (`tools/make-opening-book.py`); deutsche Namen `names_de.tsv` von mbChess (`tools/translate-openings.py`) | lichess.org, chess-openings | CC0-1.0 | [lichess-org/chess-openings](https://github.com/lichess-org/chess-openings) |
 | Mattaufgaben „lichess:“ (`src/app/resources/training/mate{1,2,3}.txt`), ausgewählt und mit dem Matt-Löser von mbChess geprüft (`tools/make-mate-puzzles.py`) | lichess.org (Lichess-Aufgabendatenbank, erzeugt aus Lichess-Partien) | CC0-1.0 | [database.lichess.org](https://database.lichess.org/#puzzles) |
+| Taktikaufgaben (`src/app/resources/training/tactics.txt`), ausgewählt mit `tools/make-tactics-puzzles.py` | lichess.org (Lichess-Aufgabendatenbank) | CC0-1.0 | [database.lichess.org](https://database.lichess.org/#puzzles) |
 | Mattaufgaben „mbchess:“ in denselben Dateien | mbChess | GPL-3.0-or-later | – |
 | PolyGlot-Zufallszahlen (`src/libs/book/polyglotkeys.inc`) | Fabien Letouzey (PolyGlot, Fruit 2.1) | GPL-2.0-or-later | `engines/fruit/src/random.cpp` |
 | Zuggeräusche (`sounds/effects`) | mbChess, synthetisch erzeugt (`tools/make-effects.py`) | GPL-3.0-or-later | – |

@@ -73,9 +73,52 @@ merkt sich `GameManager::gameSerial()`: solange die Nummer gleich ist, gehört d
   Zug des Benutzers geht vorher durch `Trainer::userMove()`; ein Zug, nach dem kein Matt in der
   Restzahl mehr erzwungen ist, wird abgewiesen. Fortschritt in `training/mate<N>/solved` (IDs,
   nur ohne Fehler und ohne Lösung gelöste).
+- **Taktik**: `resources/training/tactics.txt` (wie oben, dazu Spalte 6 mit Lichess-Themen),
+  `training::tacticThemes()` (22 Themen in 4 Gruppen, dieselbe Liste wie
+  `tools/make-tactics-puzzles.py`). Der Verteidiger spielt die Züge der Lichess-Lösung,
+  `Trainer::userMove()` nimmt nur den Lösungszug oder ein Matt an. Fortschritt in
+  `training/tactics/solved`, verpatzte in `training/tactics/retry` (kommen nach drei anderen wieder).
 - **Endspiele**: Zufallsstellungen (`Trainer::generate()`), gegen eine Engine (Texel bevorzugt,
   1 s je Zug). Prüfung nach jedem Benutzerzug: Gaviota (falls geladen) bzw. `mbc::kpk`
   (chesscore, KPK-Tabelle per Rückwärtsanalyse, 0,5 MB, beim ersten Gebrauch berechnet).
+- **Tutor** (Menü Spielen): `Tutor` hat eine eigene `EngineAnalysis` (1 Kern, 64 MB, MultiPV 3),
+  die sucht, während der Spieler überlegt (pausiert im Zug des Gegners). `MainWindow::playUserMove()`
+  hält den Zug zurück, `Tutor::check()` nimmt die Bewertung vorher (mindestens 1 s Suche) und die
+  des Zugs (aus den eigenen Linien oder 1 s Suche nach dem Zug); Maß ist der Verlust an
+  Gewinnchance (Lichess-Formel): ab 5/10/15 Punkten Ungenauigkeit/Fehler/grober Fehler, ab 35
+  „ganz grob“ (Bild `tutor-gekifft.png`, „Hast du gekifft?!“); ab „Fehler“ auch dann ganz grob,
+  wenn der Zug 6 Bauern oder mehr kostet oder ein Matt zulässt (in schon verlorenen oder gewonnenen
+  Stellungen fällt die Gewinnchance dabei weniger). `TutorDialog` erklärt und lässt
+  wählen. Nicht in Trainingsaufgaben und nicht Engine gegen Engine.
+- **Brett und Gedächtnis**: `BoardTrainingDialog`, ein eigenes Fenster mit eigenem `BoardWidget`
+  (die Partie auf dem Hauptbrett bleibt unberührt). Dafür kann das Brett Klicks nur melden
+  (`setSquareMode`, Signal `squareClicked`) und Felder färben (`setMark`). Die Stellungen für
+  „Stellung merken“ und die Zug-Übungen sind die Aufgabenstellungen von Matt finden und Taktik.
+  Die Figurenleiste des Brett-Editors ist dafür nach `piecepalette.h` gewandert. Ergebnisse in
+  `training/board/<übung>/…`.
+- **Eröffnungen**: `Trainer::prepareOpening()` baut einen Baum (Stellungsschlüssel aus den ersten
+  vier FEN-Feldern → Züge mit Gewicht): aus einer Repertoire-PGN (`pgn::readFile`, alle Varianten;
+  Tags `Repertoire "White"/"Black"`, `Name_de`/`Name_en`; mitgeliefert in
+  `resources/training/repertoire/`, eigene in `Training/Repertoire`) oder aus dem PolyGlot-Buch
+  (`PolyglotBook`, Tiefe 4..20 Halbzüge). Der Verteidiger zieht gewichtet zufällig
+  (`defenderMove`), `userMove()` weist Züge außerhalb ab; die Linie endet, wenn der Baum keine
+  Züge mehr hat. Zähler in `training/opening/<file|book>/<white|black>/<tries|perfect>`.
+- **Partien von Meistern**: `MasterGamesDialog`, eigenes Fenster mit eigenem `BoardWidget` und
+  eigener `EngineAnalysis` (Analyse-Engine, 1 Kern, 64 MB, MultiPV 1). Hauptlinie der Partie aus
+  der PGN (`resources/training/masters/classics.pgn` oder eine eigene Datei). Ein anderer Zug als
+  der des Meisters: die Engine sucht die Stellung nach dem geratenen und nach dem Meisterzug je die
+  eingestellte Zeit; Punkte nach dem Verlust an Gewinnchance (`Tutor::winChance`): ≤1/3/6/10/15
+  Punkte → 8/6/4/2/1, sonst 0. Bestergebnis (Prozent) in `training/masters/best/<hash>/<seite>`.
+- **Durchhalten**: `Trainer::Kind::Resistance`, normale Partie gegen eine Engine
+  (`GameSettings::moveTimeMs`). Nach jedem Engine-Zug prüft `Trainer::checkResistance()` die
+  Bewertung, die `GameManager` am Knoten speichert (Weiß-Sicht); fällt sie unter die Grenze (oder
+  Matt gegen den Spieler), endet die Partie. Einstellungen und Rekorde unter `training/resistance/…`.
+- **Wertungspartie** (Menü Spielen): `ratedgame.*` (Namespace `rated` und `RatedGameDialog`).
+  `rated::prepare()` wählt die Engine (Texel, Stockfish ab 1320, Arasan ab 1000) mit
+  `strengthElo` = eigene Wertung; unter 1600 ohne Bücher. `rated::begin()` legt `rated/pending`
+  an, `finish()` rechnet die Elo-Änderung und schreibt den Verlauf; eine offene Partie wird beim
+  nächsten Mal als verloren gewertet. `MainWindow` merkt sich die `gameSerial()` der Partie,
+  sperrt Zugrücknahme und Tutor und wertet in `onGameEnded()` bzw. `confirmEndGame()` aus.
 
 `tools/puzzletool` (nicht im normalen Build) prüft Aufgabendateien mit dem Matt-Löser;
 `tools/make-mate-puzzles.py` wählt aus der Lichess-Datenbank aus.

@@ -62,6 +62,7 @@ qtHaveModule(serialport): tests.depends += dgt
 
 # Windows installers (German and English, Qt Installer Framework) as the last
 # step:  qmake CONFIG+=installer   or run  install\make-installer.bat <build folder>
+# On Linux the same step packs the build as install/output/mbChess-<version>-linux-x86_64.tar.gz.
 installer {
     SUBDIRS += installer
     installer.subdir  = install

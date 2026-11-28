@@ -16,14 +16,19 @@ win32 {
     first.commands = powershell -NoProfile -ExecutionPolicy Bypass -File $$shell_quote($$script) \
         -BuildDir $$shell_quote($$shell_path($$MBCHESS_BUILD_ROOT)) \
         -QtBinDir $$shell_quote($$shell_path($$[QT_INSTALL_BINS]))
+} else:unix:!macx:!android {
+    # Linux: the build as .tar.gz for the beta testers (tools/make-linux-package.py)
+    first.commands = python3 $$shell_quote($$MBCHESS_ROOT/tools/make-linux-package.py) \
+        --build-dir $$shell_quote($$MBCHESS_BUILD_ROOT)
 } else {
-    first.commands = @echo "mbChess: the installer is only built on Windows"
+    first.commands = @echo "mbChess: the installer is only built on Windows and Linux"
 }
 
 OTHER_FILES += \
     make-installer.ps1 \
     make-installer.bat \
     README.md \
+    ../tools/make-linux-package.py \
     config/controlscript.qs \
     packages/mbchess.app/meta/installscript.qs \
     packages/mbchess.manual/meta/installscript.qs \
